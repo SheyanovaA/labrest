@@ -4,5 +4,5 @@
 
 void
 session_impl::test(const ::Ice::Current&) {
-    ::std::cout<<":)"<<::std::endl;
+    ::std::cout<<"session_impl::test() called"<<::std::endl;
 }

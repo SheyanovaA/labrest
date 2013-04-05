@@ -7,7 +7,7 @@ class entry_impl : public ::labrestapi::entry
 {
 public:
 
-    virtual ::labrestapi::sessionPtr login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
+    virtual ::labrestapi::sessionPrx login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
 };
 
 #endif /* __ENTRY_IMPL_H__ */
