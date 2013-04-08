@@ -27,10 +27,10 @@ labrest_client.cpp: labrestapi.h
 labrest_server.cpp: labrestapi.h entry_impl.h session_impl.h
 
 labrest_server: labrest_server.o labrestapi.o entry_impl.o session_impl.o
-	$(LD) $^ -L$(ICE_LIB) -lIce -LIceUtil -o $@
+	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
 
 labrest_client: labrest_client.o labrestapi.o
-	$(LD) $^ -L$(ICE_LIB) -lIce -LIceUtil -o $@
+	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
 
 clean:
 	$(RMRF) $(OBJS) labrest_server labrest_client labrestapi.h labrestapi.cpp
