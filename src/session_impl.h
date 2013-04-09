@@ -6,6 +6,9 @@
 class session_impl : public ::labrestapi::session
 {
 public:
+
+    virtual ~session_impl();
+
     virtual void test(const ::Ice::Current&);
 };
 
