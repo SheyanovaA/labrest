@@ -10,15 +10,13 @@ main(int argc, char* argv[])
     try {
         ic = Ice::initialize(argc, argv);
         Ice::ObjectPrx base = ic->stringToProxy("SimpleEntry:default -p 10000");
-        ::labrestapi::entryPrx entry = ::labrestapi::entryPrx::checkedCast(base);
-        if (!entry)
+        ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
+        if (!Entry)
             throw "Invalid proxy";
 	::std::string user;
-	::std::cin >> user;
-        ::labrestapi::sessionPrx session = entry->login(user, "password");
-	session->setName(user);
-	session->test();
-	session->close();
+//	::std::cin >> user;
+        ::LabrestAPI::SessionPrx Session = Entry->Login(user, "password");
+	Session->Test();
     } catch (const Ice::Exception& ex) {
         ::std::cerr << ex << ::std::endl;
         status = 1;

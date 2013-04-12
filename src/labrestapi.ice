@@ -1,12 +1,9 @@
-module labrestapi {
-       class session {
-		string getName();
-		void setName(string name);
-                void test();
-		void close();
+module LabrestAPI {
+       class Session {
+		void Test();
        };
 
-       interface entry {
-                session * login(string username, string authdata);
+       interface Entry {
+                Session * Login(string username, string authdata);
        };
 };

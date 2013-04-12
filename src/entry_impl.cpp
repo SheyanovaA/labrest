@@ -6,20 +6,20 @@
 #include "entry_impl.h"
 #include "session_impl.h"
 
-entry_impl::entry_impl() {
+Entry_I::Entry_I() {
     index = 0;
 }
 
-::labrestapi::sessionPrx
-entry_impl::login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) {
+::LabrestAPI::SessionPrx
+Entry_I::Login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) {
 
-    ::std::string sessionId = "SimpleSession" + index++;
+    ::std::string SessionId = "SimpleSession" + index++;
 
     ::std::cout<<"entry_impl::login() called"<<::std::endl;
 
-    Ice::ObjectPtr object = new session_impl;
+    Ice::ObjectPtr object = new Session_I;
 
-    ::labrestapi::sessionPrx sessionProxy = ::labrestapi::sessionPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId)));
+    ::LabrestAPI::SessionPrx SessionProxy = ::LabrestAPI::SessionPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(SessionId)));
 
-    return sessionProxy;
+    return SessionProxy;
 }

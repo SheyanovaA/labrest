@@ -3,13 +3,13 @@
 
 #include "labrestapi.h"
 
-class entry_impl : public ::labrestapi::entry
+class Entry_I : public ::LabrestAPI::Entry
 {
 public:
 
-    entry_impl();
+    Entry_I();
 
-    virtual ::labrestapi::sessionPrx login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
+    virtual ::LabrestAPI::SessionPrx Login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
 
 private:
 

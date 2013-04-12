@@ -3,13 +3,13 @@
 
 #include "labrestapi.h"
 
-class session_impl : public ::labrestapi::session
+class Session_I : public ::LabrestAPI::Session
 {
 public:
 
-    virtual ~session_impl();
+    virtual ~Session_I();
 
-    virtual void test(const ::Ice::Current&);
+    virtual void Test(const ::Ice::Current&);
 };
 
 #endif /* __SESSION_IMPL_H__ */
