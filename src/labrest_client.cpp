@@ -13,9 +13,12 @@ main(int argc, char* argv[])
         ::labrestapi::entryPrx entry = ::labrestapi::entryPrx::checkedCast(base);
         if (!entry)
             throw "Invalid proxy";
-
-        ::labrestapi::sessionPrx session = entry->login("user", "password");
-        session->test();
+	::std::string user;
+	::std::cin >> user;
+        ::labrestapi::sessionPrx session = entry->login(user, "password");
+	session->setName(user);
+	session->test();
+	session->close();
     } catch (const Ice::Exception& ex) {
         ::std::cerr << ex << ::std::endl;
         status = 1;
