@@ -9,28 +9,28 @@ SLICE2CPP=${ICE_HOME}/bin/slice2cpp
 ICE_INC=${ICE_HOME}/include
 ICE_LIB=${ICE_HOME}/lib
 
-OBJS=labrestapi.o \
-     session_impl.o \
-     entry_impl.o \
-     labrest_client.o \
-     labrest_server.o
+OBJS=LabrestAPI.o \
+     SessionI.o \
+     EntryI.o \
+     LabrestClient.o \
+     LabrestServer.o
 
 all: labrest_server labrest_client
 
-labrestapi.h labrestapi.cpp: labrestapi.ice
+LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 	$(SLICE2CPP) $^
 
 %.o: %.cpp
 	$(CXX) -c -I. -I$(ICE_INC) $<
 
-labrest_client.cpp: labrestapi.h
-labrest_server.cpp: labrestapi.h entry_impl.h session_impl.h
+LabrestClient.cpp: LabrestAPI.h
+LabrestServer.cpp: LabrestAPI.h EntryI.h SessionI.h
 
-labrest_server: labrest_server.o labrestapi.o entry_impl.o session_impl.o
+labrest_server: LabrestServer.o LabrestAPI.o EntryI.o SessionI.o
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
 
-labrest_client: labrest_client.o labrestapi.o
+labrest_client: LabrestClient.o LabrestAPI.o
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
 
 clean:
-	$(RMRF) $(OBJS) labrest_server labrest_client labrestapi.h labrestapi.cpp
+	$(RMRF) $(OBJS) labrest_server labrest_client LabrestAPI.h LabrestAPI.cpp
