@@ -8,11 +8,27 @@ module LabrestAPI {
                 Session * login(string username, string authdata);
        };
 
-       // interface resource
+       class Resource {
+		bool lockStatus;
+		string name;
+		string description;
+		Resource parent;
+		ResourceType type;
+		
+		string getName();
+		string getDescription();
+		boot getLockStatus();
+		Resource getParent();
+		ResourceType getType();
+		bool setLockStatus(bool status);
+		
        // get/set name/description .... ?? permissions for user ??
        // get/set lock status
        // get/set parent
        // get/set type
+}
+       class ResourceType {
+		string name;
+		ResourceType parent;
 
-       // interface resourcetype ??
 };
