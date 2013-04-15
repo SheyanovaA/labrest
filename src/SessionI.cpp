@@ -3,6 +3,11 @@
 
 #include "SessionI.h"
 
+LabrestAPI::SessionI::SessionI(::std::string sessionId) : Session() {
+    this->sessionId = sessionId;
+    this->hasRsMgrPrx = false;
+}
+
 LabrestAPI::SessionI::~SessionI()
 {
     ::std::cout<<"SessionI::~SessionI() called"<<::std::endl;
@@ -20,13 +25,13 @@ LabrestAPI::SessionI::getResourceManager(const Ice::Current& current)
 
     ::std::cout<<"SessionI::getResourceManager() called"<<::std::endl;
 
-    Ice::ObjectPtr object = new ::LabrestAPI::ResourceManagerI;
+    if(!hasRsMgrPrx) {
+        Ice::ObjectPtr object = new ::LabrestAPI::ResourceManagerI;
+        rsMgrPrx = ::LabrestAPI::ResourceManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId + "-ResourceManager")));
+        hasRsMgrPrx = true;
+    }
 
-    ::LabrestAPI::ResourceManagerPrx ResManagerProxy = ::LabrestAPI::ResourceManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity("1")));
-
-    return ResManagerProxy;
-
-    return 0;
+    return rsMgrPrx;
 }
 
 ::LabrestAPI::UserManagerPrx

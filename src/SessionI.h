@@ -12,6 +12,8 @@ class SessionI : public Session
 {
 public:
 
+    SessionI(::std::string sessionId);
+
     virtual ~SessionI();
 
     virtual void test(const Ice::Current&);
@@ -19,6 +21,12 @@ public:
     virtual ::LabrestAPI::ResourceManagerPrx getResourceManager(const Ice::Current&);
 
     virtual ::LabrestAPI::UserManagerPrx getUserManager(const Ice::Current&);
+
+private:
+
+    ::std::string sessionId;
+    ::LabrestAPI::ResourceManagerPrx rsMgrPrx;
+    bool hasRsMgrPrx;
 };
 
 };
