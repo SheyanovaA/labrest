@@ -37,4 +37,4 @@ labrest_client: LabrestClient.o LabrestAPI.o
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
 
 clean:
-	$(RMRF) $(OBJS) labrest_server labrest_client LabrestAPI.h LabrestAPI.cpp
+	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPI.h LabrestAPI.cpp

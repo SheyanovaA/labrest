@@ -13,10 +13,9 @@ main(int argc, char* argv[])
         ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
         if (!Entry)
             throw "Invalid proxy";
-	::std::string user;
-//	::std::cin >> user;
-        ::LabrestAPI::SessionPrx Session = Entry->login(user, "password");
-	Session->test();
+        ::LabrestAPI::SessionPrx Session = Entry->login("user", "password");
+	::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
+	ResourceManager->getAllResourceIds();
     } catch (const Ice::Exception& ex) {
         ::std::cerr << ex << ::std::endl;
         status = 1;

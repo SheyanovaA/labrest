@@ -3,6 +3,8 @@
 ::LabrestAPI::ResourceIdList
 LabrestAPI::ResourceManagerI::getAllResourceIds(const Ice::Current& current) 
 {
+    ::std::cout << "ResourceManagerI::getAllResourceIds() called" << ::std::endl;
+    
     return ::LabrestAPI::ResourceIdList();
 }
 
