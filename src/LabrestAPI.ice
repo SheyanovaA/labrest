@@ -1,38 +1,75 @@
 module LabrestAPI {
 
-	sequence<Resource> ResourceList;       
+	interface Resource;
+	interface ResourceType;
+	interface ResourceManager;
+	interface UserManager;
+
+	sequence<int> ResourceIdList;
+	sequence<Resource> ResourceList;
+	sequence<int> ResourceTypeIdList;
+	sequence<Resource> ResourceTypeList;
 	
 	interface Session {
 		void test();
-		ResourceList getAllResources();
-		void addResource(Resource new_resource);
-		void delete() //????
+		ResourceManager * getResourceManager();
+		UserManager * getUserManager();
 	};
 
 	interface Entry {
                 Session * login(string username, string authdata);
 	};
 
-	interface Resource {		
+        interface ResourceManager {
+		ResourceIdList getAllResourceIds();
+		ResourceList getAllResources();
+		Resource getResource(int resourceId);
+		int addResource(string name,
+			string description,
+			int parentId,
+			int typeId);
+		bool deleteResource(int resourceId);
+		bool modifyResource(int resourceId,
+			string name,
+			string description,
+			int parentId,
+			int typeId);
+		
+		bool lockResource(int resourceId);
+		void unlockResource(int resourceId);
+		
+		ResourceTypeIdList getAllResourceTypeIds();
+		ResourceTypeList getAllResourceTypes();
+		ResourceType getResourceType(int resourceTypeId);
+		int addResourceType(string name,
+			string description,
+			int parentId);
+		bool deleteResourceType(int resourceTypeId);
+		bool modifyResourceType(int resourceTypeId,
+			string name,
+			string description,
+			int parentId);
+	};
+
+	interface Resource {
+		int getId();
 		string getName();
 		string getDescription();
-		boot getLockStatus();
+		bool getLockStatus();
 		Resource getParent();
 		ResourceType getType();
-		bool setLockStatus(bool status);
-		void setName(string name);
-		void setDescription(string description);
-		void setParent(Resource parent);
-		void setType(ResourceType type);
 	// ?? permissions for user ??
 	};
 
 	interface ResourceType {
+		int getId();
 		string getName();
 		string getDescription();
 		ResourceType getParent();
-		void setName(string name);
-		void setDescription(string description);
-		void setParent(ResourceType parent);
+	};
+
+	interface UserManager {
+		bool addUser(string username, string authdata);
+		// TODO
 	};
 };
