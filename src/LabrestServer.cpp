@@ -14,7 +14,7 @@ main(int argc, char* argv[])
         ic = Ice::initialize(argc, argv);
         Ice::ObjectAdapterPtr adapter =
             ic->createObjectAdapterWithEndpoints("SimpleEntryAdapter", "default -p 10000");
-        Ice::ObjectPtr object = new EntryI;
+        Ice::ObjectPtr object = new ::LabrestAPI::EntryI;
         adapter->add(object, ic->stringToIdentity("SimpleEntry"));
         adapter->activate();
         ic->waitForShutdown();

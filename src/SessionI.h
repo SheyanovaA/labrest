@@ -1,15 +1,26 @@
-#ifndef __SESSIONI_H__
-#define __SESSIONI_H__
+#ifndef __SessionI_H__
+#define __SessionI_H__
 
 #include "LabrestAPI.h"
+#include "UserManagerI.h"
+#include "ResourceManagerI.h"
 
-class SessionI : public ::LabrestAPI::Session
+namespace LabrestAPI
+{
+
+class SessionI : public Session
 {
 public:
 
     virtual ~SessionI();
 
-    virtual void test(const ::Ice::Current&);
+    virtual void test(const Ice::Current&);
+
+    virtual ::LabrestAPI::ResourceManagerPrx getResourceManager(const Ice::Current&);
+
+    virtual ::LabrestAPI::UserManagerPrx getUserManager(const Ice::Current&);
 };
 
-#endif /* __SESSION_IMPL_H__ */
+};
+
+#endif /* __SessionI_H__ */

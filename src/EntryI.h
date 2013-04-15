@@ -3,7 +3,10 @@
 
 #include "LabrestAPI.h"
 
-class EntryI : public ::LabrestAPI::Entry
+namespace LabrestAPI 
+{
+
+class EntryI : public Entry
 {
 public:
 
@@ -16,4 +19,5 @@ private:
     int index;
 };
 
+};
 #endif /* __ENTRYI_H__ */
