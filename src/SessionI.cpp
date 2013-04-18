@@ -40,10 +40,10 @@ LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 
     ::std::cout<<"SessionI::getUserManager() called"<<::std::endl;
 
-    if(!hasRsMgrPrx) {
+    if(!hasUsMgrPrx) {
         Ice::ObjectPtr object = new ::LabrestAPI::UserManagerI;
         usMgrPrx = ::LabrestAPI::UserManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId + "-UserManager")));
         hasUsMgrPrx = true;
     }
-    return 0;
+    return usMgrPrx;
 }

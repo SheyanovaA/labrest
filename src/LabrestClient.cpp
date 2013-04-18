@@ -15,8 +15,10 @@ main(int argc, char* argv[])
             throw "Invalid proxy";
         ::LabrestAPI::SessionPrx Session = Entry->login("user", "password");
 	::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
-	::LabrestAPI::UserManagerPrx UserManager = Session->getUserManager();
 	ResourceManager->getAllResourceIds();
+	::LabrestAPI::UserManagerPrx UserManager = Session->getUserManager();
+	::std::cout << UserManager->getAllUsers() << ::std::endl;
+	UserManager->addUser("user", "password");
     } catch (const Ice::Exception& ex) {
         ::std::cerr << ex << ::std::endl;
         status = 1;

@@ -31,10 +31,10 @@ LabrestClient.cpp: LabrestAPI.h
 LabrestServer.cpp: LabrestAPI.h EntryI.h SessionI.h ResourceTypeI.h ResourceI.h ResourceManagerI.h UserManagerI.h 
 
 labrest_server: LabrestServer.o LabrestAPI.o EntryI.o SessionI.o ResourceTypeI.o ResourceI.o ResourceManagerI.o UserManagerI.o 
-	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
+	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 labrest_client: LabrestClient.o LabrestAPI.o
-	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -o $@
+	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 clean:
 	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPI.h LabrestAPI.cpp
