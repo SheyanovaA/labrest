@@ -70,6 +70,7 @@ module LabrestAPI {
 
 	interface UserManager {
 		bool addUser(string username, string authdata);
+		string getAllUsers();
 		// TODO
 	};
 };

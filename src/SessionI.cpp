@@ -6,6 +6,7 @@
 LabrestAPI::SessionI::SessionI(::std::string sessionId) : Session() {
     this->sessionId = sessionId;
     this->hasRsMgrPrx = false;
+    this->hasUsMgrPrx = false;
 }
 
 LabrestAPI::SessionI::~SessionI()
@@ -30,12 +31,19 @@ LabrestAPI::SessionI::getResourceManager(const Ice::Current& current)
         rsMgrPrx = ::LabrestAPI::ResourceManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId + "-ResourceManager")));
         hasRsMgrPrx = true;
     }
-
     return rsMgrPrx;
 }
 
 ::LabrestAPI::UserManagerPrx
 LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 {
+
+    ::std::cout<<"SessionI::getUserManager() called"<<::std::endl;
+
+    if(!hasRsMgrPrx) {
+        Ice::ObjectPtr object = new ::LabrestAPI::UserManagerI;
+        usMgrPrx = ::LabrestAPI::UserManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId + "-UserManager")));
+        hasUsMgrPrx = true;
+    }
     return 0;
 }

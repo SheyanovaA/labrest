@@ -27,6 +27,8 @@ private:
     ::std::string sessionId;
     ::LabrestAPI::ResourceManagerPrx rsMgrPrx;
     bool hasRsMgrPrx;
+    ::LabrestAPI::UserManagerPrx usMgrPrx;
+    bool hasUsMgrPrx;
 };
 
 };

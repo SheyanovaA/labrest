@@ -7,3 +7,9 @@ LabrestAPI::UserManagerI::addUser(const ::std::string& username,
 {
     return false;
 }
+
+::std::string
+LabrestAPI::UserManagerI::getAllUsers(const Ice::Current& current)
+{
+    return " ";
+}

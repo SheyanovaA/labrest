@@ -13,6 +13,7 @@ public:
     virtual bool addUser(const ::std::string&,
                          const ::std::string&,
                          const Ice::Current&);
+    virtual ::std::string getAllUsers(const Ice::Current&);
 };
 
 };
