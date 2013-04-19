@@ -17,6 +17,7 @@ OBJS=LabrestAPI.o \
      SessionI.o \
      EntryI.o \
      LabrestClient.o \
+     LabrestDB.o \
      LabrestServer.o
 
 all: labrest_server labrest_client
@@ -28,9 +29,9 @@ LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 	$(CXX) -c -I. -I$(ICE_INC) $<
 
 LabrestClient.cpp: LabrestAPI.h
-LabrestServer.cpp: LabrestAPI.h EntryI.h SessionI.h ResourceTypeI.h ResourceI.h ResourceManagerI.h UserManagerI.h 
+LabrestServer.cpp: LabrestAPI.h LabrestDB.h EntryI.h SessionI.h ResourceTypeI.h ResourceI.h ResourceManagerI.h UserManagerI.h 
 
-labrest_server: LabrestServer.o LabrestAPI.o EntryI.o SessionI.o ResourceTypeI.o ResourceI.o ResourceManagerI.o UserManagerI.o 
+labrest_server: LabrestServer.o LabrestAPI.o LabrestDB.o EntryI.o SessionI.o ResourceTypeI.o ResourceI.o ResourceManagerI.o UserManagerI.o 
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 labrest_client: LabrestClient.o LabrestAPI.o

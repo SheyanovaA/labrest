@@ -4,11 +4,14 @@ module LabrestAPI {
 	interface ResourceType;
 	interface ResourceManager;
 	interface UserManager;
+	interface User;
 
 	sequence<int> ResourceIdList;
 	sequence<Resource> ResourceList;
 	sequence<int> ResourceTypeIdList;
 	sequence<Resource> ResourceTypeList;
+	sequence<User> UserList;
+	sequence<string> UserNameList;
 	
 	interface Session {
 		void test();
@@ -70,7 +73,12 @@ module LabrestAPI {
 
 	interface UserManager {
 		bool addUser(string username, string authdata);
-		string getAllUsers();
+		UserList getAllUsers();
+//		UserNameList getAllUserName();
 		// TODO
+	};
+	
+	interface User {
+		string getUserName();
 	};
 };
