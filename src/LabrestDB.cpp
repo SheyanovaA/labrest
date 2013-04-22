@@ -70,11 +70,24 @@ int LabrestAPI::LabrestDB::exec(::std::string SQL)
 bool LabrestAPI::LabrestDB::existsUser(::std::string username, ::std::string authdate)
 {
     bool status;
+
     int str;
+
+    char ** result;
+
     ::std::string SQL;
-    SQL = "select username from user where (usrname='"+username+"') and (authdate='"+authdate+"');";
-    sqlite3_get_table(db,SQL.c_str(),0,&str,0,&szErrMsg);
-    if (str > 1) 
+
+    SQL = "select username from user where (username = '"+username+"') and (authdate = '"+authdate+"');";
+
+    ::std::cout << SQL << ::std::endl;
+
+    sqlite3_get_table(db,SQL.c_str(),&result,&str,0,&szErrMsg);
+
+    ::std::cout << "возвращено строк: " << str<< ::std::endl;
+
+    sqlite3_free_table(result);
+
+    if (str > 0) 
     {
         status = true;
     }

@@ -9,7 +9,7 @@ main(int argc, char* argv[])
 
     Ice::CommunicatorPtr ic;
 
-    try 
+    try
     {
         ic = Ice::initialize(argc, argv);
 
@@ -20,23 +20,28 @@ main(int argc, char* argv[])
         if (!Entry)
             throw "Invalid proxy";
 
-        ::LabrestAPI::SessionPrx Session = Entry->login("user", "password");
+	::std::cout << "Пользователь: " << argv[1] << "\n Пароль: " << argv[2] << ::std::endl;
 
-	::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
+        ::LabrestAPI::SessionPrx Session = Entry->login(argv[1], argv[2]);
 
-	ResourceManager->getAllResourceIds();
+::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
 
-	::LabrestAPI::UserManagerPrx UserManager = Session->getUserManager();
+ResourceManager->getAllResourceIds();
 
-	UserManager->addUser("user6", "password");
-    } 
-    catch (const Ice::Exception& ex) 
+::LabrestAPI::UserManagerPrx UserManager = Session->getUserManager();
+
+UserManager->addUser("user6", "password");
+
+} catch (const LabrestAPI::LoginException &logex) {
+}
+    
+    catch (const Ice::Exception& ex)
     {
         ::std::cerr << ex << ::std::endl;
 
         status = 1;
-    } 
-    catch (const char* msg) 
+    }
+    catch (const char* msg)
     {
         ::std::cerr << msg << ::std::endl;
 
@@ -48,3 +53,4 @@ main(int argc, char* argv[])
 
     return status;
 }
+

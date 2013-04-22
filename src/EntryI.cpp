@@ -14,6 +14,7 @@
 ::LabrestAPI::SessionPrx
 LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) 
 {
+    if (!dbPtr->existsUser(username, auth)) throw new LoginException();
 
     ::std::string sessionId = "SimpleSession" + index++;
 
@@ -22,6 +23,6 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
     Ice::ObjectPtr object = new ::LabrestAPI::SessionI(sessionId);
 
     ::LabrestAPI::SessionPrx SessionProxy = ::LabrestAPI::SessionPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId)));
-    //throw new LoginException();
+
     return SessionProxy;
 }
