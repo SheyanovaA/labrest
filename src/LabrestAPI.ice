@@ -13,6 +13,8 @@ module LabrestAPI {
 	sequence<User> UserList;
 	sequence<string> UserNameList;
 	
+	exception LoginException {};
+
 	interface Session {
 		void test();
 		ResourceManager * getResourceManager();
@@ -20,7 +22,8 @@ module LabrestAPI {
 	};
 
 	interface Entry {
-                Session * login(string username, string authdata);
+		Session * login(string username, string authdata)
+			throws LoginException;
 	};
 
         interface ResourceManager {
