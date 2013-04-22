@@ -26,6 +26,8 @@ public:
 
 	int exec(::std::string SQL);
 
+        bool existsUser(::std::string username, ::std::string authdate);
+
 };
 
 };
