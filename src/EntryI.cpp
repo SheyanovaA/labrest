@@ -14,7 +14,11 @@
 ::LabrestAPI::SessionPrx
 LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) 
 {
-    if (!dbPtr->existsUser(username, auth)) throw new LoginException();
+    if (!dbPtr->existsUser(username, auth))
+    {
+        LoginException le;
+        le.ice_throw();
+    }
 
     ::std::string sessionId = "SimpleSession" + index++;
 

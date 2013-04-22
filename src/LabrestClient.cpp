@@ -22,7 +22,17 @@ main(int argc, char* argv[])
 
 	::std::cout << "Пользователь: " << argv[1] << "\n Пароль: " << argv[2] << ::std::endl;
 
-        ::LabrestAPI::SessionPrx Session = Entry->login(argv[1], argv[2]);
+        ::LabrestAPI::SessionPrx Session;
+
+        try
+        {
+            Session = Entry->login(argv[1], argv[2]);
+        }
+        catch(LabrestAPI::LoginException & ex)
+        {
+            ::std::cerr<<"Login error"<<::std::endl;
+            return 1;
+        }
 
 ::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
 
