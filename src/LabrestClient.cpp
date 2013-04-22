@@ -20,31 +20,31 @@ main(int argc, char* argv[])
         if (!Entry)
             throw "Invalid proxy";
 
-	::std::cout << "Пользователь: " << argv[1] << "\n Пароль: " << argv[2] << ::std::endl;
+	::std::cout << "Labrest :  ";
 
-        ::LabrestAPI::SessionPrx Session;
+        ::LabrestAPI::SessionPrx Session; 
 
         try
         {
-            Session = Entry->login(argv[1], argv[2]);
+           Session = Entry->login(argv[1], argv[2]);
         }
         catch(LabrestAPI::LoginException & ex)
         {
             ::std::cerr<<"Login error"<<::std::endl;
-            return 1;
+           return 1;
         }
+        ::std::string command;
 
-::LabrestAPI::ResourceManagerPrx ResourceManager = Session->getResourceManager();
+        getline(::std::cin, command);
 
-ResourceManager->getAllResourceIds();
+        while (command != "exit") 
+	{
+            ::std::cout << "Labrest :  ";
 
-::LabrestAPI::UserManagerPrx UserManager = Session->getUserManager();
+            getline(::std::cin, command);
+	}
 
-UserManager->addUser("user6", "password");
-
-} catch (const LabrestAPI::LoginException &logex) {
-}
-    
+    }
     catch (const Ice::Exception& ex)
     {
         ::std::cerr << ex << ::std::endl;
