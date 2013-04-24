@@ -54,6 +54,9 @@ main(int argc, char* argv[])
             ::std::cout << "Labrest :  ";
 
             getline(::std::cin, command);
+            if(::std::cin.eof()) {
+                break;
+            }
 	}
 
     }
