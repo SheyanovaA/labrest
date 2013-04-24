@@ -39,6 +39,18 @@ main(int argc, char* argv[])
 
         while (command != "exit") 
 	{
+	    if (command.find("add user") != ::std::string::npos)
+	    {
+		command.erase(0,9);
+
+		::std::string usname, auth;
+
+		usname = command.substr(0,command.find(' '));
+
+		auth = command.substr(command.find(' ')+1,command.length());
+
+		Session->getUserManager()->addUser(usname, auth);
+            }
             ::std::cout << "Labrest :  ";
 
             getline(::std::cin, command);
