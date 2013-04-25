@@ -16,7 +16,6 @@ module LabrestAPI {
 	exception LoginException {};
 
 	interface Session {
-		void test();
 		ResourceManager * getResourceManager();
 		UserManager * getUserManager();
 	};
@@ -77,6 +76,7 @@ module LabrestAPI {
 	interface UserManager {
 		bool addUser(string username, string authdata);
 		UserList getAllUsers();
+//		bool modifyUser(string username, string authdata);
 //		UserNameList getAllUserName();
 		// TODO
 	};

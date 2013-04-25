@@ -24,7 +24,7 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
 
     ::std::cout<<"EntryI::login() called"<<::std::endl;
 
-    Ice::ObjectPtr object = new ::LabrestAPI::SessionI(sessionId);
+    Ice::ObjectPtr object = new ::LabrestAPI::SessionI(sessionId, username);
 
     ::LabrestAPI::SessionPrx SessionProxy = ::LabrestAPI::SessionPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId)));
 

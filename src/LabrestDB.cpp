@@ -48,14 +48,18 @@ LabrestAPI::LabrestDB::LabrestDB()
 
     this->exec("create table if not exists user(username text primary key, authdate text);");
 
+    this->exec("create table if not exists resource_type(id integer primary key autoincrement, name text, description, parent integer);");
+
+    this->exec("create table if not exists resource(id integer primary key autoincrement, name text, description text, lock_status boolean, type_id integer, parent integer);");
+
+    this->exec("create table if not exists using_resource(id integer primary key autoincrement, username text, resource_id integer, start_data datetime, timeout integer, status boolean);");
+
 }
 
 int LabrestAPI::LabrestDB::exec(::std::string SQL) 
 {
 
     char ** temp;
-
-    int col, str;
 
     if (sqlite3_exec(db, SQL.c_str(), 0, 0, &szErrMsg))
     {
@@ -92,4 +96,24 @@ bool LabrestAPI::LabrestDB::existsUser(::std::string username, ::std::string aut
         status = false;
     };
     return status;
+}
+
+
+bool  LabrestAPI::LabrestDB::addQuery(::std::string SQL) 
+{
+
+    char ** temp;
+
+    bool status = true;
+
+    if (sqlite3_exec(db, SQL.c_str(), 0, 0, &szErrMsg))
+    {
+	status = false;
+
+        ::std::cout <<  "Ошибка SQL: " << &szErrMsg << ::std::endl;
+
+        sqlite3_free(szErrMsg);
+
+    } 
+    return status; 
 }

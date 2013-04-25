@@ -1,9 +1,12 @@
 #ifndef __ResourceManagerI_H__
 #define __ResourceManagerI_H__
 
+#include <string.h>
+
 #include "LabrestAPI.h"
 #include "ResourceI.h"
 #include "ResourceTypeI.h"
+#include "LabrestDB.h"
 
 namespace LabrestAPI
 {

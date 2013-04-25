@@ -28,6 +28,10 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
                                           ::Ice::Int typeId,
                                           const Ice::Current& current)
 {
+    ::std::cout << "ResourceManagerI::addResource() called" << ::std::endl;
+
+    dbPtr->addQuery("insert into resource values(,'" + name + "','" + description + "', 0 ,'" + ::std::to_string(typeId) + "','" + ::std::to_string(parentId) + "');");
+
     return 0;
 }
 

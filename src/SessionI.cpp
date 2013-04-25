@@ -3,7 +3,7 @@
 
 #include "SessionI.h"
 
-LabrestAPI::SessionI::SessionI(::std::string sessionId) : Session() 
+LabrestAPI::SessionI::SessionI(::std::string sessionId, ::std::string username) : Session() 
 {
     this->sessionId = sessionId;
 

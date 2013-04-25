@@ -5,11 +5,13 @@ LabrestAPI::UserManagerI::addUser(const ::std::string& username,
                                   const ::std::string& authdata,
                                   const Ice::Current& current)
 {
+    bool status = true;
+
     std::cout << "UserManagerI::addUser() called \n";
 
-    dbPtr->exec("insert into user values('"+username+"','"+authdata+"');");
+    status = dbPtr->addQuery("insert into user values('"+username+"','"+authdata+"');");
 
-    return true;
+    return status;
 }
 
 ::LabrestAPI::UserList

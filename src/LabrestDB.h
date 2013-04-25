@@ -28,6 +28,8 @@ public:
 
         bool existsUser(::std::string username, ::std::string authdate);
 
+        bool addQuery(::std::string SQL);
+
 };
 
 };

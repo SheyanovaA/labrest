@@ -12,7 +12,7 @@ class SessionI : public Session
 {
 public:
 
-    SessionI(::std::string sessionId);
+    SessionI(::std::string sessionId, ::std::string username);
 
     virtual ~SessionI();
 
