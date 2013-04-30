@@ -9,7 +9,7 @@ LabrestAPI::UserManagerI::addUser(const ::std::string& username,
 
     std::cout << "UserManagerI::addUser() called \n";
 
-    status = dbPtr->addQuery("insert into user values('"+username+"','"+authdata+"');");
+    status = dbPtr->addUser(username,authdata);
 
     return status;
 }
@@ -23,4 +23,12 @@ LabrestAPI::UserManagerI::getAllUsers(const Ice::Current& current)
     ::std::cout << "UserManagerI::getAllUsers() called" << ::std::endl;
 
     return list;
+}
+
+bool
+LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
+                                     const ::std::string& authdata,
+                                     const Ice::Current& current)
+{
+    return false;
 }

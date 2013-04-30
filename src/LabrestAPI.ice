@@ -11,7 +11,6 @@ module LabrestAPI {
 	sequence<int> ResourceTypeIdList;
 	sequence<Resource> ResourceTypeList;
 	sequence<User> UserList;
-	sequence<string> UserNameList;
 	
 	exception LoginException {};
 
@@ -76,8 +75,7 @@ module LabrestAPI {
 	interface UserManager {
 		bool addUser(string username, string authdata);
 		UserList getAllUsers();
-//		bool modifyUser(string username, string authdata);
-//		UserNameList getAllUserName();
+		bool modifyUser(string username, string authdata);
 		// TODO
 	};
 	

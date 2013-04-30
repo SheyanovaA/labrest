@@ -24,12 +24,33 @@ public:
 
 	int disconnect();
 
-	int exec(::std::string SQL);
-
         bool existsUser(::std::string username, ::std::string authdate);
 
-        bool addQuery(::std::string SQL);
+	bool addUser(::std::string username, ::std::string authdate);
 
+	bool deleteUser(::std::string username);
+
+	bool changeUser(::std::string username, ::std::string field, ::std::string value);
+
+	int  addResourse(::std::string name, ::std::string description, int typeId, int parentId);
+
+	bool deleteResource(int id);
+
+	bool changeResource(int id, ::std::string field, ::std::string value);
+
+	bool changeResource(int id, ::std::string field, int value);
+
+	int  addResourceType(::std::string name, ::std::string description, int parentId);
+
+	bool deleteResourceType(int id);
+
+	bool changeResourceType(int id, ::std::string field, ::std::string value);
+
+	bool changeResourceType(int id, ::std::string field, int value);
+
+	bool lockResourse(int resourceId, ::std::string username);
+
+	bool unlockResource(int resourceId);
 };
 
 };

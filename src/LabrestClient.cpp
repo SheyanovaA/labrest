@@ -51,7 +51,9 @@ main(int argc, char* argv[])
 		{
 		    if (argc == 3) 
 		    {
- 			auth = argv[2];
+		        name = argv[1];
+ 		
+  			auth = argv[2];
 		    }
 		    else
 		    {
@@ -141,6 +143,6 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
 
 	ss >> name >> descr >> tipe_id >> parent_id;
 
-	session->getResourceManeger()->addResource(name,descr,tipe_id,parent_id);
+	session->getResourceManager()->addResource(name,descr,tipe_id,parent_id);
     }
 }

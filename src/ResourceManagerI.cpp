@@ -30,7 +30,7 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
 {
     ::std::cout << "ResourceManagerI::addResource() called" << ::std::endl;
 
-    dbPtr->addQuery("insert into resource values(,'" + name + "','" + description + "', 0 ,'" + ::std::to_string(typeId) + "','" + ::std::to_string(parentId) + "');");
+//    dbPtr->addQuery("insert into resource values(,'" + name + "','" + description + "', 0 ,'" +  "','" + "');");
 
     return 0;
 }
