@@ -10,6 +10,10 @@ class UserI : virtual public User
 {
 public:
 
+    ::std::string name;
+
+    ::std::string auth;
+
     virtual ::std::string getUserName(const Ice::Current&);
 };
 

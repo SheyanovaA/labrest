@@ -3,5 +3,6 @@
 ::std::string
 LabrestAPI::UserI::getUserName(const Ice::Current& current)
 {
-    return ::std::string();
+    return this->name;
 }
+

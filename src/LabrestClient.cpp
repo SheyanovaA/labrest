@@ -154,4 +154,23 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
 
 	    ::std::cout << "this user has not been deleted!\nUser with the name \"" << usname << "\" does not exists!\n";
     };
+    if (command == "all_users")
+    {
+	session->getUserManager()->getAllUsers();
+        
+        ::std::cout << "done" << ::std::endl;
+
+    };
+    if (command == "help")
+    {
+	::std::cout << "all_users" << ::std::endl;
+        
+        ::std::cout << "add_user username authdata" << ::std::endl;
+        
+        ::std::cout << "delete_user username" << ::std::endl;
+        
+        ::std::cout << "add_resource name description tipe_id parent_id " << ::std::endl;
+        
+        ::std::cout << "exit" << ::std::endl;
+    };
 }

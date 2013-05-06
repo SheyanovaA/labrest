@@ -125,20 +125,11 @@ bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
 
     s = sqlite3_prepare(db,"delete from user where username = ?;",-1,&ppStmt,0);
     
-    if(s != SQLITE_OK) {
-        ::std::cout << "Error prepare" <<s<< ::std::endl;
-        return false;
-    }
-
     sqlite3_bind_text(ppStmt, 1, username.c_str(), username.length(),NULL);
 
-    s = sqlite3_step(ppStmt);
-    ::std::cout << "s==" <<s<< ::std::endl;
-    
-    if (s == SQLITE_DONE)
+    if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
 	status = true;
-::std::cout << "SQL query done!" << ::std::endl;
     }
     else
     {
@@ -287,4 +278,34 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username)
 bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
 {
 
+}
+
+::std::vector<LabrestAPI::UserI>
+LabrestAPI::LabrestDB::getAllUsers()
+{
+    int s;
+    
+    ::std::vector<LabrestAPI::UserI> users;
+    
+    ::std::cout << "LabrestDB::getAllUsers() called" << ::std::endl;
+    
+    sqlite3_stmt * ppStmt;
+
+    sqlite3_prepare(db,"select * from user;",-1,&ppStmt,0);
+
+    s = sqlite3_step(ppStmt);
+    
+    ::std::cout << "error in step with code: " << s << ::std::endl;
+    
+    while (s == SQLITE_ROW)
+    {     
+        const unsigned char * username = sqlite3_column_text(ppStmt, 0);
+        
+        const unsigned char * authdata = sqlite3_column_text(ppStmt, 1);
+        
+        ::std::cout << username << " | " << authdata << ::std::endl;
+
+         s = sqlite3_step(ppStmt);
+    }
+    return users;
 }

@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <sqlite3.h>
+#include <LabrestAPI.h>
+#include <UserI.h>
 
 namespace LabrestAPI 
 {
@@ -25,6 +27,8 @@ public:
 	int disconnect();
 
         bool existsUser(::std::string username, ::std::string authdate);
+
+	::std::vector<UserI> getAllUsers();	
 
 	bool addUser(::std::string username, ::std::string authdate);
 
