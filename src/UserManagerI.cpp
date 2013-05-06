@@ -22,8 +22,8 @@ LabrestAPI::UserManagerI::getAllUsers(const Ice::Current& current)
 
     ::std::cout << "UserManagerI::getAllUsers() called" << ::std::endl;
     
-    dbPtr->getAllUsers();
-
+    list = dbPtr->getAllUsers();
+    
     return list;
 }
 

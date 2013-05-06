@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "LabrestAPI.h"
+#include "UserI.h"
 
 void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx Session);
 
@@ -156,9 +157,20 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
     };
     if (command == "all_users")
     {
-	session->getUserManager()->getAllUsers();
+        ::LabrestAPI::UserList users;
         
-        ::std::cout << "done" << ::std::endl;
+	users = session->getUserManager()->getAllUsers();
+        
+        for (::LabrestAPI::UserList::iterator it = users.begin(); it != users.end(); it++)
+        {
+            ::LabrestAPI::UserPtr temp;
+            
+            temp = *it;
+            
+            ::std::cout <<  "step" << ::std::endl;
+            
+            ::std::cout <<  temp->getUserName() << ::std::endl;
+        };
 
     };
     if (command == "help")

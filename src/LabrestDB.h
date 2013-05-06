@@ -28,7 +28,7 @@ public:
 
         bool existsUser(::std::string username, ::std::string authdate);
 
-	::std::vector<UserI> getAllUsers();	
+	::LabrestAPI::UserList getAllUsers();	
 
 	bool addUser(::std::string username, ::std::string authdate);
 

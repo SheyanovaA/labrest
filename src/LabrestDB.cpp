@@ -280,12 +280,12 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
 
 }
 
-::std::vector<LabrestAPI::UserI>
+::LabrestAPI::UserList
 LabrestAPI::LabrestDB::getAllUsers()
 {
     int s;
     
-    ::std::vector<LabrestAPI::UserI> users;
+    ::LabrestAPI::UserList users;
     
     ::std::cout << "LabrestDB::getAllUsers() called" << ::std::endl;
     
@@ -295,17 +295,18 @@ LabrestAPI::LabrestDB::getAllUsers()
 
     s = sqlite3_step(ppStmt);
     
-    ::std::cout << "error in step with code: " << s << ::std::endl;
-    
     while (s == SQLITE_ROW)
-    {     
-        const unsigned char * username = sqlite3_column_text(ppStmt, 0);
+    {
+        ::LabrestAPI::UserI temp_user;
         
-        const unsigned char * authdata = sqlite3_column_text(ppStmt, 1);
+        temp_user.name=reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0));
         
-        ::std::cout << username << " | " << authdata << ::std::endl;
+        temp_user.auth=reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1));
+        
+        //users.push_back(temp_user);
 
          s = sqlite3_step(ppStmt);
     }
+
     return users;
 }
