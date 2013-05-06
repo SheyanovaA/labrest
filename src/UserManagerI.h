@@ -15,6 +15,9 @@ public:
                          const ::std::string&,
                          const Ice::Current&);
 
+    virtual bool deleteUser(const ::std::string&,
+                            const Ice::Current&);
+
     virtual ::LabrestAPI::UserList getAllUsers(const Ice::Current&);
 
     virtual bool modifyUser(const ::std::string&,

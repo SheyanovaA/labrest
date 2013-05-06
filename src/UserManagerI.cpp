@@ -32,3 +32,17 @@ LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
 {
     return false;
 }
+
+
+bool
+LabrestAPI::UserManagerI::deleteUser(const ::std::string& username,
+                                     const Ice::Current& current)
+{
+    bool status = true;
+
+    std::cout << "UserManagerI::deleteUser() called \n";
+
+    status = dbPtr->deleteUser(username);
+
+    return status;
+}

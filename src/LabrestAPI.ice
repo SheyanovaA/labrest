@@ -74,6 +74,7 @@ module LabrestAPI {
 
 	interface UserManager {
 		bool addUser(string username, string authdata);
+		bool deleteUser(string username);
 		UserList getAllUsers();
 		bool modifyUser(string username, string authdata);
 		// TODO

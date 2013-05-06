@@ -129,6 +129,7 @@ bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
 	status = true;
+::std::cout << "SQL query done!" << ::std::endl;
     }
     else
     {
@@ -150,7 +151,7 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"insert into resource(name,description,type_id,parent) values(?,?,?,?);",-1,&ppStmt,0);
+    sqlite3_prepare(db,"insert into resource(name, description, type_id, lock_status, parent) values(?, ?, ?, ?);",-1,&ppStmt,0);
 
     sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
 

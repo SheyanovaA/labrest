@@ -124,7 +124,6 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
 
     ss >> command;
 
-//    if (command.find("add_user") != ::std::string::npos)
     if (command == "add_user")
     {
 	::std::string usname, auth;
@@ -144,5 +143,15 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
 	ss >> name >> descr >> tipe_id >> parent_id;
 
 	session->getResourceManager()->addResource(name,descr,tipe_id,parent_id);
-    }
+    };
+    if (command == "delete_user")
+    {
+	::std::string usname;
+
+	ss >> usname;
+
+	if (!session->getUserManager()->deleteUser(usname))
+
+	    ::std::cout << "this user has not been deleted!\nUser with the name \"" << usname << "\" does not exists!\n";
+    };
 }
