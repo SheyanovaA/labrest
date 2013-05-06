@@ -119,14 +119,23 @@ bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authda
 bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
 {
     bool status;
+    int s;
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"delete from user where username = ?;",1,&ppStmt,0);
+    s = sqlite3_prepare(db,"delete from user where username = ?;",-1,&ppStmt,0);
+    
+    if(s != SQLITE_OK) {
+        ::std::cout << "Error prepare" <<s<< ::std::endl;
+        return false;
+    }
 
     sqlite3_bind_text(ppStmt, 1, username.c_str(), username.length(),NULL);
 
-    if (sqlite3_step(ppStmt) == SQLITE_DONE)
+    s = sqlite3_step(ppStmt);
+    ::std::cout << "s==" <<s<< ::std::endl;
+    
+    if (s == SQLITE_DONE)
     {
 	status = true;
 ::std::cout << "SQL query done!" << ::std::endl;
