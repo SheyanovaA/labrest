@@ -1,9 +1,11 @@
 #include <Ice/Ice.h>
+#include <Ice/ObjectFactory.h>
 #include <sstream>
 
 #include "LabrestAPI.h"
 #include "UserI.h"
 #include "EntryI.h"
+#include "ObjectFactory.h"
 
 void 
 exec_command(::std::string full_comm, 
@@ -20,6 +22,9 @@ main(int argc, char* argv[])
     {
         ic = Ice::initialize(argc, argv);
 
+//        ::Ice::ObjectFactoryPtr factory = new ::LabrestAPI::ObjectFactory();
+//        ic->addObjectFactory(factory, ::LabrestAPI::User::ice_staticId());
+        
         Ice::ObjectPrx base = ic->stringToProxy("SimpleEntry:default -p 10000");
 
         ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
@@ -166,11 +171,11 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
         
         for (::LabrestAPI::UserList::iterator it = users.begin(); it != users.end(); it++)
         {
-           ::LabrestAPI::UserPtr temp;
+           ::LabrestAPI::User temp;
            
            temp = *it;
             
-           ::std::cout <<  temp->getUserName() << ::std::endl;
+           ::std::cout <<  temp.name << ::std::endl;
         };
 
     };

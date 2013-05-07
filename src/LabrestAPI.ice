@@ -4,7 +4,11 @@ module LabrestAPI {
 	interface ResourceType;
 	interface ResourceManager;
 	interface UserManager;
-	interface User;
+
+        struct User {
+		string name;
+		string auth;
+	};
 
 	sequence<int> ResourceIdList;
 	sequence<Resource> ResourceList;
@@ -80,7 +84,4 @@ module LabrestAPI {
 		// TODO
 	};
 	
-	interface User {
-		string getUserName();
-	};
 };
