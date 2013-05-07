@@ -3,8 +3,11 @@
 
 #include "LabrestAPI.h"
 #include "UserI.h"
+#include "EntryI.h"
 
-void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx Session);
+void 
+exec_command(::std::string full_comm, 
+        ::LabrestAPI::SessionPrx Session);
 
 int
 main(int argc, char* argv[])
@@ -158,18 +161,16 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
     if (command == "all_users")
     {
         ::LabrestAPI::UserList users;
-        
+         
 	users = session->getUserManager()->getAllUsers();
         
         for (::LabrestAPI::UserList::iterator it = users.begin(); it != users.end(); it++)
         {
-            ::LabrestAPI::UserPtr temp;
+           ::LabrestAPI::UserPtr temp;
+           
+           temp = *it;
             
-            temp = *it;
-            
-            ::std::cout <<  "step" << ::std::endl;
-            
-            ::std::cout <<  temp->getUserName() << ::std::endl;
+           ::std::cout <<  temp->getUserName() << ::std::endl;
         };
 
     };

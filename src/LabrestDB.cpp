@@ -299,11 +299,11 @@ LabrestAPI::LabrestDB::getAllUsers()
     {
         ::LabrestAPI::UserI temp_user;
         
-        temp_user.name=reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0));
+        temp_user.setName(reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
         
-        temp_user.auth=reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1));
+        temp_user.setAuth(reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         
-        //users.push_back(temp_user);
+        users.push_back(temp_user);
 
          s = sqlite3_step(ppStmt);
     }

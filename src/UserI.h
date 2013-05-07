@@ -8,15 +8,17 @@ namespace LabrestAPI
 
 class UserI : virtual public User
 {
-public:    ::std::string name;
+    ::std::string name;
 
     ::std::string auth;
     
-     virtual ::std::string getUserName(const Ice::Current&);
+public: 
     
- //   void setName(::std::string username);
+    virtual ::std::string getUserName(const Ice::Current&);
     
- //   void setAuth(::std::string authdata);
+    void setName(::std::string username);
+    
+    void setAuth(::std::string authdata);
 };
 
 };

@@ -8,9 +8,7 @@ LabrestAPI::UserI::getUserName(const Ice::Current& current)
     return this->name;
 }
 
-
-
-/*void 
+void 
 LabrestAPI::UserI::setName(::std::string username)
 {
     this->name = username;
@@ -20,4 +18,4 @@ void
 LabrestAPI::UserI::setAuth(::std::string authdata)
 {
     this->auth = authdata;
-}*/
+}
