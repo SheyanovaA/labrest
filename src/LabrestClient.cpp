@@ -121,18 +121,14 @@ main(int argc, char* argv[])
     return status;
 }
 
-void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
+struct __exec_command_action
 {
     ::std::string command;
+    void (*fn) (::LabrestAPI::SessionPrx & session, ::std::stringstream & ss);
+};
 
-    ::std::stringstream ss;
-
-    ss.str (full_comm);
-
-    ss >> command;
-
-    if (command == "add_user")
-    {
+void __add_user(::LabrestAPI::SessionPrx & session, ::std::stringstream & ss)
+{
 	::std::string usname, auth;
 
 	ss >> usname >> auth;
@@ -140,30 +136,34 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
 	if (!session->getUserManager()->addUser(usname, auth))
 
 	    ::std::cout << "this user has not been added!\nUser with the name \"" << usname << "\" already exists!\n";
-    };
-    if (command == "add_resource")
-    {
-	::std::string name, descr;
+}
+
+void __add_resource(::LabrestAPI::SessionPrx & session, ::std::stringstream & ss)
+{
+    	::std::string name, descr;
 
 	int  tipe_id, parent_id;
 
 	ss >> name >> descr >> tipe_id >> parent_id;
 
 	session->getResourceManager()->addResource(name,descr,tipe_id,parent_id);
-    };
-    if (command == "delete_user")
-    {
-	::std::string usname;
+}
+
+void __delete_user(::LabrestAPI::SessionPrx & session, ::std::stringstream & ss)
+{
+    	::std::string usname;
 
 	ss >> usname;
 
 	if (!session->getUserManager()->deleteUser(usname))
 
 	    ::std::cout << "this user has not been deleted!\nUser with the name \"" << usname << "\" does not exists!\n";
-    };
-    if (command == "all_users")
-    {
-        ::LabrestAPI::UserList users;
+
+}
+
+void __all_users(::LabrestAPI::SessionPrx & session, ::std::stringstream & ss)
+{
+            ::LabrestAPI::UserList users;
          
 	users = session->getUserManager()->getAllUsers();
         
@@ -176,10 +176,12 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
            ::std::cout <<  temp.name << ::std::endl;
         };
 
-    };
-    if (command == "help")
-    {
-	::std::cout << "all_users" << ::std::endl;
+
+}
+
+void __help(::LabrestAPI::SessionPrx & session, ::std::stringstream & ss)
+{
+    	::std::cout << "all_users" << ::std::endl;
         
         ::std::cout << "add_user username authdata" << ::std::endl;
         
@@ -188,5 +190,30 @@ void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
         ::std::cout << "add_resource name description tipe_id parent_id " << ::std::endl;
         
         ::std::cout << "exit" << ::std::endl;
-    };
+
+}
+
+__exec_command_action ea[] = {
+        {"add_user", __add_user},
+        {"add_resource", __add_resource},
+        {"delete_user", __delete_user},
+        {"all_users", __all_users},
+        {"help", __help}
+};
+
+void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
+{
+    ::std::string command;
+
+    ::std::stringstream ss;
+
+    ss.str (full_comm);
+
+    ss >> command;
+
+    for(int i=0; i<sizeof(ea) / sizeof(__exec_command_action); i++) {
+        if(ea[i].command == command) {
+            ea[i].fn(session, ss);
+        }
+    }
 }
