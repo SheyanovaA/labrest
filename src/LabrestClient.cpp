@@ -3,9 +3,7 @@
 #include <sstream>
 
 #include "LabrestAPI.h"
-#include "UserI.h"
 #include "EntryI.h"
-#include "ObjectFactory.h"
 
 void 
 exec_command(::std::string full_comm, 

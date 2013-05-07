@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sqlite3.h>
 #include <LabrestAPI.h>
-#include <UserI.h>
 
 namespace LabrestAPI 
 {
