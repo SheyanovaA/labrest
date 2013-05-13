@@ -1,7 +1,5 @@
 module LabrestAPI {
 
-	interface Resource;
-	interface ResourceType;
 	interface ResourceManager;
 	interface UserManager;
 
@@ -10,10 +8,27 @@ module LabrestAPI {
 		string auth;
 	};
 
+	struct ResourceType {
+		int id;
+		string name;
+		string description;
+		int parentId;
+	};
+
+        struct Resource {
+		int id;
+		string name;
+		string description;
+		bool lockStatus;
+                int parentId;
+		ResourceType type;
+	};
+
+
 	sequence<int> ResourceIdList;
 	sequence<Resource> ResourceList;
 	sequence<int> ResourceTypeIdList;
-	sequence<Resource> ResourceTypeList;
+	sequence<ResourceType> ResourceTypeList;
 	sequence<User> UserList;
 	
 	exception LoginException {};
@@ -59,22 +74,7 @@ module LabrestAPI {
 			int parentId);
 	};
 
-	interface Resource {
-		int getId();
-		string getName();
-		string getDescription();
-		bool getLockStatus();
-		Resource getParent();
-		ResourceType getType();
-	// ?? permissions for user ??
-	};
 
-	interface ResourceType {
-		int getId();
-		string getName();
-		string getDescription();
-		ResourceType getParent();
-	};
 
 	interface UserManager {
 		bool addUser(string username, string authdata);

@@ -14,11 +14,11 @@ LabrestAPI::ResourceManagerI::getAllResources(const Ice::Current& current)
     return ::LabrestAPI::ResourceList();
 }
 
-::LabrestAPI::ResourcePtr
+::LabrestAPI::Resource
 LabrestAPI::ResourceManagerI::getResource(::Ice::Int resourceId,
                                           const Ice::Current& current) 
 {
-    return 0;
+    return ::LabrestAPI::Resource();
 }
 
 ::Ice::Int
@@ -78,11 +78,11 @@ LabrestAPI::ResourceManagerI::getAllResourceTypes(const Ice::Current& current)
     return ::LabrestAPI::ResourceTypeList();
 }
 
-::LabrestAPI::ResourceTypePtr
+::LabrestAPI::ResourceType
 LabrestAPI::ResourceManagerI::getResourceType(::Ice::Int resourceTypeId,
                                               const Ice::Current& current)
 {
-    return 0;
+    return ::LabrestAPI::ResourceType();
 }
 
 ::Ice::Int

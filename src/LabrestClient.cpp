@@ -4,10 +4,7 @@
 
 #include "LabrestAPI.h"
 #include "EntryI.h"
-
-void 
-exec_command(::std::string full_comm, 
-        ::LabrestAPI::SessionPrx Session);
+#include "UserCommand.h"
 
 int
 main(int argc, char* argv[])
@@ -15,28 +12,28 @@ main(int argc, char* argv[])
     int status = 0;
 
     Ice::CommunicatorPtr ic;
+    
+
 
     try
     {
         ic = Ice::initialize(argc, argv);
+       
 
-//        ::Ice::ObjectFactoryPtr factory = new ::LabrestAPI::ObjectFactory();
-//        ic->addObjectFactory(factory, ::LabrestAPI::User::ice_staticId());
-        
+     
         Ice::ObjectPrx base = ic->stringToProxy("SimpleEntry:default -p 10000");
 
         ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
 
+
         if (!Entry)
             throw "Invalid proxy";
-
-	::std::cout << "Labrest :  ";
 
         ::LabrestAPI::SessionPrx Session; 
 
         try
         {
-	    ::std::string name, auth;
+            ::std::string name, auth;
 
 	    if (argc == 1) 
 	    {
@@ -70,37 +67,51 @@ main(int argc, char* argv[])
 		    }
 		}
 	    }
+              
 	    Session = Entry->login(name, auth);
+              
         }
         catch(LabrestAPI::LoginException & ex)
         {
             ::std::cerr << "Login error" << ::std::endl;
            return 1;
         }
+        
         ::std::string full_command;
 
-        getline(::std::cin, full_command);
-
-        while (full_command != "exit") 
+        ::std::map<std::string, base_command *> commands;
+ 
+        commands["exit"] = new exit_command();
+        commands["help"] = new help_command();
+        commands["add_user"] = new add_user_command();
+        commands["delete_user"] = new delete_user_command();
+        commands["all_users"] = new all_users_command();
+        
+        while (true) 
 	{
-	    exec_command(full_command, Session);
-		
-            if(::std::cin.eof()) 
-	    {
-		full_command = "exit";
-
-		::std::cout << full_command << ::std::endl;
-
+            ::std::cout << "Labrest :  ";     
+            getline(::std::cin, full_command);
+            if(::std::cin.eof()) {
                 break;
-            } 
-	    else
-	    {
-                ::std::cout << "Labrest :  ";
+            }
+            
+            std::stringstream full_command_stream;
+            full_command_stream.str(full_command);
+            std::vector<std::string> vector_command;
+            while(full_command_stream.good()) {
+                std::string s;
+                full_command_stream>>s;
+                vector_command.push_back(s);
+            }
 
-                getline(::std::cin, full_command);
-	    }
+            base_command * cmd = commands[vector_command[0]];
+            if(cmd != NULL) {
+                bool shouldContinue = cmd->run(vector_command, Session);
+                if(!shouldContinue) {
+                    break;
+                }
+            }
 	}
-
     }
     catch (const Ice::Exception& ex)
     {
@@ -111,7 +122,7 @@ main(int argc, char* argv[])
     catch (const char* msg)
     {
         ::std::cerr << msg << ::std::endl;
-
+        
         status = 1;
     }
     if (ic)
@@ -119,74 +130,4 @@ main(int argc, char* argv[])
         ic->destroy();
 
     return status;
-}
-
-void exec_command(::std::string full_comm, ::LabrestAPI::SessionPrx session)
-{
-    ::std::string command;
-
-    ::std::stringstream ss;
-
-    ss.str (full_comm);
-
-    ss >> command;
-
-    if (command == "add_user")
-    {
-	::std::string usname, auth;
-
-	ss >> usname >> auth;
-
-	if (!session->getUserManager()->addUser(usname, auth))
-
-	    ::std::cout << "this user has not been added!\nUser with the name \"" << usname << "\" already exists!\n";
-    };
-    if (command == "add_resource")
-    {
-	::std::string name, descr;
-
-	int  tipe_id, parent_id;
-
-	ss >> name >> descr >> tipe_id >> parent_id;
-
-	session->getResourceManager()->addResource(name,descr,tipe_id,parent_id);
-    };
-    if (command == "delete_user")
-    {
-	::std::string usname;
-
-	ss >> usname;
-
-	if (!session->getUserManager()->deleteUser(usname))
-
-	    ::std::cout << "this user has not been deleted!\nUser with the name \"" << usname << "\" does not exists!\n";
-    };
-    if (command == "all_users")
-    {
-        ::LabrestAPI::UserList users;
-         
-	users = session->getUserManager()->getAllUsers();
-        
-        for (::LabrestAPI::UserList::iterator it = users.begin(); it != users.end(); it++)
-        {
-           ::LabrestAPI::User temp;
-           
-           temp = *it;
-            
-           ::std::cout <<  temp.name << ::std::endl;
-        };
-
-    };
-    if (command == "help")
-    {
-	::std::cout << "all_users" << ::std::endl;
-        
-        ::std::cout << "add_user username authdata" << ::std::endl;
-        
-        ::std::cout << "delete_user username" << ::std::endl;
-        
-        ::std::cout << "add_resource name description tipe_id parent_id " << ::std::endl;
-        
-        ::std::cout << "exit" << ::std::endl;
-    };
 }
