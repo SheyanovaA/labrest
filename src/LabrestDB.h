@@ -45,9 +45,9 @@ public:
 
 	bool deleteResource(int id);
 
-        bool modifyResource(int id, ::std::string& name, ::std::string& description, int typeId, int parentId);
-
-	::LabrestAPI::ResourceTypeList getAllResourceTypes();
+        bool modifyResource(int id, ::std::string name, ::std::string description, int typeId, int parentId);
+	
+        ::LabrestAPI::ResourceTypeList getAllResourceTypes();
         
         ::LabrestAPI::ResourceType getResourceType(int id);
         

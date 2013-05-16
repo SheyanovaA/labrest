@@ -472,12 +472,12 @@ LabrestAPI::LabrestDB::getAllResources()
     {
         ::LabrestAPI::Resource temp_resource;
         
-        temp_resource.id = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+        temp_resource.id = sqlite3_column_int(ppStmt, 0);
         temp_resource.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         temp_resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        temp_resource.lockStatus = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
-        temp_resource.type = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 4)));
-        temp_resource.parentId = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 5)));
+        temp_resource.lockStatus = sqlite3_column_int(ppStmt, 3);
+        temp_resource.type = getResourceType(sqlite3_column_int(ppStmt, 4));
+        temp_resource.parentId = sqlite3_column_int(ppStmt, 5);
         
         resources.push_back(temp_resource);
 
@@ -507,13 +507,12 @@ LabrestAPI::LabrestDB::getResource(int id)
     
     if  (s == SQLITE_ROW)
     {
-        resource.id = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+        resource.id = sqlite3_column_int(ppStmt, 0);
         resource.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        resource.lockStatus = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
-        resource.type = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 4)));
-        resource.parentId = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 5)));
-      
+        resource.lockStatus = sqlite3_column_int(ppStmt, 3);
+        resource.type = getResourceType(sqlite3_column_int(ppStmt, 4));
+        resource.parentId = sqlite3_column_int(ppStmt, 5);    
     }
 
     return resource;
@@ -538,10 +537,10 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
     {
         ::LabrestAPI::ResourceType temp_resource_type;
         
-        temp_resource_type.id = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+        temp_resource_type.id = sqlite3_column_int(ppStmt, 0);
         temp_resource_type.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         temp_resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        temp_resource_type.parentId = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
+        temp_resource_type.parentId = sqlite3_column_int(ppStmt, 3);
         
         resource_types.push_back(temp_resource_type);
 
@@ -572,11 +571,10 @@ LabrestAPI::LabrestDB::getResourceType(int id)
     
     if  (s == SQLITE_ROW)
     {
-        resource_type.id = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+        resource_type.id = sqlite3_column_int(ppStmt, 0);
         resource_type.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        resource_type.parentId = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
-      
+        resource_type.parentId = sqlite3_column_int(ppStmt, 3);      
     }
 
     return resource_type;

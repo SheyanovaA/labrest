@@ -90,11 +90,7 @@ void
 LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
                                              const Ice::Current& current)
 {
-    bool status;
-    
-    status = dbPtr->unlockResource(resourceId);
-    
-    return status;
+    dbPtr->unlockResource(resourceId);
 }
 
 ::LabrestAPI::ResourceTypeIdList
