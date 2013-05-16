@@ -19,6 +19,9 @@ public:
                             const Ice::Current&);
 
     virtual ::LabrestAPI::UserList getAllUsers(const Ice::Current&);
+    
+    virtual ::LabrestAPI::User getUser(const ::std::string&,
+                                           const Ice::Current&);
 
     virtual bool modifyUser(const ::std::string&,
                             const ::std::string&,

@@ -80,6 +80,7 @@ module LabrestAPI {
 		bool addUser(string username, string authdata);
 		bool deleteUser(string username);
 		UserList getAllUsers();
+                User getUser(string username);
 		bool modifyUser(string username, string authdata);
 		// TODO
 	};
