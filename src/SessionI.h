@@ -25,6 +25,8 @@ public:
 private:
 
     ::std::string sessionId;
+    
+    ::std::string User;
 
     ::LabrestAPI::ResourceManagerPrx rsMgrPrx;
 

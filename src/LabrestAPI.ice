@@ -21,7 +21,7 @@ module LabrestAPI {
 		string description;
 		bool lockStatus;
                 int parentId;
-		ResourceType type;
+		int typeId;
 	};
 
 

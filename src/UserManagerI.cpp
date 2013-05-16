@@ -47,7 +47,7 @@ LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
 {   
     bool status = true;
 
-    std::cout << "UserManagerI::deleteUser() called \n";
+    std::cout << "UserManagerI::modifyUser() called \n";
 
     status = dbPtr->modifyUser(username, authdata);
     

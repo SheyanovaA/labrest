@@ -86,6 +86,13 @@ main(int argc, char* argv[])
         commands["add_user"] = new add_user_command();
         commands["delete_user"] = new delete_user_command();
         commands["all_users"] = new all_users_command();
+        commands["change_user"] = new change_user_command();
+        commands["change_res"] = new change_resource_command();
+        commands["add_res"] = new add_resource_command();
+        commands["delete_res"] = new delete_resource_command();
+        commands["lock_res"] = new lock_resource_command();
+        commands["unlock_res"] = new unlock_resource_command();
+        commands["change_res"] = new change_resource_command();
         
         while (true) 
 	{
