@@ -15,11 +15,19 @@ module LabrestAPI {
 		int parentId;
 	};
 
+        struct HistoryRow {
+		int id;
+		string username;
+                int resourceId;
+		string starTime;
+		string endTime;
+	};
+
         struct Resource {
 		int id;
 		string name;
 		string description;
-		bool lockStatus;
+		bool lockStatus; // string currentUser; ?
                 int parentId;
 		int typeId;
 	};
@@ -30,6 +38,7 @@ module LabrestAPI {
 	sequence<int> ResourceTypeIdList;
 	sequence<ResourceType> ResourceTypeList;
 	sequence<User> UserList;
+        sequence<HistoryRow> History;
 	
 	exception LoginException {};
 
@@ -60,6 +69,8 @@ module LabrestAPI {
 		
 		bool lockResource(int resourceId);
 		void unlockResource(int resourceId);
+
+                History getLockHistory();
 		
 		ResourceTypeIdList getAllResourceTypeIds();
 		ResourceTypeList getAllResourceTypes();

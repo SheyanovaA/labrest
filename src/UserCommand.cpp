@@ -99,7 +99,10 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
             "11. change_restype <resource type id> name/descr/parent_id <new value>\n"
             "12. all_users\n"
             "13. all_res\n"
-            "14. all_restypes\n";
+            "14. all_restypes\n"
+            "15. lock_history\n"
+            "16. lock_res <resource id>\n"
+            "17. unlock_res <resource id>\n";
     return true;
 }
 
@@ -234,14 +237,10 @@ bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
     ::std::stringstream s1(parameters[3]), s2(parameters[4]);
     
     int type_id, parent_id;
-    
-    ::std::cout << parameters[4] << ::std::endl;
         
     s1 >> parent_id;
     
     s2 >> type_id;
-    
-    ::std::cout << type_id << ::std::endl;
     
     session->getResourceManager()->addResource(parameters[1],parameters[2],parent_id, type_id);
     
@@ -437,3 +436,22 @@ bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAP
     return true;
 }
 
+bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,1);
+    
+    ::LabrestAPI::History history;
+         
+    history = session->getResourceManager()->getLockHistory();
+        
+    for (::LabrestAPI::History::iterator it = history.begin(); it != history.end(); ++it)
+    {
+        ::LabrestAPI::HistoryRow temp;
+           
+        temp = *it;
+            
+        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.endTime << ::std::endl;
+    };
+    
+    return true;
+}

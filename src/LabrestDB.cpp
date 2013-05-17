@@ -383,12 +383,10 @@ bool LabrestAPI::LabrestDB::ResourceIsLock(int resourceId)
 
     sqlite3_stmt *ppStmt;
     
-    sqlite3_prepare(db,"select * from using_resource where (resource_id = ?) and (end_time = ?);"
-            "where id = ?;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select * from using_resource where resource_id = ? "
+            "and end_time isnull;",-1,&ppStmt,0);
 
     sqlite3_bind_int(ppStmt, 1, resourceId);
-    
-    sqlite3_bind_null(ppStmt, 2);
 
     if (sqlite3_step(ppStmt) == SQLITE_ROW)
     {
@@ -413,7 +411,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username)
     
     if (!ResourceIsLock(resourceId))
     {
-        sqlite3_prepare(db,"update resource set lock_status = ? ;"
+        sqlite3_prepare(db,"update resource set lock_status = ? "
             "where id = ?;",-1,&ppStmt,0);
         
         sqlite3_bind_int(ppStmt,  1, 1);
@@ -433,8 +431,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username)
         if (status)
         {
             sqlite3_prepare(db,"insert into using_resource(username,resource_id, "
-                "start_time, end_time) values(?,?,datetime(), ?);"
-                "where id = ?;",-1,&ppStmt,0);
+                "start_time, end_time) values(?,?,datetime(), ?);" ,-1,&ppStmt,0);
     
             sqlite3_bind_text(ppStmt,1,username.c_str(),username.length(),NULL);
             
@@ -465,7 +462,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"update resource set lock_status = ?;"
+    sqlite3_prepare(db,"update resource set lock_status = ? "
             " where id = ?;",-1,&ppStmt,0);
         
     sqlite3_bind_int(ppStmt,  1, 0);
@@ -685,4 +682,37 @@ LabrestAPI::LabrestDB::getResourceType(int id)
     }
 
     return resource_type;
+}
+
+::LabrestAPI::History 
+LabrestAPI::LabrestDB::getLockHistry()
+{
+    int s;
+    
+    ::LabrestAPI::History lock_history;
+    
+    ::std::cout << "LabrestDB::getLockHistry() called" << ::std::endl;
+    
+    sqlite3_stmt * ppStmt;
+
+    sqlite3_prepare(db,"select * from using_resource;",-1,&ppStmt,0);
+    
+    s = sqlite3_step(ppStmt);
+    
+    while (s == SQLITE_ROW)
+    {
+        ::LabrestAPI::HistoryRow temp_row;
+        
+        temp_row.id = sqlite3_column_int(ppStmt, 0);
+        temp_row.username = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
+        temp_row.resourceId = sqlite3_column_int(ppStmt, 2);
+        temp_row.starTime = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
+        temp_row.endTime = (sqlite3_column_int(ppStmt,4)==0)? "" : (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 4)));
+        
+        lock_history.push_back(temp_row);
+
+        s = sqlite3_step(ppStmt);
+    }
+
+    return lock_history;
 }

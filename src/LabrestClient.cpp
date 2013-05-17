@@ -98,6 +98,7 @@ main(int argc, char* argv[])
         commands["delete_restype"] = new delete_restype_command();
         commands["change_restype"] = new change_restype_command();
         commands["all_restypes"] = new all_restype_command();
+        commands["lock_history"] = new lock_history_command();
         
         while (true) 
 	{

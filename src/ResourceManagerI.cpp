@@ -182,3 +182,15 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
 {
     User = user;
 }
+
+::LabrestAPI::History 
+LabrestAPI::ResourceManagerI::getLockHistory(const Ice::Current&)
+{
+    ::std::cout << "ResourceManagerI::getLockHistory() called" << ::std::endl;
+    
+    ::LabrestAPI::History history;
+    
+    history = dbPtr->getLockHistry();
+    
+    return history;   
+}

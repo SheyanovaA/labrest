@@ -187,6 +187,12 @@ public:
     virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
 };
 
+class lock_history_command : public base_command
+{
+public:
+    virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
+
 
 #endif	/* USERCOMMAND_H */
 

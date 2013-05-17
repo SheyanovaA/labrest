@@ -65,6 +65,8 @@ public:
                                     const ::std::string&,
                                     ::Ice::Int,
                                     const Ice::Current&);
+    
+    virtual ::LabrestAPI::History getLockHistory(const Ice::Current&);
 };
 
 };

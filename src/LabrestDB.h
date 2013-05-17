@@ -73,6 +73,8 @@ public:
 	bool unlockResource(int resourceId);
         
         bool ResourceIsLock(int resourceId);
+        
+        ::LabrestAPI::History getLockHistry();
 };
 
 };
