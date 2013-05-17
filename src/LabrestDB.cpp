@@ -180,8 +180,6 @@ bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string aut
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
 	status = true;
-    
-        std::cout << username <<", " << authdata <<::std::endl;
     }
     else
     {
@@ -196,8 +194,6 @@ bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string aut
 int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string description, int typeId, int parentId)
 {
     ::std::cout << "LabrestDB::addResourse()  called" << ::std::endl;
-    
-    ::std::cout << name << description << parentId << typeId << ::std::endl;
     
     bool status;
 

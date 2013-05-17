@@ -4,21 +4,54 @@
 #include "UserCommand.h"
 #include "LabrestAPI.h"
 
+void base_command::rightParameters(::std::vector<std::string> &parameters, int count)
+{
+    while (parameters.size()!=count) 
+    {
+        parameters.erase(parameters.begin()+1,parameters.end());
+        
+        if (count != 1) 
+        {
+            ::std::cout << "Wrong number of parameters to this action! Please write parameters again:  \n" ;
+            
+            for (::std::vector<std::string>::iterator it = parameters.begin(); it != parameters.end();++it)
+            {
+                ::std::cout << (*it) << " " ;
+            }
+            ::std::string temp;
+            
+            getline(::std::cin, temp);
+            
+            ::std::stringstream ss(temp);
+            
+            while (ss.good())
+            {
+                ss >> temp;
+                
+                parameters.push_back(temp);
+            }
+        }
+    }
+        
+}
+
 bool
 add_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
-    if (!session->getUserManager()->addUser(parameters[1],parameters[2]))
-    ::std::cout << "this user has not been added!\nUser with the name \"" << parameters[1] << "\" already exists!\n";
     
+    rightParameters(parameters,3);  
+    
+    session->getUserManager()->addUser(parameters[1],parameters[2]);
+        
     return true;
 }
 
 bool
 delete_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
-{
-   if (!session->getUserManager()->deleteUser(parameters[1]))
-
-   ::std::cout << "this user has not been deleted!\nUser with the name \"" << parameters[1] << "\" does not exists!\n";
+{  
+    rightParameters(parameters,2);
+    
+   session->getUserManager()->deleteUser(parameters[1]);
    
    return true;
 }
@@ -26,6 +59,8 @@ delete_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::Se
 bool
 all_users_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,1);
+    
     ::LabrestAPI::UserList users;
          
     users = session->getUserManager()->getAllUsers();
@@ -51,7 +86,20 @@ exit_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
 bool 
 help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
-    ::std::cout<<":)"<<std::endl;
+    ::std::cout<<" 1. help\n"
+            " 2. exit\n"
+            " 3. add_user <username> <password>\n"
+            " 4. add_res <name> <description> <type id> <parent id>\n"
+            " 5. add_restype <name> <description> <parent id>\n"
+            " 6. delete_user <username>\n"
+            " 7. delete_res <resource id>\n"
+            " 8. delete_restype <resource type id>\n"
+            " 9. change_user <username> password <new password>\n"
+            "10. change_res <resource id> name/descr/type_id/parent_id <new value>\n"
+            "11. change_restype <resource type id> name/descr/parent_id <new value>\n"
+            "12. all_users\n"
+            "13. all_res\n"
+            "14. all_restypes\n";
     return true;
 }
 
@@ -59,6 +107,8 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
 bool 
 change_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {  
+    rightParameters(parameters,4);
+    
     ::std::map<std::string, base_change_user_command*>  func;
          
     func["password"] = new change_us_password();
@@ -81,36 +131,37 @@ void change_us_password::run(::std::vector<std::string> parameters, ::LabrestAPI
          
     user = session->getUserManager()->getUser(parameters[1]);
     
-    ::std::cout << "old: " << user.name << ", " << user.auth << ::std::endl;
-    
     session->getUserManager()->modifyUser(user.name, parameters[3]);
-    
-    user = session->getUserManager()->getUser(parameters[1]);
-    
-    ::std::cout << "new: " << user.name << ", " << user.auth << ::std::endl;
 }
 
 bool change_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,4);
+    
     ::std::map<std::string, base_change_resource_command*>  func;
          
     func["name"] = new change_res_name();
-    func["description"] = new change_res_descr();
-    func["typeId"] = new change_res_typeId();
-    func["parentId"] = new change_res_parentId();
+    func["descr"] = new change_res_descr();
+    func["type_id"] = new change_res_typeId();
+    func["parent_id"] = new change_res_parentId();
     
     base_change_resource_command * f = func[parameters[2]];
     if(f != NULL) 
     {
         f->run(parameters, session);
     }
-             
+    
+    for (::std::map<std::string, base_change_resource_command*>::iterator it = func.begin(); it!=func.end(); ++it)
+    {   
+        delete[] (*it).second;
+    }
+    
     return true;
 }
 
 
 void change_res_name::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
-{
+{   
     ::LabrestAPI::Resource resource;
     
     ::std::stringstream s(parameters[1]);
@@ -121,13 +172,7 @@ void change_res_name::run(::std::vector<std::string> parameters, ::LabrestAPI::S
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    ::std::cout << "old: " << resource.id << ", " << resource.name << "change on: " << parameters[3] << ::std::endl;
-    
     session->getResourceManager()->modifyResource(resource.id,parameters[3],resource.description,resource.parentId,resource.typeId);
-    
-    resource = session->getResourceManager()->getResource(res_id);
-    
-    ::std::cout << "new: " << resource.id << ", " << resource.name << ::std::endl;
 }
 
 
@@ -143,13 +188,7 @@ void change_res_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    ::std::cout << "old: " << resource.id << ", " << resource.name << ::std::endl;
-    
     session->getResourceManager()->modifyResource(resource.id,resource.name, parameters[3],resource.parentId,resource.typeId);
-    
-    resource = session->getResourceManager()->getResource(res_id);
-    
-    ::std::cout << "new: " << resource.name << ", " << resource.name << ::std::endl;
 }
 
 
@@ -157,25 +196,17 @@ void change_res_typeId::run(::std::vector<std::string> parameters, ::LabrestAPI:
 {
     ::LabrestAPI::Resource resource;
     
-    ::std::stringstream s(parameters[1]);
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
     
     int res_id, new_type_id;
     
-    s >> res_id;
+    s1 >> res_id;
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    s.str(parameters[3]);
-    
-    s >> new_type_id;
-    
-    ::std::cout << "old: " << resource.id << ", " << resource.name << ::std::endl;
+    s2 >> new_type_id;
     
     session->getResourceManager()->modifyResource(resource.id,resource.name, resource.description,resource.parentId,new_type_id);
-    
-    resource = session->getResourceManager()->getResource(res_id);
-    
-    ::std::cout << "new: " << resource.name << ", " << resource.name << ::std::endl;
 }
 
 
@@ -183,29 +214,23 @@ void change_res_parentId::run(::std::vector<std::string> parameters, ::LabrestAP
 {
     ::LabrestAPI::Resource resource;
     
-    ::std::stringstream s(parameters[1]);
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
     
     int res_id, new_parent_id;
     
-    s >> res_id;
+    s1 >> res_id;
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    ::std::cout << "old: " << resource.id << ", " << resource.name << ::std::endl;
-    
-    s.str(parameters[3]);
-    
-    s >> new_parent_id;
+    s2 >> new_parent_id;
         
     session->getResourceManager()->modifyResource(resource.id,resource.name,resource.description,new_parent_id,resource.typeId);
-    
-    resource = session->getResourceManager()->getResource(res_id);
-    
-    ::std::cout << "new: " << resource.name << ", " << resource.name << ::std::endl;
 }
 
 bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,5);
+    
     ::std::stringstream s1(parameters[3]), s2(parameters[4]);
     
     int type_id, parent_id;
@@ -225,38 +250,40 @@ bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
 
 
 bool delete_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
-{
+{    
+    rightParameters(parameters,2);
+    
     ::std::stringstream s(parameters[1]);
     
     int res_id;
     
     s >> res_id;
     
-   if (!session->getResourceManager()->deleteResource(res_id))
-
-   ::std::cout << "this resource has not been deleted!\nResource with id =" << parameters[1] << " does not exists!\n";
-    
-    return true;
+   session->getResourceManager()->deleteResource(res_id);
+   
+   return true;
 }
 
 
 bool lock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {       
+    rightParameters(parameters,2);
+    
     ::std::stringstream s(parameters[1]);
     
     int res_id;
     
     s >> res_id;
     
-    if (!session->getResourceManager()->lockResource(res_id))
-
-   ::std::cout << "this resource has not been locked!\n ";
-   
-   return true;
+    session->getResourceManager()->lockResource(res_id);
+    
+    return true;
 }
 
 bool unlock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,2);
+    
     ::std::stringstream s(parameters[1]);
     
     int res_id;
@@ -271,6 +298,7 @@ bool unlock_resource_command::run(::std::vector<std::string> parameters, ::Labre
 
 bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,1);
 
     ::LabrestAPI::ResourceList resources;
          
@@ -290,6 +318,8 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
 
 bool add_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters, 4);
+    
     ::std::stringstream s1(parameters[3]);
     
     int parent_id;   
@@ -303,31 +333,38 @@ bool add_restype_command::run(::std::vector<std::string> parameters, ::LabrestAP
 
 bool delete_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,2);
+    
     ::std::stringstream s(parameters[1]);
     
     int res_id;
     
     s >> res_id;
     
-   if (!session->getResourceManager()->deleteResourceType(res_id))
-
-   ::std::cout << "this resource type has not been deleted!\nResource type with id =" << parameters[1] << " does not exists!\n";
-    
-    return true;
+   session->getResourceManager()->deleteResourceType(res_id);
+   
+   return true;
 }
 
 bool change_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,4);
+    
     ::std::map<std::string, base_change_restype_command*>  func;
          
     func["name"] = new change_restype_name();
-    func["description"] = new change_restype_descr();
-    func["parentId"] = new change_restype_parentId();
+    func["descr"] = new change_restype_descr();
+    func["parent_id"] = new change_restype_parentId();
     
     base_change_restype_command * f = func[parameters[2]];
     if(f != NULL) 
     {
         f->run(parameters, session);
+    }
+    
+    for (::std::map<std::string, base_change_restype_command*>::iterator it = func.begin(); it!=func.end(); ++it)
+    {   
+        delete[] (*it).second;
     }
              
     return true;
@@ -345,14 +382,7 @@ void change_restype_name::run(::std::vector<std::string> parameters, ::LabrestAP
          
     res_type = session->getResourceManager()->getResourceType(rest_id);
     
-    ::std::cout << "old: " << res_type.id << ", " << res_type.name << "change on: " << parameters[3] << ::std::endl;
-    
     session->getResourceManager()->modifyResourceType(res_type.id,parameters[3],res_type.description,res_type.parentId);
-    
-    res_type = session->getResourceManager()->getResourceType(rest_id);
-    
-    ::std::cout << "new: " << res_type.id << ", " << res_type.name << ::std::endl;
-
 }
 
 void change_restype_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
@@ -367,44 +397,29 @@ void change_restype_descr::run(::std::vector<std::string> parameters, ::LabrestA
          
     res_type = session->getResourceManager()->getResourceType(rest_id);
     
-    ::std::cout << "old: " << res_type.id << ", " << res_type.name << ::std::endl;
-    
     session->getResourceManager()->modifyResourceType(res_type.id,res_type.name, parameters[3],res_type.parentId);
-    
-    res_type = session->getResourceManager()->getResourceType(rest_id);
-    
-    ::std::cout << "new: " << res_type.name << ", " << res_type.name << ::std::endl;
-
 }
 
 void change_restype_parentId::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
     ::LabrestAPI::ResourceType res_type;
     
-    ::std::stringstream s(parameters[1]);
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
     
     int rest_id, new_parent_id;
     
-    s >> rest_id;
+    s1 >> rest_id;
          
     res_type = session->getResourceManager()->getResourceType(rest_id);
     
-    ::std::cout << "old: " << res_type.id << ", " << res_type.name << ::std::endl;
-    
-    s.str(parameters[3]);
-    
-    s >> new_parent_id;
+    s2 >> new_parent_id;
         
     session->getResourceManager()->modifyResourceType(res_type.id,res_type.name,res_type.description,new_parent_id);
-    
-    res_type = session->getResourceManager()->getResourceType(rest_id);
-    
-    ::std::cout << "new: " << res_type.name << ", " << res_type.name << ::std::endl;
-
 }
 
 bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
+    rightParameters(parameters,1);
 
     ::LabrestAPI::ResourceTypeList restypes;
          

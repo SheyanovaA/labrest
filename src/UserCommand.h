@@ -17,6 +17,8 @@ class base_command
 {
 public:
     virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session) = 0;
+protected:
+    void rightParameters(::std::vector<std::string> &parameters, int count);
 };
 
 class add_user_command : public base_command

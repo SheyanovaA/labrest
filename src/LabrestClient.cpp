@@ -125,7 +125,16 @@ main(int argc, char* argv[])
                     break;
                 }
             }
+            else
+            {
+                commands["help"]->run(vector_command, Session);
+            }
 	}
+        for (::std::map<std::string, base_command*>::iterator it = commands.begin(); it!=commands.end(); ++it)
+        {   
+           delete[] (*it).second;
+        }
+                
     }
     catch (const Ice::Exception& ex)
     {
