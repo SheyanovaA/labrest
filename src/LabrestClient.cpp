@@ -93,6 +93,11 @@ main(int argc, char* argv[])
         commands["lock_res"] = new lock_resource_command();
         commands["unlock_res"] = new unlock_resource_command();
         commands["change_res"] = new change_resource_command();
+        commands["all_res"] = new all_resource_command();
+        commands["add_restype"] = new add_restype_command();
+        commands["delete_restype"] = new delete_restype_command();
+        commands["change_restype"] = new change_restype_command();
+        commands["all_restypes"] = new all_restype_command();
         
         while (true) 
 	{
@@ -110,11 +115,13 @@ main(int argc, char* argv[])
                 full_command_stream>>s;
                 vector_command.push_back(s);
             }
-
+            
             base_command * cmd = commands[vector_command[0]];
-            if(cmd != NULL) {
+            if(cmd != NULL) 
+            {
                 bool shouldContinue = cmd->run(vector_command, Session);
-                if(!shouldContinue) {
+                if(!shouldContinue) 
+                {
                     break;
                 }
             }
