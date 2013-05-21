@@ -16,6 +16,8 @@ class LabrestDB
 	char * szErrMsg;
         
         const unsigned char * sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol, const char * default_value = "");
+        
+        int sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol, int default_value = -1);
 
 public:
 

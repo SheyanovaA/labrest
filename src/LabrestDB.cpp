@@ -720,9 +720,22 @@ LabrestAPI::LabrestDB::getLockHistry()
 }
 
 const unsigned char *
-LabrestAPI::LabrestDB::sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol, const char * default_value /* = "" */) {
-    if(sqlite3_column_type(stmt, iCol) == SQLITE_NULL) {
+LabrestAPI::LabrestDB::sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol, const char * default_value /* = "" */) 
+{
+    if(sqlite3_column_type(stmt, iCol) == SQLITE_NULL) 
+    {
         return default_value;
     }
     return sqlite3_column_text(stmt, iCol);
+}
+
+        
+int 
+LabrestAPI::LabrestDB::sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol, int default_value /* = -1 */)
+{
+    if(sqlite3_column_type(stmt, iCol) == SQLITE_NULL) 
+    {
+        return default_value;
+    }
+    return sqlite3_column_int(stmt, iCol);
 }

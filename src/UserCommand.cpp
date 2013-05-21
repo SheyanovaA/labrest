@@ -89,7 +89,7 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
     ::std::cout<<" 1. help\n"
             " 2. exit\n"
             " 3. add_user <username> <password>\n"
-            " 4. add_res <name> <description> <type id> <parent id>\n"
+            " 4. add_res <name> <description> <parent id> <type id>\n"
             " 5. add_restype <name> <description> <parent id>\n"
             " 6. delete_user <username>\n"
             " 7. delete_res <resource id>\n"
