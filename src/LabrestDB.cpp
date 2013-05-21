@@ -724,7 +724,7 @@ LabrestAPI::LabrestDB::sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol
 {
     if(sqlite3_column_type(stmt, iCol) == SQLITE_NULL) 
     {
-        return default_value;
+        return reinterpret_cast<const unsigned char *>(default_value);
     }
     return sqlite3_column_text(stmt, iCol);
 }
