@@ -11,14 +11,26 @@ LabrestAPI::ResourceManagerI::getAllResourceIds(const Ice::Current& current)
 ::LabrestAPI::ResourceList
 LabrestAPI::ResourceManagerI::getAllResources(const Ice::Current& current) 
 {
-    return ::LabrestAPI::ResourceList();
+    ::LabrestAPI::ResourceList resources;
+    
+    ::std::cout << "ResourceManagerI::getAllResources() called" << ::std::endl;
+    
+    resources = dbPtr->getAllResources();    
+    
+    return resources;
 }
 
-::LabrestAPI::ResourcePtr
+::LabrestAPI::Resource
 LabrestAPI::ResourceManagerI::getResource(::Ice::Int resourceId,
                                           const Ice::Current& current) 
 {
-    return 0;
+    ::LabrestAPI::Resource resource;
+    
+    ::std::cout << "ResourceManagerI::getResource() called" << ::std::endl;
+    
+    resource = dbPtr->getResource(resourceId);
+    
+    return resource;
 }
 
 ::Ice::Int
@@ -30,16 +42,24 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
 {
     ::std::cout << "ResourceManagerI::addResource() called" << ::std::endl;
 
-//    dbPtr->addQuery("insert into resource values(,'" + name + "','" + description + "', 0 ,'" +  "','" + "');");
-
-    return 0;
+    int new_resource_id;
+    
+    new_resource_id = dbPtr->addResourse(name,description, typeId, parentId);
+    
+    return new_resource_id;
 }
 
 bool
 LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
                                              const Ice::Current& current)
-{
-    return false;
+{       
+    bool status;
+    
+    ::std::cout << "ResourceManagerI::deleteResource() called" << ::std::endl;
+    
+    status = dbPtr->deleteResource(resourceId);
+    
+    return status;
 }
 
 bool
@@ -50,39 +70,68 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
                                              ::Ice::Int typeId,
                                              const Ice::Current& current)
 {
-    return false;
+    bool status;
+    
+    ::std::cout << "ResourceManagerI::modifyResource() called" << ::std::endl;
+    
+    status = dbPtr->modifyResource(resourceId, name, description, typeId, parentId);
+    
+    return status;
 }
 
 bool
 LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
                                            const Ice::Current& current)
-{
-    return false;
+{   
+    bool status;
+    
+    ::std::cout << "ResourceManagerI::lockResource() called" << ::std::endl;
+    
+    status = dbPtr->lockResourse(resourceId, User);
+    
+    return status;
 }
 
 void
 LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
                                              const Ice::Current& current)
 {
+    ::std::cout << "ResourceManagerI::unlockResource() called" << ::std::endl;
+    
+    dbPtr->unlockResource(resourceId);
 }
 
 ::LabrestAPI::ResourceTypeIdList
 LabrestAPI::ResourceManagerI::getAllResourceTypeIds(const Ice::Current& current)
 {
+    ::std::cout << "ResourceManagerI::getAllResourceTypeIds() called" << ::std::endl;
+    
     return ::LabrestAPI::ResourceTypeIdList();
 }
 
 ::LabrestAPI::ResourceTypeList
 LabrestAPI::ResourceManagerI::getAllResourceTypes(const Ice::Current& current)
 {
-    return ::LabrestAPI::ResourceTypeList();
+     ::LabrestAPI::ResourceTypeList resource_types;
+     
+     ::std::cout << "ResourceManagerI::getAllResourceTypes() called" << ::std::endl;
+    
+    resource_types = dbPtr->getAllResourceTypes();
+    
+    return resource_types;
 }
 
-::LabrestAPI::ResourceTypePtr
+::LabrestAPI::ResourceType
 LabrestAPI::ResourceManagerI::getResourceType(::Ice::Int resourceTypeId,
                                               const Ice::Current& current)
 {
-    return 0;
+    ::LabrestAPI::ResourceType resource_type;
+    
+    ::std::cout << "ResourceManagerI::getResourceType() called" << ::std::endl;
+    
+    resource_type = dbPtr->getResourceType(resourceTypeId);
+    
+    return resource_type;
 }
 
 ::Ice::Int
@@ -91,14 +140,26 @@ LabrestAPI::ResourceManagerI::addResourceType(const ::std::string& name,
                                               ::Ice::Int parentId,
                                               const Ice::Current& current)
 {
-    return 0;
+    int new_resource_type_id;
+    
+    ::std::cout << "ResourceManagerI::addResourceType() called" << ::std::endl;
+    
+    new_resource_type_id =   dbPtr->addResourceType(name, description, parentId);
+    
+    return new_resource_type_id;
 }
 
 bool
 LabrestAPI::ResourceManagerI::deleteResourceType(::Ice::Int resourceTypeId,
                                                  const Ice::Current& current)
 {
-    return false;
+    bool status;
+    
+    ::std::cout << "ResourceManagerI::deleteResourceType() called" << ::std::endl;
+    
+    status = dbPtr->deleteResourceType(resourceTypeId);
+    
+    return status;
 }
 
 bool
@@ -108,5 +169,16 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
                                                  ::Ice::Int parentId,
                                                  const Ice::Current& current)
 {
-    return false;
+    bool status;
+    
+    ::std::cout << "ResourceManagerI::modifyResourceType() called" << ::std::endl;
+    
+    status = dbPtr->modifyResourceType(resourceTypeId, name, description, parentId);
+    
+    return status;
+}
+
+::LabrestAPI::ResourceManagerI::ResourceManagerI(::std::string user)
+{
+    User = user;
 }

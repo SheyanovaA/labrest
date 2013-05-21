@@ -27,33 +27,52 @@ public:
 
         bool existsUser(::std::string username, ::std::string authdate);
 
-	::LabrestAPI::UserList getAllUsers();	
+	::LabrestAPI::UserList getAllUsers();
+        
+        ::LabrestAPI::User getUser(::std::string username);
 
 	bool addUser(::std::string username, ::std::string authdate);
 
 	bool deleteUser(::std::string username);
 
-	bool changeUser(::std::string username, ::std::string field, ::std::string value);
+	bool modifyUser(::std::string username, ::std::string authdata);
+        
+        ::LabrestAPI::ResourceList getAllResources();
+        
+        ::LabrestAPI::Resource getResource(int id);
 
-	int  addResourse(::std::string name, ::std::string description, int typeId, int parentId);
+	int  addResourse(::std::string name, 
+                         ::std::string description, 
+                         int typeId, 
+                         int parentId);
 
 	bool deleteResource(int id);
 
-	bool changeResource(int id, ::std::string field, ::std::string value);
-
-	bool changeResource(int id, ::std::string field, int value);
-
-	int  addResourceType(::std::string name, ::std::string description, int parentId);
+        bool modifyResource(int id, ::std::string name, 
+                            ::std::string description,
+                            int typeId, 
+                            int parentId);
+	
+        ::LabrestAPI::ResourceTypeList getAllResourceTypes();
+        
+        ::LabrestAPI::ResourceType getResourceType(int id);
+        
+        int  addResourceType(::std::string name, 
+                             ::std::string description, 
+                             int parentId);
 
 	bool deleteResourceType(int id);
 
-	bool changeResourceType(int id, ::std::string field, ::std::string value);
-
-	bool changeResourceType(int id, ::std::string field, int value);
+	bool modifyResourceType(int id, 
+                                ::std::string name, 
+                                ::std::string description, 
+                                int parentId);
 
 	bool lockResourse(int resourceId, ::std::string username);
 
 	bool unlockResource(int resourceId);
+        
+        bool ResourceIsLock(int resourceId);
 };
 
 };

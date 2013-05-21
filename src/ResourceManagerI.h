@@ -4,8 +4,6 @@
 #include <string.h>
 
 #include "LabrestAPI.h"
-#include "ResourceI.h"
-#include "ResourceTypeI.h"
 #include "LabrestDB.h"
 
 namespace LabrestAPI
@@ -13,13 +11,16 @@ namespace LabrestAPI
 
 class ResourceManagerI : virtual public ResourceManager
 {
+    ::std::string User;
 public:
+    
+    ResourceManagerI(::std::string user);
 
     virtual ::LabrestAPI::ResourceIdList getAllResourceIds(const Ice::Current&);
 
     virtual ::LabrestAPI::ResourceList getAllResources(const Ice::Current&);
 
-    virtual ::LabrestAPI::ResourcePtr getResource(::Ice::Int,
+    virtual ::LabrestAPI::Resource getResource(::Ice::Int,
                                                   const Ice::Current&);
 
     virtual ::Ice::Int addResource(const ::std::string&,
@@ -48,7 +49,7 @@ public:
 
     virtual ::LabrestAPI::ResourceTypeList getAllResourceTypes(const Ice::Current&);
 
-    virtual ::LabrestAPI::ResourceTypePtr getResourceType(::Ice::Int,
+    virtual ::LabrestAPI::ResourceType getResourceType(::Ice::Int,
                                                           const Ice::Current&);
 
     virtual ::Ice::Int addResourceType(const ::std::string&,

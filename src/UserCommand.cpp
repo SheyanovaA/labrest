@@ -1,0 +1,439 @@
+
+#include <map>
+
+#include "UserCommand.h"
+#include "LabrestAPI.h"
+
+void base_command::rightParameters(::std::vector<std::string> &parameters, int count)
+{
+    while (parameters.size()!=count) 
+    {
+        parameters.erase(parameters.begin()+1,parameters.end());
+        
+        if (count != 1) 
+        {
+            ::std::cout << "Wrong number of parameters to this action! Please write parameters again:  \n" ;
+            
+            for (::std::vector<std::string>::iterator it = parameters.begin(); it != parameters.end();++it)
+            {
+                ::std::cout << (*it) << " " ;
+            }
+            ::std::string temp;
+            
+            getline(::std::cin, temp);
+            
+            ::std::stringstream ss(temp);
+            
+            while (ss.good())
+            {
+                ss >> temp;
+                
+                parameters.push_back(temp);
+            }
+        }
+    }
+        
+}
+
+bool
+add_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    
+    rightParameters(parameters,3);  
+    
+    session->getUserManager()->addUser(parameters[1],parameters[2]);
+        
+    return true;
+}
+
+bool
+delete_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{  
+    rightParameters(parameters,2);
+    
+   session->getUserManager()->deleteUser(parameters[1]);
+   
+   return true;
+}
+
+bool
+all_users_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,1);
+    
+    ::LabrestAPI::UserList users;
+         
+    users = session->getUserManager()->getAllUsers();
+        
+    for (::LabrestAPI::UserList::iterator it = users.begin(); it != users.end(); it++)
+    {
+        ::LabrestAPI::User temp;
+           
+        temp = *it;
+            
+        ::std::cout <<  temp.name << ::std::endl;
+    };
+    
+    return true;
+}
+
+bool 
+exit_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    return false;
+}
+
+bool 
+help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::std::cout<<" 1. help\n"
+            " 2. exit\n"
+            " 3. add_user <username> <password>\n"
+            " 4. add_res <name> <description> <type id> <parent id>\n"
+            " 5. add_restype <name> <description> <parent id>\n"
+            " 6. delete_user <username>\n"
+            " 7. delete_res <resource id>\n"
+            " 8. delete_restype <resource type id>\n"
+            " 9. change_user <username> password <new password>\n"
+            "10. change_res <resource id> name/descr/type_id/parent_id <new value>\n"
+            "11. change_restype <resource type id> name/descr/parent_id <new value>\n"
+            "12. all_users\n"
+            "13. all_res\n"
+            "14. all_restypes\n";
+    return true;
+}
+
+
+bool 
+change_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{  
+    rightParameters(parameters,4);
+    
+    ::std::map<std::string, base_change_user_command*>  func;
+         
+    func["password"] = new change_us_password();
+    
+    base_change_user_command * f = func[parameters[2]];
+    if(f != NULL) 
+    {
+        f->run(parameters, session);
+    }
+    
+//    delete[] (func["password"]);
+        
+    return true;
+}
+
+
+void change_us_password::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::User user;
+         
+    user = session->getUserManager()->getUser(parameters[1]);
+    
+    session->getUserManager()->modifyUser(user.name, parameters[3]);
+}
+
+bool change_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,4);
+    
+    ::std::map<std::string, base_change_resource_command*>  func;
+         
+    func["name"] = new change_res_name();
+    func["descr"] = new change_res_descr();
+    func["type_id"] = new change_res_typeId();
+    func["parent_id"] = new change_res_parentId();
+    
+    base_change_resource_command * f = func[parameters[2]];
+    if(f != NULL) 
+    {
+        f->run(parameters, session);
+    }
+    
+    for (::std::map<std::string, base_change_resource_command*>::iterator it = func.begin(); it!=func.end(); ++it)
+    {   
+        delete[] (*it).second;
+    }
+    
+    return true;
+}
+
+
+void change_res_name::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{   
+    ::LabrestAPI::Resource resource;
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+         
+    resource = session->getResourceManager()->getResource(res_id);
+    
+    session->getResourceManager()->modifyResource(resource.id,parameters[3],resource.description,resource.parentId,resource.typeId);
+}
+
+
+void change_res_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+     ::LabrestAPI::Resource resource;
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+         
+    resource = session->getResourceManager()->getResource(res_id);
+    
+    session->getResourceManager()->modifyResource(resource.id,resource.name, parameters[3],resource.parentId,resource.typeId);
+}
+
+
+void change_res_typeId::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::Resource resource;
+    
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
+    
+    int res_id, new_type_id;
+    
+    s1 >> res_id;
+         
+    resource = session->getResourceManager()->getResource(res_id);
+    
+    s2 >> new_type_id;
+    
+    session->getResourceManager()->modifyResource(resource.id,resource.name, resource.description,resource.parentId,new_type_id);
+}
+
+
+void change_res_parentId::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::Resource resource;
+    
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
+    
+    int res_id, new_parent_id;
+    
+    s1 >> res_id;
+         
+    resource = session->getResourceManager()->getResource(res_id);
+    
+    s2 >> new_parent_id;
+        
+    session->getResourceManager()->modifyResource(resource.id,resource.name,resource.description,new_parent_id,resource.typeId);
+}
+
+bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,5);
+    
+    ::std::stringstream s1(parameters[3]), s2(parameters[4]);
+    
+    int type_id, parent_id;
+    
+    ::std::cout << parameters[4] << ::std::endl;
+        
+    s1 >> parent_id;
+    
+    s2 >> type_id;
+    
+    ::std::cout << type_id << ::std::endl;
+    
+    session->getResourceManager()->addResource(parameters[1],parameters[2],parent_id, type_id);
+    
+    return true;
+}
+
+
+bool delete_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{    
+    rightParameters(parameters,2);
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+    
+   session->getResourceManager()->deleteResource(res_id);
+   
+   return true;
+}
+
+
+bool lock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{       
+    rightParameters(parameters,2);
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+    
+    session->getResourceManager()->lockResource(res_id);
+    
+    return true;
+}
+
+bool unlock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,2);
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+    
+   session->getResourceManager()->unlockResource(res_id);
+   
+   return true;
+   
+}
+
+bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,1);
+
+    ::LabrestAPI::ResourceList resources;
+         
+    resources = session->getResourceManager()->getAllResources();
+        
+    for (::LabrestAPI::ResourceList::iterator it = resources.begin(); it != resources.end(); ++it)
+    {
+        ::LabrestAPI::Resource temp;
+           
+        temp = *it;
+            
+        ::std::cout <<  temp.id << ",   " << temp.name << ",   " << temp.description << ",   " << temp.lockStatus << ",   " << temp.typeId << ",   " << temp.parentId << ::std::endl;
+    };
+    
+    return true;
+}
+
+bool add_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters, 4);
+    
+    ::std::stringstream s1(parameters[3]);
+    
+    int parent_id;   
+        
+    s1 >> parent_id;
+    
+    session->getResourceManager()->addResourceType(parameters[1],parameters[2],parent_id);
+    
+    return true;
+}
+
+bool delete_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,2);
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int res_id;
+    
+    s >> res_id;
+    
+   session->getResourceManager()->deleteResourceType(res_id);
+   
+   return true;
+}
+
+bool change_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,4);
+    
+    ::std::map<std::string, base_change_restype_command*>  func;
+         
+    func["name"] = new change_restype_name();
+    func["descr"] = new change_restype_descr();
+    func["parent_id"] = new change_restype_parentId();
+    
+    base_change_restype_command * f = func[parameters[2]];
+    if(f != NULL) 
+    {
+        f->run(parameters, session);
+    }
+    
+    for (::std::map<std::string, base_change_restype_command*>::iterator it = func.begin(); it!=func.end(); ++it)
+    {   
+        delete[] (*it).second;
+    }
+             
+    return true;
+}
+
+void change_restype_name::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::ResourceType res_type;
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int rest_id;
+    
+    s >> rest_id;
+         
+    res_type = session->getResourceManager()->getResourceType(rest_id);
+    
+    session->getResourceManager()->modifyResourceType(res_type.id,parameters[3],res_type.description,res_type.parentId);
+}
+
+void change_restype_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+     ::LabrestAPI::ResourceType res_type;
+    
+    ::std::stringstream s(parameters[1]);
+    
+    int rest_id;
+    
+    s >> rest_id;
+         
+    res_type = session->getResourceManager()->getResourceType(rest_id);
+    
+    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name, parameters[3],res_type.parentId);
+}
+
+void change_restype_parentId::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::ResourceType res_type;
+    
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
+    
+    int rest_id, new_parent_id;
+    
+    s1 >> rest_id;
+         
+    res_type = session->getResourceManager()->getResourceType(rest_id);
+    
+    s2 >> new_parent_id;
+        
+    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name,res_type.description,new_parent_id);
+}
+
+bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    rightParameters(parameters,1);
+
+    ::LabrestAPI::ResourceTypeList restypes;
+         
+    restypes = session->getResourceManager()->getAllResourceTypes();
+        
+    for (::LabrestAPI::ResourceTypeList::iterator it = restypes.begin(); it != restypes.end(); ++it)
+    {
+        ::LabrestAPI::ResourceType temp;
+           
+        temp = *it;
+            
+        ::std::cout <<  temp.id << ",   " << temp.name << ",   " << temp.description << ",   " << temp.parentId << ::std::endl;
+    };
+    
+    return true;
+}
+
