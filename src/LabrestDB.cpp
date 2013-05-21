@@ -707,7 +707,7 @@ LabrestAPI::LabrestDB::getLockHistry()
         temp_row.username = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         temp_row.resourceId = sqlite3_column_int(ppStmt, 2);
         temp_row.starTime = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
-        temp_row.endTime = (sqlite3_column_int(ppStmt,4)==0)? "" : (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 4)));
+        temp_row.endTime = (reinterpret_cast<const char *>(sqlite3_column_text_or_null(ppStmt, 4)));
         
         lock_history.push_back(temp_row);
 
@@ -715,4 +715,12 @@ LabrestAPI::LabrestDB::getLockHistry()
     }
 
     return lock_history;
+}
+
+const unsigned char *
+LabrestAPI::LabrestDB::sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol, const char * default_value /* = "" */) {
+    if(sqlite3_column_type(stmt, iCol) == SQLITE_NULL) {
+        return default_value;
+    }
+    return sqlite3_column_text(stmt, iCol);
 }
