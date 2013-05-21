@@ -79,9 +79,10 @@ LabrestAPI::LabrestDB::LabrestDB()
     this->connect();
 }
 
-bool LabrestAPI::LabrestDB::existsUser(::std::string username, ::std::string authdate)
+bool 
+LabrestAPI::LabrestDB::authUser(::std::string username, ::std::string authdate)
 {
-    ::std::cout << "LabrestDB::existsUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
     
     bool status;
 
@@ -107,6 +108,7 @@ bool LabrestAPI::LabrestDB::existsUser(::std::string username, ::std::string aut
 
     return status;
 }
+
 
 bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authdate)
 {
@@ -583,7 +585,7 @@ LabrestAPI::LabrestDB::getAllResources()
         temp_resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
         temp_resource.lockStatus = sqlite3_column_int(ppStmt, 3);
         temp_resource.typeId = sqlite3_column_int(ppStmt, 4);
-        temp_resource.parentId = sqlite3_column_int(ppStmt, 5);
+        temp_resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);
         
         resources.push_back(temp_resource);
 
@@ -618,7 +620,7 @@ LabrestAPI::LabrestDB::getResource(int id)
         resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
         resource.lockStatus = sqlite3_column_int(ppStmt, 3);
         resource.typeId = sqlite3_column_int(ppStmt, 4);
-        resource.parentId = sqlite3_column_int(ppStmt, 5);    
+        resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);    
     }
 
     return resource;

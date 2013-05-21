@@ -14,7 +14,7 @@
 ::LabrestAPI::SessionPrx
 LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) 
 {
-    if (!dbPtr->existsUser(username, auth))
+    if (!dbPtr->authUser(username, auth))
     {
         LoginException le;
         le.ice_throw();

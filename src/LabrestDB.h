@@ -29,8 +29,8 @@ public:
 
 	int disconnect();
 
-        bool existsUser(::std::string username, ::std::string authdate);
-
+        bool authUser(::std::string username, ::std::string authdate);
+        
 	::LabrestAPI::UserList getAllUsers();
         
         ::LabrestAPI::User getUser(::std::string username);
