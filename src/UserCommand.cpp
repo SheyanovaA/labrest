@@ -309,7 +309,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << ",   " << temp.name << ",   " << temp.description << ",   " << temp.lockStatus << ",   " << temp.typeId << ",   " << temp.parentId << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.lockStatus << " | " << temp.typeId << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
