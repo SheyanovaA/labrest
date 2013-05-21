@@ -27,7 +27,7 @@ module LabrestAPI {
 		int id;
 		string name;
 		string description;
-		bool lockStatus; // string currentUser; ?
+		bool lockStatus; 
                 int parentId;
 		int typeId;
 	};

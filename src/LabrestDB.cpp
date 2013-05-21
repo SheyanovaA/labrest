@@ -208,9 +208,10 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
 
     sqlite3_bind_int(ppStmt, 3, typeId);
     
-    sqlite3_bind_int(ppStmt, 4, 0);
-
-    sqlite3_bind_int(ppStmt, 5, parentId);
+    sqlite3_bind_null(ppStmt, 4);
+    
+    if (parentId == -1) sqlite3_bind_null(ppStmt, 5);
+    else  sqlite3_bind_int(ppStmt, 5, parentId);
 
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
@@ -298,8 +299,9 @@ int  LabrestAPI::LabrestDB::addResourceType(::std::string name, ::std::string de
     sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
 
     sqlite3_bind_text(ppStmt, 2, description.c_str(), description.length(),NULL);
-
-    sqlite3_bind_int(ppStmt, 3, parentId);
+    
+    if (parentId == -1) sqlite3_bind_null(ppStmt,3);
+    else    sqlite3_bind_int(ppStmt, 3, parentId);
 
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
@@ -644,7 +646,7 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
         temp_resource_type.id = sqlite3_column_int(ppStmt, 0);
         temp_resource_type.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
         temp_resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        temp_resource_type.parentId = sqlite3_column_int(ppStmt, 3);
+        temp_resource_type.parentId =sqlite3_column_int(ppStmt, 3);
         
         resource_types.push_back(temp_resource_type);
 
