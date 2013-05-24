@@ -22,6 +22,8 @@ public:
 
     virtual ::LabrestAPI::UserManagerPrx getUserManager(const Ice::Current&);
 
+    virtual ::LabrestAPI::CallbackManagerPrx getCallbackManager(const Ice::Current&);
+
 private:
 
     ::std::string sessionId;
