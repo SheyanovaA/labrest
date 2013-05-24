@@ -35,6 +35,7 @@ int LabrestAPI::LabrestDB::connect()
         //add test user 'us' with password '1':
         sql[4] = "insert or replace into user values('us','1');";
 
+         sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
         for (int i = 0; i < 5; i++)
         {
@@ -45,6 +46,7 @@ int LabrestAPI::LabrestDB::connect()
                 sqlite3_free(szErrMsg);
 	    }
         }  
+         sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
     return rc;
 }
