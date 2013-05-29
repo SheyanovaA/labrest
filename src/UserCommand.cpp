@@ -335,7 +335,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.lockStatus << " | " << temp.typeId << " | " << temp.parentId << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.resLockStatus.username << " | " << temp.resLockStatus.starTime << " | " << temp.typeId << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
@@ -472,11 +472,11 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
         
     for (::LabrestAPI::History::iterator it = history.begin(); it != history.end(); ++it)
     {
-        ::LabrestAPI::HistoryRow temp;
+        ::LabrestAPI::LockStatus temp;
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.endTime << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.starTime << " | " << temp.endTime << ::std::endl;
     };
     
     return true;
