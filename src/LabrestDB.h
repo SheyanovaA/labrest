@@ -35,11 +35,11 @@ public:
         
         ::LabrestAPI::User getUser(::std::string username);
 
-	bool addUser(::std::string username, ::std::string authdate);
+	bool addUser(::std::string username, ::std::string authdate, int group);
 
 	bool deleteUser(::std::string username);
 
-	bool modifyUser(::std::string username, ::std::string authdata);
+	bool modifyUser(::std::string username, ::std::string authdata, int group);
         
         ::LabrestAPI::ResourceList getAllResources();
         
@@ -77,6 +77,8 @@ public:
 	bool unlockResource(int resourceId);
         
         bool ResourceIsLock(int resourceId);
+        
+        ::LabrestAPI::LockStatus getLockStatus(int Id);
         
         ::LabrestAPI::History getLockHistry();
 };

@@ -13,6 +13,7 @@ public:
 
     virtual bool addUser(const ::std::string&,
                          const ::std::string&,
+                         ::Ice::Int,
                          const Ice::Current&);
 
     virtual bool deleteUser(const ::std::string&,
@@ -25,6 +26,7 @@ public:
 
     virtual bool modifyUser(const ::std::string&,
                             const ::std::string&,
+                            ::Ice::Int,
                             const Ice::Current&);
 };
 

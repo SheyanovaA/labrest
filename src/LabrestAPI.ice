@@ -1,13 +1,9 @@
 module LabrestAPI {
 
-	interface ResourceManager;
-	interface UserManager;
-        interface CallbackManager;
-        interface Callback;
-
-        struct User {
+	struct User {
 		string name;
 		string auth;
+                int group;
 	};
 
 	struct ResourceType {
@@ -22,6 +18,7 @@ module LabrestAPI {
 		string username;
                 int resourceId;
 		string starTime;
+                int duration; 
 		string endTime;
 	};
 
@@ -29,18 +26,22 @@ module LabrestAPI {
 		int id;
 		string name;
 		string description;
-		LockStatus lockStatus; 
+		LockStatus resLockStatus; 
                 int parentId;
 		int typeId;
 	};
 
+        interface ResourceManager;
+	interface UserManager;
+        interface CallbackManager;
+        interface Callback;
 
 	sequence<int> ResourceIdList;
 	sequence<Resource> ResourceList;
 	sequence<int> ResourceTypeIdList;
 	sequence<ResourceType> ResourceTypeList;
 	sequence<User> UserList;
-        sequence<HistoryRow> History;
+        sequence<LockStatus> History;
 	
 	exception LoginException {};
 
@@ -88,15 +89,12 @@ module LabrestAPI {
 			int parentId);
 	};
 
-
-
 	interface UserManager {
-		bool addUser(string username, string authdata);
+		bool addUser(string username, string authdata, int group);
 		bool deleteUser(string username);
 		UserList getAllUsers();
                 User getUser(string username);
-		bool modifyUser(string username, string authdata);
-		// TODO
+		bool modifyUser(string username, string authdata, int group);
 	};
 
         interface CallbackManager {

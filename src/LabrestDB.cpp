@@ -30,7 +30,7 @@ int LabrestAPI::LabrestDB::connect()
        sql[3] = "create table if not exists "
                 "using_resource(id integer primary key autoincrement, "
                 "username text, resource_id integer, start_time datetime, "
-                "end_time datetime);";
+                "duration integer, end_time datetime);";
 
         //add test user 'us' with password '1':
         sql[4] = "insert or replace into user values('us','1');";
@@ -529,11 +529,8 @@ LabrestAPI::LabrestDB::getAllUsers()
     
     while (s == SQLITE_ROW)
     {
-        ::LabrestAPI::User temp_user;
-        
-        temp_user.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
-        temp_user.auth = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
-        
+        ::LabrestAPI::User temp_user=  getUser(reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+       
         users.push_back(temp_user);
 
         s = sqlite3_step(ppStmt);
@@ -563,6 +560,8 @@ LabrestAPI::LabrestDB::getUser(::std::string username)
         user.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
         
         user.auth = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
+        
+        user.group = sqlite3_column_int(ppStmt,2);
     }
 
     return user;
@@ -584,14 +583,7 @@ LabrestAPI::LabrestDB::getAllResources()
     
     while (s == SQLITE_ROW)
     {
-        ::LabrestAPI::Resource temp_resource;
-        
-        temp_resource.id = sqlite3_column_int(ppStmt, 0);
-        temp_resource.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
-        temp_resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        temp_resource.lockStatus = sqlite3_column_int(ppStmt, 3);
-        temp_resource.typeId = sqlite3_column_int(ppStmt, 4);
-        temp_resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);
+        ::LabrestAPI::Resource temp_resource = getResource(sqlite3_column_int(ppStmt, 0));
         
         resources.push_back(temp_resource);
 
@@ -622,11 +614,17 @@ LabrestAPI::LabrestDB::getResource(int id)
     if  (s == SQLITE_ROW)
     {
         resource.id = sqlite3_column_int(ppStmt, 0);
+        
         resource.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
+        
         resource.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        resource.lockStatus = sqlite3_column_int(ppStmt, 3);
+        
+        resource.resLockStatus = getLockStatus(sqlite3_column_int(ppStmt, 3));
+        
         resource.typeId = sqlite3_column_int(ppStmt, 4);
+        
         resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);    
+  
     }
 
     return resource;
@@ -649,12 +647,7 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
     
     while (s == SQLITE_ROW)
     {
-        ::LabrestAPI::ResourceType temp_resource_type;
-        
-        temp_resource_type.id = sqlite3_column_int(ppStmt, 0);
-        temp_resource_type.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
-        temp_resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
-        temp_resource_type.parentId =sqlite3_column_int(ppStmt, 3);
+        ::LabrestAPI::ResourceType temp_resource_type = getResourceType(sqlite3_column_int(ppStmt, 0));
         
         resource_types.push_back(temp_resource_type);
 
@@ -686,8 +679,11 @@ LabrestAPI::LabrestDB::getResourceType(int id)
     if  (s == SQLITE_ROW)
     {
         resource_type.id = sqlite3_column_int(ppStmt, 0);
+        
         resource_type.name = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
+        
         resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
+        
         resource_type.parentId = sqlite3_column_int(ppStmt, 3);      
     }
 
@@ -711,14 +707,8 @@ LabrestAPI::LabrestDB::getLockHistry()
     
     while (s == SQLITE_ROW)
     {
-        ::LabrestAPI::HistoryRow temp_row;
-        
-        temp_row.id = sqlite3_column_int(ppStmt, 0);
-        temp_row.username = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
-        temp_row.resourceId = sqlite3_column_int(ppStmt, 2);
-        temp_row.starTime = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
-        temp_row.endTime = (reinterpret_cast<const char *>(sqlite3_column_text_or_null(ppStmt, 4)));
-        
+        ::LabrestAPI::LockStatus temp_row = getLockStatus(sqlite3_column_int(ppStmt, 0));
+
         lock_history.push_back(temp_row);
 
         s = sqlite3_step(ppStmt);
@@ -746,4 +736,41 @@ LabrestAPI::LabrestDB::sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol,
         return default_value;
     }
     return sqlite3_column_int(stmt, iCol);
+}
+
+::LabrestAPI::LockStatus 
+LabrestAPI::LabrestDB::getLockStatus(int Id)
+{
+    int s;
+    
+    ::LabrestAPI::LockStatus temp;
+    
+    ::std::cout << "LabrestDB::getLockStatus() called" << ::std::endl;
+    
+    sqlite3_stmt * ppStmt;
+
+    sqlite3_prepare(db,"select * from using_resource where id = ?;",-1,&ppStmt,0);
+    
+    sqlite3_bind_int(ppStmt, 1, Id);
+    
+    s = sqlite3_step(ppStmt);
+    
+    while (s == SQLITE_ROW)
+    {
+        temp.id = sqlite3_column_int(ppStmt, 0);
+        
+        temp.username = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1)));
+        
+        temp.resourceId = sqlite3_column_int(ppStmt, 2);
+        
+        temp.starTime = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 3)));
+        
+        temp.duration = sqlite3_column_int_or_null(ppStmt,4);
+        
+        temp.endTime = (reinterpret_cast<const char *>(sqlite3_column_text_or_null(ppStmt, 5)));
+
+        s = sqlite3_step(ppStmt);
+    }
+
+    return temp;
 }

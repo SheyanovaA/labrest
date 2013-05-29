@@ -71,6 +71,11 @@ public:
     virtual void run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
 };
 
+class change_us_group : public base_change_user_command
+{
+public:
+    virtual void run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
 
 class base_change_resource_command 
 {

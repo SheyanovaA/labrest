@@ -3,13 +3,14 @@
 bool
 LabrestAPI::UserManagerI::addUser(const ::std::string& username,
                                   const ::std::string& authdata,
+                                  ::Ice::Int group,
                                   const Ice::Current& current)
 {
     bool status = true;
 
     std::cout << "UserManagerI::addUser() called \n";
 
-    status = dbPtr->addUser(username,authdata);
+    status = dbPtr->addUser(username,authdata,group);
 
     return status;
 }
@@ -43,13 +44,14 @@ LabrestAPI::UserManagerI::getUser(const ::std::string& username,
 bool
 LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
                                      const ::std::string& authdata,
+                                     ::Ice::Int group,
                                      const Ice::Current& current)
 {   
     bool status = true;
 
     std::cout << "UserManagerI::modifyUser() called \n";
 
-    status = dbPtr->modifyUser(username, authdata);
+    status = dbPtr->modifyUser(username, authdata,group);
     
     return false;
 }

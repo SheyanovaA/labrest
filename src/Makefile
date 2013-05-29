@@ -22,7 +22,7 @@ OBJS=LabrestAPI.o \
 all: labrest_server labrest_client
 
 LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
-	$(SLICE2CPP) $^
+	$(SLICE2CPP) $^ 
 
 %.o: %.cpp
 	$(CXX) -c -I. -I$(ICE_INC) $<

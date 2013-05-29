@@ -39,9 +39,15 @@ bool
 add_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
     
-    rightParameters(parameters,3);  
+    rightParameters(parameters,4);  
     
-    session->getUserManager()->addUser(parameters[1],parameters[2]);
+    ::std::stringstream s(parameters[3]);
+    
+    int group;
+    
+    s >> group;
+    
+    session->getUserManager()->addUser(parameters[1],parameters[2],group);
         
     return true;
 }
@@ -115,6 +121,7 @@ change_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::Se
     ::std::map<std::string, base_change_user_command*>  func;
          
     func["password"] = new change_us_password();
+    func["password"] = new change_us_group();
     
     base_change_user_command * f = func[parameters[2]];
     if(f != NULL) 
@@ -122,7 +129,10 @@ change_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::Se
         f->run(parameters, session);
     }
     
-//    delete[] (func["password"]);
+    for (::std::map<std::string, base_change_user_command*>::iterator it = func.begin(); it!=func.end(); ++it)
+        {   
+           delete[] (*it).second;
+        }
         
     return true;
 }
@@ -134,8 +144,24 @@ void change_us_password::run(::std::vector<std::string> parameters, ::LabrestAPI
          
     user = session->getUserManager()->getUser(parameters[1]);
     
-    session->getUserManager()->modifyUser(user.name, parameters[3]);
+    session->getUserManager()->modifyUser(user.name, parameters[3], user.group);
 }
+
+void change_us_group::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::User user;
+         
+    user = session->getUserManager()->getUser(parameters[1]);
+    
+    ::std::stringstream s(parameters[3]);
+    
+    int group;
+    
+    s >> group;
+    
+    session->getUserManager()->modifyUser(user.name, user.auth, group);
+}
+
 
 bool change_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
