@@ -60,3 +60,9 @@ LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 
     return usMgrPrx;
 }
+
+::LabrestAPI::CallbackManagerPrx
+ LabrestAPI::SessionI::getCallbackManager(const Ice::Current&)
+{
+    return NULL;
+}

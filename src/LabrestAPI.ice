@@ -2,6 +2,8 @@ module LabrestAPI {
 
 	interface ResourceManager;
 	interface UserManager;
+        interface CallbackManager;
+        interface Callback;
 
         struct User {
 		string name;
@@ -45,6 +47,7 @@ module LabrestAPI {
 	interface Session {
 		ResourceManager * getResourceManager();
 		UserManager * getUserManager();
+                CallbackManager * getCallbackManager();
 	};
 
 	interface Entry {
@@ -95,5 +98,14 @@ module LabrestAPI {
 		bool modifyUser(string username, string authdata);
 		// TODO
 	};
+
+        interface CallbackManager {
+                bool registerCallback(Callback * cb);
+                bool unregisterCallback(Callback * cb);
+        };
+
+        interface Callback {
+                void doCallback();
+        };
 	
 };
