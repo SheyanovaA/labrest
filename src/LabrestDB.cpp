@@ -17,7 +17,7 @@ int LabrestAPI::LabrestDB::connect()
         ::std::string sql[5];
 
         sql[0] = "create table if not exists user(username text primary key, "
-                "authdata text);";
+                "authdata text, admin_group boolean);";
 
         sql[1] = "create table if not exists "
                 "resource_type(id integer primary key autoincrement, "
@@ -112,7 +112,7 @@ LabrestAPI::LabrestDB::authUser(::std::string username, ::std::string authdate)
 }
 
 
-bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authdate)
+bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authdate, int group)
 {
     ::std::cout << "LabrestDB::addUser()  called" << ::std::endl;
     
@@ -120,11 +120,13 @@ bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authda
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"insert into user values(?,?);",-1,&ppStmt,0);
+    sqlite3_prepare(db,"insert into user values(?,?,);",-1,&ppStmt,0);
 
     sqlite3_bind_text(ppStmt, 1, username.c_str(), username.length(),NULL);
 
     sqlite3_bind_text(ppStmt, 2, authdate.c_str(), authdate.length(),NULL);
+    
+    sqlite3_bind_int(ppStmt, 3, group);
 
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {
@@ -165,7 +167,7 @@ bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
     return status;
 }
 
-bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string authdata)
+bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string authdata, int group)
 {
     ::std::cout << "LabrestDB::modifyUser()  called" << ::std::endl;
     
@@ -173,13 +175,15 @@ bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string aut
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"update user set authdata = ? where username = ?;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"update user set authdata = ?, admin_group=?  where username = ?;",-1,&ppStmt,0);
     
     
 
-    sqlite3_bind_text(ppStmt, 2, username.c_str(), username.length(),NULL);
+    sqlite3_bind_text(ppStmt, 3, username.c_str(), username.length(),NULL);
 
     sqlite3_bind_text(ppStmt, 1, authdata.c_str(), authdata.length(),NULL);
+    
+    sqlite3_bind_int(ppStmt, 2, group);
 
     if (sqlite3_step(ppStmt) == SQLITE_DONE)
     {

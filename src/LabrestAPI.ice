@@ -15,7 +15,7 @@ module LabrestAPI {
 		int parentId;
 	};
 
-        struct HistoryRow {
+        struct LockStatus {
 		int id;
 		string username;
                 int resourceId;
@@ -27,7 +27,7 @@ module LabrestAPI {
 		int id;
 		string name;
 		string description;
-		bool lockStatus; 
+		LockStatus lockStatus; 
                 int parentId;
 		int typeId;
 	};
