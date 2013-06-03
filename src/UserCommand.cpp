@@ -77,7 +77,7 @@ all_users_command::run(::std::vector<std::string> parameters, ::LabrestAPI::Sess
            
         temp = *it;
             
-        ::std::cout <<  temp.name << ::std::endl;
+        ::std::cout <<  temp.name << " | " << temp.group << ::std::endl;
     };
     
     return true;
@@ -121,7 +121,7 @@ change_user_command::run(::std::vector<std::string> parameters, ::LabrestAPI::Se
     ::std::map<std::string, base_change_user_command*>  func;
          
     func["password"] = new change_us_password();
-    func["password"] = new change_us_group();
+    func["group"] = new change_us_group();
     
     base_change_user_command * f = func[parameters[2]];
     if(f != NULL) 

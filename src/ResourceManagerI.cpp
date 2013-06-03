@@ -40,6 +40,12 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
                                           ::Ice::Int typeId,
                                           const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
+    
     ::std::cout << "ResourceManagerI::addResource() called" << ::std::endl;
 
     int new_resource_id;
@@ -53,6 +59,12 @@ bool
 LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
                                              const Ice::Current& current)
 {       
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
+    
     bool status;
     
     ::std::cout << "ResourceManagerI::deleteResource() called" << ::std::endl;
@@ -70,6 +82,12 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
                                              ::Ice::Int typeId,
                                              const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
+    
     bool status;
     
     ::std::cout << "ResourceManagerI::modifyResource() called" << ::std::endl;
@@ -88,7 +106,7 @@ LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
     
     ::std::cout << "ResourceManagerI::lockResource() called" << ::std::endl;
     
-    status = dbPtr->lockResourse(resourceId, User, duration);
+    status = dbPtr->lockResourse(resourceId, User.name, duration);
     
     return status;
 }
@@ -141,6 +159,11 @@ LabrestAPI::ResourceManagerI::addResourceType(const ::std::string& name,
                                               ::Ice::Int parentId,
                                               const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     int new_resource_type_id;
     
     ::std::cout << "ResourceManagerI::addResourceType() called" << ::std::endl;
@@ -154,6 +177,11 @@ bool
 LabrestAPI::ResourceManagerI::deleteResourceType(::Ice::Int resourceTypeId,
                                                  const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     bool status;
     
     ::std::cout << "ResourceManagerI::deleteResourceType() called" << ::std::endl;
@@ -170,6 +198,11 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
                                                  ::Ice::Int parentId,
                                                  const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     bool status;
     
     ::std::cout << "ResourceManagerI::modifyResourceType() called" << ::std::endl;
@@ -179,7 +212,7 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
     return status;
 }
 
-::LabrestAPI::ResourceManagerI::ResourceManagerI(::std::string user)
+::LabrestAPI::ResourceManagerI::ResourceManagerI(::LabrestAPI::User user)
 {
     User = user;
 }

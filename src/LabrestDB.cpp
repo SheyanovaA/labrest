@@ -123,7 +123,7 @@ bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authda
 
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"insert into user values(?,?,);",-1,&ppStmt,0);
+    sqlite3_prepare(db,"insert into user values(?,?,?);",-1,&ppStmt,0);
 
     sqlite3_bind_text(ppStmt, 1, username.c_str(), username.length(),NULL);
 

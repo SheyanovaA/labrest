@@ -19,7 +19,7 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
         LoginException le;
         le.ice_throw();
     }
-
+    
     ::std::string sessionId = "SimpleSession" + index++;
 
     ::std::cout<<"EntryI::login() called"<<::std::endl;

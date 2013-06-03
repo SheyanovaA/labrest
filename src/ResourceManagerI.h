@@ -11,10 +11,10 @@ namespace LabrestAPI
 
 class ResourceManagerI : virtual public ResourceManager
 {
-    ::std::string User;
+    ::LabrestAPI::User User;
 public:
     
-    ResourceManagerI(::std::string user);
+    ResourceManagerI(::LabrestAPI::User user);
 
     virtual ::LabrestAPI::ResourceIdList getAllResourceIds(const Ice::Current&);
 

@@ -134,7 +134,18 @@ main(int argc, char* argv[])
             base_command * cmd = commands[vector_command[0]];
             if(cmd != NULL) 
             {
-                bool shouldContinue = cmd->run(vector_command, Session);
+                bool shouldContinue;
+                
+                try
+                {
+                    shouldContinue = cmd->run(vector_command, Session);
+                }
+                catch (LabrestAPI::AccessDenied & ex)
+                {
+                    ::std::cerr << "Access denied" << ::std::endl;
+                    
+                    shouldContinue = true;
+                }
                 if(!shouldContinue) 
                 {
                     break;

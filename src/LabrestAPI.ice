@@ -1,19 +1,23 @@
-module LabrestAPI {
+module LabrestAPI 
+{
 
-	struct User {
+	struct User 
+        {
 		string name;
 		string auth;
                 int group;
 	};
 
-	struct ResourceType {
+	struct ResourceType 
+        {
 		int id;
 		string name;
 		string description;
 		int parentId;
 	};
 
-        struct LockStatus {
+        struct LockStatus 
+        {
 		int id;
 		string username;
                 int resourceId;
@@ -22,7 +26,8 @@ module LabrestAPI {
 		string endTime;
 	};
 
-        struct Resource {
+        struct Resource 
+        {
 		int id;
 		string name;
 		string description;
@@ -44,57 +49,89 @@ module LabrestAPI {
         sequence<LockStatus> History;
 	
 	exception LoginException {};
+        exception AccessDenied {};
 
-	interface Session {
+	interface Session 
+        {
 		ResourceManager * getResourceManager();
+
 		UserManager * getUserManager();
+
                 CallbackManager * getCallbackManager();
 	};
 
-	interface Entry {
+	interface Entry 
+        {
 		Session * login(string username, string authdata)
 			throws LoginException;
 	};
 
-        interface ResourceManager {
+        interface ResourceManager 
+        {
 		ResourceIdList getAllResourceIds();
+
 		ResourceList getAllResources();
+
 		Resource getResource(int resourceId);
+
 		int addResource(string name,
-			string description,
-			int parentId,
-			int typeId);
-		bool deleteResource(int resourceId);
+                            string description,
+                            int parentId,
+                            int typeId)
+                        throws AccessDenied;
+
+		bool deleteResource(int resourceId)
+                        throws AccessDenied;
+
 		bool modifyResource(int resourceId,
-			string name,
-			string description,
-			int parentId,
-			int typeId);
+                            string name,
+                            string description,
+                            int parentId,
+                            int typeId)
+                        throws AccessDenied;
 		
 		bool lockResource(int resourceId, int duration);
+
 		void unlockResource(int resourceId);
 
-                History getLockHistory();
+                History getLockHistory()
+                        throws AccessDenied;
 		
 		ResourceTypeIdList getAllResourceTypeIds();
+
 		ResourceTypeList getAllResourceTypes();
+
 		ResourceType getResourceType(int resourceTypeId);
+
 		int addResourceType(string name,
-			string description,
-			int parentId);
-		bool deleteResourceType(int resourceTypeId);
+                            string description,
+                            int parentId)
+                        throws AccessDenied;
+
+		bool deleteResourceType(int resourceTypeId)
+                        throws AccessDenied;
+
 		bool modifyResourceType(int resourceTypeId,
-			string name,
-			string description,
-			int parentId);
+                            string name,
+                            string description,
+                            int parentId)
+                        throws AccessDenied;
 	};
 
-	interface UserManager {
-		bool addUser(string username, string authdata, int group);
-		bool deleteUser(string username);
+	interface UserManager 
+        {
+		bool addUser(string username, string authdata, int group)
+                        throws AccessDenied;
+
+		bool deleteUser(string username)
+                        throws AccessDenied;
+
 		UserList getAllUsers();
+
                 User getUser(string username);
-		bool modifyUser(string username, string authdata, int group);
+
+		bool modifyUser(string username, string authdata, int group)
+                        throws AccessDenied;
 	};
 
         interface CallbackManager {

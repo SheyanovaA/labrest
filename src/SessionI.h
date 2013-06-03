@@ -28,7 +28,7 @@ private:
 
     ::std::string sessionId;
     
-    ::std::string User;
+    ::LabrestAPI::User current_user;
 
     ::LabrestAPI::ResourceManagerPrx rsMgrPrx;
 

@@ -1,11 +1,21 @@
 #include "UserManagerI.h"
 
+::LabrestAPI::UserManagerI::UserManagerI(::LabrestAPI::User user)
+{
+    User = user;
+}
+
 bool
 LabrestAPI::UserManagerI::addUser(const ::std::string& username,
                                   const ::std::string& authdata,
                                   ::Ice::Int group,
                                   const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     bool status = true;
 
     std::cout << "UserManagerI::addUser() called \n";
@@ -47,6 +57,11 @@ LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
                                      ::Ice::Int group,
                                      const Ice::Current& current)
 {   
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     bool status = true;
 
     std::cout << "UserManagerI::modifyUser() called \n";
@@ -61,6 +76,11 @@ bool
 LabrestAPI::UserManagerI::deleteUser(const ::std::string& username,
                                      const Ice::Current& current)
 {
+    if (User.group == 0)
+    {
+        AccessDenied ad;
+        ad.ice_throw();
+    }
     bool status = true;
 
     std::cout << "UserManagerI::deleteUser() called \n";

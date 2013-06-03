@@ -9,7 +9,11 @@ namespace LabrestAPI
 
 class UserManagerI : virtual public UserManager
 {
+    ::LabrestAPI::User User;
+    
 public:
+    
+    UserManagerI(::LabrestAPI::User user);
 
     virtual bool addUser(const ::std::string&,
                          const ::std::string&,
