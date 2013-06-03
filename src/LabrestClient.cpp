@@ -146,6 +146,12 @@ main(int argc, char* argv[])
                     
                     shouldContinue = true;
                 }
+                catch (LabrestAPI::InvalidValue & ex)
+                {
+                    ::std::cerr << "Invalid Value" << ::std::endl;
+                    
+                    shouldContinue = true;
+                }
                 if(!shouldContinue) 
                 {
                     break;

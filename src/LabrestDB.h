@@ -18,6 +18,12 @@ class LabrestDB
         const unsigned char * sqlite3_column_text_or_null(sqlite3_stmt * stmt, int iCol, const char * default_value = "");
         
         int sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol, int default_value = -1);
+        
+        bool ResourceIsLock(int resourceId);
+        
+        bool ExistsResourceType(int resTypeId);
+        
+        bool ExistsResource(int resourceId);
 
 public:
 
@@ -75,8 +81,6 @@ public:
 	bool lockResourse(int resourceId, ::std::string username, int duration);
 
 	bool unlockResource(int resourceId);
-        
-        bool ResourceIsLock(int resourceId);
         
         ::LabrestAPI::LockStatus getLockStatus(int Id);
         

@@ -50,6 +50,7 @@ module LabrestAPI
 	
 	exception LoginException {};
         exception AccessDenied {};
+        exception InvalidValue {};
 
 	interface Session 
         {
@@ -78,21 +79,23 @@ module LabrestAPI
                             string description,
                             int parentId,
                             int typeId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 
 		bool deleteResource(int resourceId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 
 		bool modifyResource(int resourceId,
                             string name,
                             string description,
                             int parentId,
                             int typeId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 		
-		bool lockResource(int resourceId, int duration);
+		bool lockResource(int resourceId, int duration)
+                        throws InvalidValue;
 
-		void unlockResource(int resourceId);
+		void unlockResource(int resourceId)
+                        throws InvalidValue;
 
                 History getLockHistory()
                         throws AccessDenied;
@@ -106,16 +109,16 @@ module LabrestAPI
 		int addResourceType(string name,
                             string description,
                             int parentId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 
 		bool deleteResourceType(int resourceTypeId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 
 		bool modifyResourceType(int resourceTypeId,
                             string name,
                             string description,
                             int parentId)
-                        throws AccessDenied;
+                        throws AccessDenied, InvalidValue;
 	};
 
 	interface UserManager 
