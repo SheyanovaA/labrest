@@ -40,6 +40,7 @@ public:
                                 const Ice::Current&);
 
     virtual bool lockResource(::Ice::Int,
+                              ::Ice::Int,
                               const Ice::Current&);
 
     virtual void unlockResource(::Ice::Int,

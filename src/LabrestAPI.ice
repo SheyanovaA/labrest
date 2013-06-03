@@ -71,7 +71,7 @@ module LabrestAPI {
 			int parentId,
 			int typeId);
 		
-		bool lockResource(int resourceId);
+		bool lockResource(int resourceId, int duration);
 		void unlockResource(int resourceId);
 
                 History getLockHistory();

@@ -72,7 +72,7 @@ public:
                                 ::std::string description, 
                                 int parentId);
 
-	bool lockResourse(int resourceId, ::std::string username);
+	bool lockResourse(int resourceId, ::std::string username, int duration);
 
 	bool unlockResource(int resourceId);
         

@@ -81,13 +81,14 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
 
 bool
 LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
+                                           ::Ice::Int duration,
                                            const Ice::Current& current)
 {   
     bool status;
     
     ::std::cout << "ResourceManagerI::lockResource() called" << ::std::endl;
     
-    status = dbPtr->lockResourse(resourceId, User);
+    status = dbPtr->lockResourse(resourceId, User, duration);
     
     return status;
 }

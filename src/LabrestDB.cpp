@@ -25,7 +25,8 @@ int LabrestAPI::LabrestDB::connect()
 
         sql[2] = "create table if not exists "
                 "resource(id integer primary key autoincrement,"
-                " name text, description text, lock_status boolean, type_id integer, parent integer);";
+                " name text, description text, lock_status integer, "
+                "type_id integer, parent integer);";
 
        sql[3] = "create table if not exists "
                 "using_resource(id integer primary key autoincrement, "
@@ -33,16 +34,18 @@ int LabrestAPI::LabrestDB::connect()
                 "duration integer, end_time datetime);";
 
         //add test user 'us' with password '1':
-        sql[4] = "insert or replace into user values('us','1');";
+        sql[4] = "insert or replace into user values('us','1','1');";
 
          sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
         for (int i = 0; i < 5; i++)
         {
+            ::std::cout << sql[i] << ::std::endl;
+                
             if (sqlite3_exec(db, sql[i].c_str(), 0, 0, &szErrMsg))
             {
                 ::std::cout <<  "Ошибка SQL: " << &szErrMsg << ::std::endl;
-
+                
                 sqlite3_free(szErrMsg);
 	    }
         }  
@@ -393,8 +396,8 @@ bool LabrestAPI::LabrestDB::ResourceIsLock(int resourceId)
 
     sqlite3_stmt *ppStmt;
     
-    sqlite3_prepare(db,"select * from using_resource where resource_id = ? "
-            "and end_time isnull;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select * from resource where id = ? and "
+            "lock_status isnull;",-1,&ppStmt,0);
 
     sqlite3_bind_int(ppStmt, 1, resourceId);
 
@@ -411,26 +414,38 @@ bool LabrestAPI::LabrestDB::ResourceIsLock(int resourceId)
     return status;
 }
 
-bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username)
+bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username, int duration)
 {
     ::std::cout << "LabrestDB::lockResourse()  called" << ::std::endl;
     
     bool status;
+    
+    int lock_st_id; 
 
     sqlite3_stmt *ppStmt;
     
-    if (!ResourceIsLock(resourceId))
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
+    
+    if (ResourceIsLock(resourceId))
     {
-        sqlite3_prepare(db,"update resource set lock_status = ? "
-            "where id = ?;",-1,&ppStmt,0);
-        
-        sqlite3_bind_int(ppStmt,  1, 1);
-        
+        sqlite3_prepare(db,"insert into using_resource(username,resource_id, "
+                "start_time, duration, end_time) "
+               "values(?,?,datetime(), ?, ?);" ,-1,&ppStmt,0);
+       
+        sqlite3_bind_text(ppStmt,1,username.c_str(),username.length(),NULL);
+
         sqlite3_bind_int(ppStmt, 2, resourceId);
+        
+        if (duration == -1) sqlite3_bind_null(ppStmt,3);
+            else sqlite3_bind_int(ppStmt, 3, duration);
+        
+        sqlite3_bind_null(ppStmt,4);
         
         if (sqlite3_step(ppStmt) == SQLITE_DONE)
         {
             status = true;
+            
+            ::std::cout << "true" << ::std::endl;
         }
         else
         {
@@ -439,26 +454,30 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username)
         sqlite3_finalize(ppStmt);
     
         if (status)
-        {
-            sqlite3_prepare(db,"insert into using_resource(username,resource_id, "
-                "start_time, end_time) values(?,?,datetime(), ?);" ,-1,&ppStmt,0);
-    
-            sqlite3_bind_text(ppStmt,1,username.c_str(),username.length(),NULL);
-            
-            sqlite3_bind_int(ppStmt, 2, resourceId);
-            
-            sqlite3_bind_null(ppStmt, 3);
-            
-            if (sqlite3_step(ppStmt) == SQLITE_DONE)
+         
             {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
-            sqlite3_finalize(ppStmt);
+                sqlite3_prepare(db,"update resource set lock_status = "
+                        "(select id from using_resource where "
+                     "resource_id = ? and end_time isnull)"
+                        " where id = ?;" ,-1,&ppStmt,0);
+                
+                sqlite3_bind_int(ppStmt, 1, resourceId);
+                
+                sqlite3_bind_int(ppStmt, 2, resourceId);
+                
+                if (sqlite3_step(ppStmt) == SQLITE_DONE)
+                {
+                    status = true;
+                }
+                else
+                {
+                    status = false;
+                }
+                sqlite3_finalize(ppStmt);
+                          
         }
+        
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
     
     return status;
@@ -470,12 +489,32 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     
     bool status;
 
+    int lock_st_id; 
+    
     sqlite3_stmt *ppStmt;
 
+    sqlite3_prepare(db,"select lock_status from resource "
+            " where id = ?;",-1,&ppStmt,0);
+
+    sqlite3_bind_int(ppStmt, 1, resourceId);
+
+    if (sqlite3_step(ppStmt) == SQLITE_ROW)
+    {
+        lock_st_id = sqlite3_column_int(ppStmt,0);
+    }
+    else
+    {
+        lock_st_id = -1;
+    }
+    sqlite3_finalize(ppStmt);
+    
+    if (lock_st_id != -1)
+    {
+    
     sqlite3_prepare(db,"update resource set lock_status = ? "
             " where id = ?;",-1,&ppStmt,0);
         
-    sqlite3_bind_int(ppStmt,  1, 0);
+    sqlite3_bind_null(ppStmt,  1);
 
     sqlite3_bind_int(ppStmt, 2, resourceId);
 
@@ -492,11 +531,9 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     if (status)
     {
         sqlite3_prepare(db,"update using_resource set end_time = datetime()"
-            " where (resource_id = ?) and end_time isnull ;",-1,&ppStmt,0);
+            " where (id = ?);",-1,&ppStmt,0);
         
-        sqlite3_bind_int(ppStmt, 1, resourceId);
-    
-        sqlite3_bind_null(ppStmt, 2);
+        sqlite3_bind_int(ppStmt, 1, lock_st_id);
     
         if (sqlite3_step(ppStmt) == SQLITE_DONE)
         {
@@ -510,6 +547,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     };
 
     return status;
+}
 }
 
 ::LabrestAPI::UserList
@@ -684,7 +722,7 @@ LabrestAPI::LabrestDB::getResourceType(int id)
         
         resource_type.description = (reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 2)));
         
-        resource_type.parentId = sqlite3_column_int(ppStmt, 3);      
+        resource_type.parentId = sqlite3_column_int_or_null(ppStmt, 3);      
     }
 
     return resource_type;

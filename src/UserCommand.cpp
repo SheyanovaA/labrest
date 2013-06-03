@@ -292,15 +292,17 @@ bool delete_resource_command::run(::std::vector<std::string> parameters, ::Labre
 
 bool lock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {       
-    rightParameters(parameters,2);
+    rightParameters(parameters,3);
     
-    ::std::stringstream s(parameters[1]);
+    ::std::stringstream s1(parameters[1]), s2(parameters[1]);
     
-    int res_id;
+    int res_id, duration;
     
-    s >> res_id;
+    s1 >> res_id;
     
-    session->getResourceManager()->lockResource(res_id);
+    s2 >> duration;
+    
+    session->getResourceManager()->lockResource(res_id, duration);
     
     return true;
 }
@@ -335,7 +337,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.resLockStatus.username << " | " << temp.resLockStatus.starTime << " | " << temp.typeId << " | " << temp.parentId << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " || " << temp.resLockStatus.username << " | " << temp.resLockStatus.starTime << " || " << temp.typeId << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
@@ -456,7 +458,7 @@ bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAP
            
         temp = *it;
             
-        ::std::cout <<  temp.id << ",   " << temp.name << ",   " << temp.description << ",   " << temp.parentId << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
@@ -476,7 +478,7 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.starTime << " | " << temp.endTime << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.endTime <<  ::std::endl;
     };
     
     return true;
