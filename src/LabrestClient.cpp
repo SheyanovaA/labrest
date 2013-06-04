@@ -101,7 +101,7 @@ main(int argc, char* argv[])
         
         while (true) 
 	{
-            ::std::cout << "Labrest :  ";     
+            ::std::cout << "Labrest :  ";
             getline(::std::cin, full_command);
             if(::std::cin.eof()) 
             {

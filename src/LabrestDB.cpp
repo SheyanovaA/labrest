@@ -205,34 +205,54 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
 {
     ::std::cout << "LabrestDB::addResourse()  called" << ::std::endl;
     
-    bool status;
+    bool status, stat2;
 
     sqlite3_stmt *ppStmt;
-
-    sqlite3_prepare(db,"insert into resource(name, description, type_id, "
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
+    
+    if (parentId != -1) 
+    {
+        status = ExistsResource(parentId);
+    }
+    stat2 = ExistsResourceType(typeId);
+    
+    if (status && stat2)
+    { 
+        sqlite3_prepare(db,"insert into resource(name, description, type_id, "
             "lock_status, parent) values(?, ?, ?, ?, ?);",-1,&ppStmt,0);
 
-    sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
+        sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
 
-    sqlite3_bind_text(ppStmt, 2, description.c_str(), description.length(),NULL);
+        sqlite3_bind_text(ppStmt, 2, description.c_str(), description.length(),NULL);
 
-    sqlite3_bind_int(ppStmt, 3, typeId);
+        sqlite3_bind_int(ppStmt, 3, typeId);
     
-    sqlite3_bind_null(ppStmt, 4);
+        sqlite3_bind_null(ppStmt, 4);
     
-    if (parentId == -1) sqlite3_bind_null(ppStmt, 5);
-    else  sqlite3_bind_int(ppStmt, 5, parentId);
+        if (parentId == -1) sqlite3_bind_null(ppStmt, 5);
+        else  sqlite3_bind_int(ppStmt, 5, parentId);
 
-    if (sqlite3_step(ppStmt) == SQLITE_DONE)
-    {
-	status = true;
+        if (sqlite3_step(ppStmt) == SQLITE_DONE)
+        {
+            status = true;
+        }
+        else
+        {
+            status = false;
+        }
+        sqlite3_finalize(ppStmt);
+      
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
-    else
+    else 
     {
-	status = false;
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::InvalidValue iv;
+        
+        iv.ice_throw();
     }
-    sqlite3_finalize(ppStmt);
-
     return status;
 }
 
@@ -243,6 +263,24 @@ bool LabrestAPI::LabrestDB::deleteResource(int id)
     bool status;
 
     sqlite3_stmt *ppStmt;
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
+    
+    sqlite3_prepare(db,"update resource set parent = ? where parent = ?;",-1,&ppStmt,0);
+    
+    sqlite3_bind_null(ppStmt,1);
+
+    sqlite3_bind_int(ppStmt, 2, id);
+
+    if (sqlite3_step(ppStmt) == SQLITE_DONE)
+    {
+	status = true;
+    }
+    else
+    {
+	status = false;
+    }
+    sqlite3_finalize(ppStmt);
 
     sqlite3_prepare(db,"delete from resource where id = ?;",-1,&ppStmt,0);
 
@@ -257,6 +295,8 @@ bool LabrestAPI::LabrestDB::deleteResource(int id)
 	status = false;
     }
     sqlite3_finalize(ppStmt);
+    
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return status;
 
@@ -266,32 +306,51 @@ bool LabrestAPI::LabrestDB::modifyResource(int id, ::std::string name, ::std::st
 {
     ::std::cout << "LabrestDB::modifyResource()  called" << ::std::endl;
    
-    bool status;
+    bool status, stat2;
 
     sqlite3_stmt *ppStmt;
+    
+    if (parentId != -1) 
+    {
+        status = ExistsResource(parentId);
+    }
+    stat2 = ExistsResourceType(typeId);
 
-    sqlite3_prepare(db,"update resource set name = ?, description = ?, "
+    if (status && stat2)
+    { 
+        sqlite3_prepare(db,"update resource set name = ?, description = ?, "
             "type_id = ?, parent = ?   where id = ?;",-1,&ppStmt,0);
 
-    sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
+        sqlite3_bind_text(ppStmt, 1, name.c_str(), name.length(),NULL);
 
-    sqlite3_bind_text(ppStmt, 2, description.c_str(), description.length(),NULL);
+        sqlite3_bind_text(ppStmt, 2, description.c_str(), description.length(),NULL);
     
-    sqlite3_bind_int(ppStmt,3,typeId);
+        sqlite3_bind_int(ppStmt,3,typeId);
     
-    sqlite3_bind_int(ppStmt, 4, parentId);
+        sqlite3_bind_int(ppStmt, 4, parentId);
     
-    sqlite3_bind_int(ppStmt, 5, id);
+        sqlite3_bind_int(ppStmt, 5, id);
 
-    if (sqlite3_step(ppStmt) == SQLITE_DONE)
-    {
-	status = true;
+        if (sqlite3_step(ppStmt) == SQLITE_DONE)
+        {
+            status = true;
+        }
+        else
+        {
+            status = false;
+        }
+        sqlite3_finalize(ppStmt);
+        
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
-    else
+    else 
     {
-	status = false;
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::InvalidValue iv;
+        
+        iv.ice_throw();
     }
-    sqlite3_finalize(ppStmt);
 }
 
 
@@ -330,14 +389,17 @@ int  LabrestAPI::LabrestDB::addResourceType(::std::string name, ::std::string de
             status = false;
         }
         sqlite3_finalize(ppStmt);
+        
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
     else 
     {
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
         ::LabrestAPI::InvalidValue iv;
+        
         iv.ice_throw();
     }
-    sqlite3_exec(db, "COMMIT", 0, 0, 0);
-    
     return status;
 
 }
@@ -353,6 +415,26 @@ bool LabrestAPI::LabrestDB::deleteResourceType(int id)
     sqlite3_stmt *ppStmt;
     
     sqlite3_prepare(db,"update resource set type_id = ? where type_id = ?;",-1,&ppStmt,0);
+
+    sqlite3_bind_null(ppStmt,1);
+    
+    sqlite3_bind_int(ppStmt, 2, id);
+    
+//    sqlite3_prepare(db,"delete from resource where type_id = ?;",-1,&ppStmt,0);
+//    
+//    sqlite3_bind_int(ppStmt, 1, id);
+
+    if (sqlite3_step(ppStmt) == SQLITE_DONE)
+    {
+	status = true;
+    }
+    else
+    {
+	status = false;
+    }
+    sqlite3_finalize(ppStmt);
+    
+    sqlite3_prepare(db,"update resource_type set parent = ? where parent = ?;",-1,&ppStmt,0);
 
     sqlite3_bind_null(ppStmt,1);
     
@@ -385,6 +467,8 @@ bool LabrestAPI::LabrestDB::deleteResourceType(int id)
         }
         sqlite3_finalize(ppStmt);
     }
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
+    
     return status;
 
 }
@@ -425,9 +509,17 @@ bool LabrestAPI::LabrestDB::modifyResourceType(int id, ::std::string name, ::std
 	status = false;
     }
     sqlite3_finalize(ppStmt);
-    }
-    
+        
     sqlite3_exec(db, "COMMIT", 0, 0, 0);
+    }
+    else
+    {
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::InvalidValue iv;
+        
+        iv.ice_throw();
+    }
     
     return status;
     
@@ -471,6 +563,8 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
     
     sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
+    if (ExistsResource(resourceId))
+    {    
     if (ResourceIsLock(resourceId))
     {
         sqlite3_prepare(db,"insert into using_resource(username,resource_id, "
@@ -519,10 +613,28 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
                     status = false;
                 }
                 sqlite3_finalize(ppStmt);
-                          
+                
+                sqlite3_prepare(db,"select id from resource where parent = ?;" ,-1,&ppStmt,0);
+                                
+                sqlite3_bind_int(ppStmt, 1, resourceId);
+                
+                while (sqlite3_step(ppStmt) == SQLITE_ROW)
+                {
+                    lockResourse(sqlite3_column_int(ppStmt,0), username, duration);
+                }
+                sqlite3_finalize(ppStmt);          
         }
         
         sqlite3_exec(db, "COMMIT", 0, 0, 0);
+    }
+    }
+    else
+    {
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::InvalidValue iv;
+        
+        iv.ice_throw();
     }
     
     return status;
@@ -533,66 +645,72 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     ::std::cout << "LabrestDB::unlockResource()  called" << ::std::endl;
     
     bool status;
-
-    int lock_st_id; 
     
     sqlite3_stmt *ppStmt;
 
-    sqlite3_prepare(db,"select lock_status from resource "
-            " where id = ?;",-1,&ppStmt,0);
-
-    sqlite3_bind_int(ppStmt, 1, resourceId);
-
-    if (sqlite3_step(ppStmt) == SQLITE_ROW)
-    {
-        lock_st_id = sqlite3_column_int(ppStmt,0);
-    }
-    else
-    {
-        lock_st_id = -1;
-    }
-    sqlite3_finalize(ppStmt);
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
-    if (lock_st_id != -1)
-    {
-    
-    sqlite3_prepare(db,"update resource set lock_status = ? "
-            " where id = ?;",-1,&ppStmt,0);
-        
-    sqlite3_bind_null(ppStmt,  1);
-
-    sqlite3_bind_int(ppStmt, 2, resourceId);
-
-    if (sqlite3_step(ppStmt) == SQLITE_DONE)
-    {
-	status = true;
-    }
-    else
-    {
-	status = false;
-    }
-    sqlite3_finalize(ppStmt);
-    
-    if (status)
-    {
-        sqlite3_prepare(db,"update using_resource set end_time = datetime()"
-            " where (id = ?);",-1,&ppStmt,0);
-        
-        sqlite3_bind_int(ppStmt, 1, lock_st_id);
-    
-        if (sqlite3_step(ppStmt) == SQLITE_DONE)
+    if (ExistsResource(resourceId))
+    {  
+        if (!ResourceIsLock(resourceId))
         {
+            sqlite3_prepare(db,"update using_resource set end_time = datetime()"
+            " where id = (select lock_status from resource "
+            " where id = ?);",-1,&ppStmt,0);
+        
+            sqlite3_bind_int(ppStmt, 1, resourceId);
+    
+            if (sqlite3_step(ppStmt) == SQLITE_DONE)
+            {
                 status = true;
-        }
-        else
-        {
+            }
+            else
+            {
                 status = false;
-        }
-        sqlite3_finalize(ppStmt);
-    };
+            }
+            sqlite3_finalize(ppStmt);
+      
+            sqlite3_prepare(db,"update resource set lock_status = ? "
+            " where id = ?;",-1,&ppStmt,0);
+    
+            sqlite3_bind_null(ppStmt,  1);
 
+            sqlite3_bind_int(ppStmt, 2, resourceId);
+
+            if (sqlite3_step(ppStmt) == SQLITE_DONE)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+            sqlite3_finalize(ppStmt);
+    
+            if (status)
+            {
+               sqlite3_prepare(db,"select id from resource where parent = ?;" ,-1,&ppStmt,0);
+                                
+                sqlite3_bind_int(ppStmt, 1, resourceId);
+                
+                while (sqlite3_step(ppStmt) == SQLITE_ROW)
+                {
+                    unlockResource(sqlite3_column_int(ppStmt,0));
+                }
+                sqlite3_finalize(ppStmt);  
+            };
+        }
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+    }                   
+    else
+    {
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::InvalidValue iv;
+        
+        iv.ice_throw();
+    }
     return status;
-}
 }
 
 ::LabrestAPI::UserList
@@ -605,19 +723,22 @@ LabrestAPI::LabrestDB::getAllUsers()
     ::LabrestAPI::UserList users;
     
     sqlite3_stmt * ppStmt;
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
 
-    sqlite3_prepare(db,"select * from user;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select username from user;",-1,&ppStmt,0);
 
     s = sqlite3_step(ppStmt);
     
     while (s == SQLITE_ROW)
     {
-        ::LabrestAPI::User temp_user=  getUser(reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
+        ::LabrestAPI::User temp_user =  getUser(reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 0)));
        
         users.push_back(temp_user);
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return users;
 }
@@ -659,8 +780,10 @@ LabrestAPI::LabrestDB::getAllResources()
     
     ::LabrestAPI::ResourceList resources; 
     sqlite3_stmt * ppStmt;
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
 
-    sqlite3_prepare(db,"select * from resource;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select id from resource;",-1,&ppStmt,0);
 
     s = sqlite3_step(ppStmt);
     
@@ -672,6 +795,7 @@ LabrestAPI::LabrestDB::getAllResources()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return resources;
 }
@@ -704,7 +828,7 @@ LabrestAPI::LabrestDB::getResource(int id)
         
         resource.resLockStatus = getLockStatus(sqlite3_column_int(ppStmt, 3));
         
-        resource.typeId = sqlite3_column_int(ppStmt, 4);
+        resource.typeId = sqlite3_column_int_or_null(ppStmt, 4);
         
         resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);    
   
@@ -723,8 +847,10 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
     ::std::cout << "LabrestDB::getAllResourceTypes() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
 
-    sqlite3_prepare(db,"select * from resource_type;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select id from resource_type;",-1,&ppStmt,0);
 
     s = sqlite3_step(ppStmt);
     
@@ -736,6 +862,7 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return resource_types;
     
@@ -783,8 +910,10 @@ LabrestAPI::LabrestDB::getLockHistry()
     ::std::cout << "LabrestDB::getLockHistry() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
+    
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
 
-    sqlite3_prepare(db,"select * from using_resource;",-1,&ppStmt,0);
+    sqlite3_prepare(db,"select id from using_resource;",-1,&ppStmt,0);
     
     s = sqlite3_step(ppStmt);
     
@@ -796,6 +925,7 @@ LabrestAPI::LabrestDB::getLockHistry()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return lock_history;
 }

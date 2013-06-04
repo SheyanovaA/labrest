@@ -6,7 +6,7 @@
 
 void base_command::rightParameters(::std::vector<std::string> &parameters, int count)
 {
-    while (parameters.size()!=count) 
+    while (parameters.size()<count) 
     {
         parameters.erase(parameters.begin()+1,parameters.end());
         
@@ -94,20 +94,20 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
 {
     ::std::cout<<" 1. help\n"
             " 2. exit\n"
-            " 3. add_user <username> <password>\n"
+            " 3. add_user <username> <password> <admin(1)/user(0)>\n"
             " 4. add_res <name> <description> <parent id> <type id>\n"
             " 5. add_restype <name> <description> <parent id>\n"
             " 6. delete_user <username>\n"
             " 7. delete_res <resource id>\n"
             " 8. delete_restype <resource type id>\n"
-            " 9. change_user <username> password <new password>\n"
+            " 9. change_user <username> password/group <new value>\n"
             "10. change_res <resource id> name/descr/type_id/parent_id <new value>\n"
             "11. change_restype <resource type id> name/descr/parent_id <new value>\n"
             "12. all_users\n"
             "13. all_res\n"
             "14. all_restypes\n"
             "15. lock_history\n"
-            "16. lock_res <resource id>\n"
+            "16. lock_res <resource id> [<duration>]\n"
             "17. unlock_res <resource id>\n";
     return true;
 }
@@ -266,8 +266,8 @@ bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
         
     s1 >> parent_id;
     
-    s2 >> type_id;
-    
+    s2 >> type_id; 
+
     session->getResourceManager()->addResource(parameters[1],parameters[2],parent_id, type_id);
     
     return true;
@@ -292,15 +292,24 @@ bool delete_resource_command::run(::std::vector<std::string> parameters, ::Labre
 
 bool lock_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {       
-    rightParameters(parameters,3);
+    rightParameters(parameters,2);
     
-    ::std::stringstream s1(parameters[1]), s2(parameters[1]);
-    
+    ::std::stringstream s1(parameters[1]); 
+            
     int res_id, duration;
     
     s1 >> res_id;
     
-    s2 >> duration;
+    if (parameters.size() > 2)
+    {
+        ::std::stringstream s2(parameters[2]);
+        
+        s2 >> duration;
+    }    
+    else
+    {
+        duration = -1;
+    }
     
     session->getResourceManager()->lockResource(res_id, duration);
     

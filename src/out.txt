@@ -1,0 +1,9 @@
+res
+1) -> id for u_res
+4) -> del lock_status
+ch_r
+3) check ch_r for this res
+
+u_res
+
+2) close u_res row for this res
