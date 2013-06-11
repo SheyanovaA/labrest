@@ -24,6 +24,7 @@ module LabrestAPI
 		string starTime;
                 int duration; 
 		string endTime;
+                string unlockComment;
 	};
 
         struct Resource 
@@ -51,6 +52,7 @@ module LabrestAPI
 	exception LoginException {};
         exception AccessDenied {};
         exception InvalidValue {};
+        exception ResourceIsLock {};
 
 	interface Session 
         {
@@ -92,7 +94,7 @@ module LabrestAPI
                         throws AccessDenied, InvalidValue;
 		
 		bool lockResource(int resourceId, int duration)
-                        throws InvalidValue;
+                        throws InvalidValue, ResourceIsLock;
 
 		void unlockResource(int resourceId)
                         throws InvalidValue;

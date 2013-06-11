@@ -117,7 +117,7 @@ LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
 {
     ::std::cout << "ResourceManagerI::unlockResource() called" << ::std::endl;
     
-    dbPtr->unlockResource(resourceId);
+    dbPtr->unlockResource(resourceId, User.name);
 }
 
 ::LabrestAPI::ResourceTypeIdList

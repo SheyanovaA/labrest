@@ -487,7 +487,7 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.endTime <<  ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.endTime << " | " << temp.unlockComment << ::std::endl;
     };
     
     return true;

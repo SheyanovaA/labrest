@@ -80,7 +80,9 @@ public:
 
 	bool lockResourse(int resourceId, ::std::string username, int duration);
 
-	bool unlockResource(int resourceId);
+	bool unlockResource(int resourceId, ::std::string username = "system");
+        
+        bool ResourceIsLockByUser(int resourceId, ::std::string username);
         
         ::LabrestAPI::LockStatus getLockStatus(int Id);
         

@@ -31,7 +31,7 @@ int LabrestAPI::LabrestDB::connect()
        sql[3] = "create table if not exists "
                 "using_resource(id integer primary key autoincrement, "
                 "username text, resource_id integer, start_time datetime, "
-                "duration integer, end_time datetime);";
+                "duration integer, end_time datetime, unlock_comment text);";
 
         //add test user 'us' with password '1':
         sql[4] = "insert or replace into user values('us','1','1');";
@@ -559,14 +559,12 @@ bool LabrestAPI::LabrestDB::ResourceIsNotLock(int resourceId)
                 while (sqlite3_step(ppStmt) == SQLITE_ROW)
                 {
                     status = ResourceIsNotLock(sqlite3_column_int(ppStmt,0));
-                    
-                    ::std::cout << "child is lock!" << ::std::endl;
-                    
+                                        
                     if (!status) break;
                 }
+                sqlite3_finalize(ppStmt);
     }
-    
-    
+       
     return status;
 }
 
@@ -644,6 +642,14 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
         
         sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
+    else
+    {
+        sqlite3_exec(db, "COMMIT", 0, 0, 0);
+        
+        ::LabrestAPI::ResourceIsLock rl;
+        
+        rl.ice_throw();
+    }
     }
     else
     {
@@ -657,10 +663,10 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
     return status;
 }
 
-bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
+bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string username)
 {
     ::std::cout << "LabrestDB::unlockResource()  called" << ::std::endl;
-    
+        
     bool status;
     
     sqlite3_stmt *ppStmt;
@@ -669,13 +675,22 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     
     if (ExistsResource(resourceId))
     {  
-        if (!ResourceIsNotLock(resourceId))
+        if (ResourceIsLockByUser(resourceId, username))
         {
-            sqlite3_prepare(db,"update using_resource set end_time = datetime()"
-            " where id = (select lock_status from resource "
-            " where id = ?);",-1,&ppStmt,0);
+            sqlite3_prepare(db,"update using_resource set end_time = datetime(), "
+                    "unlock_comment = ?"
+                    " where id = (select lock_status from resource "
+                    " where id = ?);",-1,&ppStmt,0);
         
-            sqlite3_bind_int(ppStmt, 1, resourceId);
+            ::std::string tuser = ((dbPtr->getUser(username).group == 1)&&(dbPtr->getResource(resourceId).resLockStatus.username!= username)) ?  username + " as admin" :    username;        
+            ::std::string unlock_comment = (username == "system") ? "Timeout expired" : tuser;
+            
+            
+    ::std::cout << unlock_comment << ::std::endl;
+            
+            sqlite3_bind_text(ppStmt, 1, unlock_comment.c_str(),unlock_comment.length(),NULL);
+            
+            sqlite3_bind_int(ppStmt, 2, resourceId);
     
             if (sqlite3_step(ppStmt) == SQLITE_DONE)
             {
@@ -712,7 +727,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
                 
                 while (sqlite3_step(ppStmt) == SQLITE_ROW)
                 {
-                    unlockResource(sqlite3_column_int(ppStmt,0));
+                    unlockResource(sqlite3_column_int(ppStmt,0), username);
                 }
                 sqlite3_finalize(ppStmt);  
             };
@@ -998,6 +1013,8 @@ LabrestAPI::LabrestDB::getLockStatus(int Id)
         temp.duration = sqlite3_column_int_or_null(ppStmt,4);
         
         temp.endTime = (reinterpret_cast<const char *>(sqlite3_column_text_or_null(ppStmt, 5)));
+        
+        temp.unlockComment = (reinterpret_cast<const char *>(sqlite3_column_text_or_null(ppStmt, 6)));
 
         s = sqlite3_step(ppStmt);
     }
@@ -1060,3 +1077,10 @@ bool
     return status;
 }
 
+bool 
+::LabrestAPI::LabrestDB::ResourceIsLockByUser(int resourceId, ::std::string username)
+{    
+    return (username == "system") ||
+            (dbPtr->getUser(username).group == 1) ||
+            (dbPtr->getResource(resourceId).resLockStatus.username == username);
+}

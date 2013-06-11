@@ -159,6 +159,12 @@ LabrestClientApp::run(int argc, char* argv[])
                     
                     shouldContinue = true;
                 }
+                catch (LabrestAPI::ResourceIsLock & ex)
+                {
+                    ::std::cerr << "Resource already is locked!" << ::std::endl;
+                    
+                    shouldContinue = true;
+                }
                 if(!shouldContinue) 
                 {
                     break;
