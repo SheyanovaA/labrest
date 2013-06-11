@@ -520,12 +520,13 @@ bool LabrestAPI::LabrestDB::modifyResourceType(int id, ::std::string name, ::std
         
         iv.ice_throw();
     }
+    sqlite3_finalize(ppStmt);
     
     return status;
     
 }
 
-bool LabrestAPI::LabrestDB::ResourceIsLock(int resourceId)
+bool LabrestAPI::LabrestDB::ResourceIsNotLock(int resourceId)
 {
     ::std::cout << "LabrestDB::ResourceIsLock()  called" << ::std::endl;
     
@@ -545,8 +546,26 @@ bool LabrestAPI::LabrestDB::ResourceIsLock(int resourceId)
     else
     {
 	status = false;
+        
     }
     sqlite3_finalize(ppStmt);
+    
+    if (status) 
+    {
+                sqlite3_prepare(db,"select id from resource where parent = ?;" ,-1,&ppStmt,0);
+                                
+                sqlite3_bind_int(ppStmt, 1, resourceId);
+                
+                while (sqlite3_step(ppStmt) == SQLITE_ROW)
+                {
+                    status = ResourceIsNotLock(sqlite3_column_int(ppStmt,0));
+                    
+                    ::std::cout << "child is lock!" << ::std::endl;
+                    
+                    if (!status) break;
+                }
+    }
+    
     
     return status;
 }
@@ -565,7 +584,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
     
     if (ExistsResource(resourceId))
     {    
-    if (ResourceIsLock(resourceId))
+    if (ResourceIsNotLock(resourceId))
     {
         sqlite3_prepare(db,"insert into using_resource(username,resource_id, "
                 "start_time, duration, end_time) "
@@ -583,8 +602,6 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
         if (sqlite3_step(ppStmt) == SQLITE_DONE)
         {
             status = true;
-            
-            ::std::cout << "true" << ::std::endl;
         }
         else
         {
@@ -652,7 +669,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId)
     
     if (ExistsResource(resourceId))
     {  
-        if (!ResourceIsLock(resourceId))
+        if (!ResourceIsNotLock(resourceId))
         {
             sqlite3_prepare(db,"update using_resource set end_time = datetime()"
             " where id = (select lock_status from resource "

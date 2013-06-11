@@ -19,7 +19,7 @@ class LabrestDB
         
         int sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol, int default_value = -1);
         
-        bool ResourceIsLock(int resourceId);
+        bool ResourceIsNotLock(int resourceId);
         
         bool ExistsResourceType(int resTypeId);
         
