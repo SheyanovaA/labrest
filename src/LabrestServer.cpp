@@ -8,61 +8,48 @@
 
 LabrestAPI::LabrestDB * dbPtr;
 
+class LabrestServerApp : public Ice::Application 
+{
+public:
+    virtual int run(int argc, char* argv[]);
+};
+
+
 int
 main(int argc, char* argv[])
 {
-
-    int status = 0;
-
-    Ice::CommunicatorPtr ic;
-
-    try 
-    {
-        ic = Ice::initialize(argc, argv);
+    LabrestServerApp labrest_server;
     
-        Ice::ObjectAdapterPtr adapter = ic->createObjectAdapterWithEndpoints("SimpleEntryAdapter", "default -p 10000");
+    return labrest_server.main(argc,argv,"config.server");
+};
 
-        Ice::ObjectPtr object = new ::LabrestAPI::EntryI;
 
-        adapter->add(object, ic->stringToIdentity("SimpleEntry"));
-
-        adapter->activate();
-
-	::LabrestAPI::LabrestDB db;
-
-	dbPtr = &db;
-
-        ic->waitForShutdown();
-
-	db.disconnect();
-    } 
-    catch (const Ice::Exception& e) 
+int
+LabrestServerApp::run(int argc, char* argv[])
+{
+    if(argc > 1)
     {
-        ::std::cerr << e << ::std::endl;
-
-        status = 1;
-
-    } 
-    catch (const char* msg) 
-    {
-        ::std::cerr << msg << ::std::endl;
-
-        status = 1;
+        ::std::cerr << appName() << ": too many arguments" << ::std::endl;
+        return EXIT_FAILURE;
     }
+    
+    int status = 0;
+    
+    Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapterWithEndpoints("SimpleEntryAdapter", "default -p 10000");
 
-    if (ic) 
-    {
-        try 
-        {
-            ic->destroy();
-        } 
-        catch (const Ice::Exception& e) 
-        {
-            ::std::cerr << e << ::std::endl;
+    Ice::ObjectPtr object = new ::LabrestAPI::EntryI;
 
-            status = 1;
-        }
-    }
+    adapter->add(object, communicator()->stringToIdentity("SimpleEntry"));
 
+    adapter->activate();
+
+    ::LabrestAPI::LabrestDB db;
+
+    dbPtr = &db;
+
+    communicator()->waitForShutdown();
+
+    db.disconnect();
+    
     return status;
 }

@@ -6,22 +6,29 @@
 #include "EntryI.h"
 #include "UserCommand.h"
 
+
+class LabrestClientApp : public Ice::Application 
+{
+public:        
+    virtual int run(int argc, char* argv[]);
+};
+
+
 int
 main(int argc, char* argv[])
 {
+    LabrestClientApp labrest_client;
+    
+    return labrest_client.main(argc,argv,"config.client");
+};
+
+
+int
+LabrestClientApp::run(int argc, char* argv[])
+{
     int status = 0;
 
-    Ice::CommunicatorPtr ic;
-    
-
-
-    try
-    {
-        ic = Ice::initialize(argc, argv);
-       
-
-     
-        Ice::ObjectPrx base = ic->stringToProxy("SimpleEntry:default -p 10000");
+        Ice::ObjectPrx base = communicator()->stringToProxy("SimpleEntry:default -p 10000");
 
         ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
 
@@ -167,22 +174,5 @@ main(int argc, char* argv[])
            delete[] (*it).second;
         }
                 
-    }
-    catch (const Ice::Exception& ex)
-    {
-        ::std::cerr << ex << ::std::endl;
-
-        status = 1;
-    }
-    catch (const char* msg)
-    {
-        ::std::cerr << msg << ::std::endl;
-        
-        status = 1;
-    }
-    if (ic)
-
-        ic->destroy();
-
     return status;
 }
