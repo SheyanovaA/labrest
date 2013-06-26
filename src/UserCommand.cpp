@@ -1,8 +1,5 @@
-
-#include <map>
-
 #include "UserCommand.h"
-#include "LabrestAPI.h"
+
 
 void base_command::rightParameters(::std::vector<std::string> &parameters, int count)
 {
@@ -492,3 +489,25 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
     
     return true;
 }
+//
+//bool reg_callback_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+//{    
+//    Ice::Identity ident;
+//    
+//    ident.category="";
+//    
+//    ident.name=parameters[1];
+//    
+//    session->getCallbackManager()->registerCallback(ident);
+//};
+//
+//bool unreg_callback_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+//{
+//     Ice::Identity ident;
+//    
+//    ident.category="";
+//    
+//    ident.name=parameters[1];
+//    
+//    session->getCallbackManager()->unregisterCallback(ident);
+//};

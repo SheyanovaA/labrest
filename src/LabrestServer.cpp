@@ -5,8 +5,10 @@
 #include "LabrestAPI.h"
 #include "SessionI.h"
 #include "EntryI.h"
+#include "EventsQueue.h"
 
 LabrestAPI::LabrestDB * dbPtr;
+LabrestAPI::EventsQueue * EvQueuePtr;
 
 class LabrestServerApp : public Ice::Application 
 {
@@ -35,7 +37,7 @@ LabrestServerApp::run(int argc, char* argv[])
     
     int status = 0;
     
-    Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapterWithEndpoints("SimpleEntryAdapter", "default -p 10000");
+    Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("LabrestServer");
 
     Ice::ObjectPtr object = new ::LabrestAPI::EntryI;
 
@@ -46,6 +48,10 @@ LabrestServerApp::run(int argc, char* argv[])
     ::LabrestAPI::LabrestDB db;
 
     dbPtr = &db;
+    
+    ::LabrestAPI::EventsQueue queue;
+    
+    EvQueuePtr = &queue;
 
     communicator()->waitForShutdown();
 

@@ -52,6 +52,15 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
     
     new_resource_id = dbPtr->addResourse(name,description, typeId, parentId);
     
+    CB_Event ev;
+    
+    ev.TypeEvent = CB_ADD_RES;
+    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.resourceId = new_resource_id;
+    ev.username = "";
+    
+    EvQueuePtr->push_back(ev);
+    
     return new_resource_id;
 }
 
@@ -70,6 +79,15 @@ LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
     ::std::cout << "ResourceManagerI::deleteResource() called" << ::std::endl;
     
     status = dbPtr->deleteResource(resourceId);
+    
+    CB_Event ev;
+    
+    ev.TypeEvent = CB_DEL_RES;
+    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.resourceId = resourceId;
+    ev.username = "";
+    
+    EvQueuePtr->push_back(ev);
     
     return status;
 }
@@ -94,6 +112,15 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
     
     status = dbPtr->modifyResource(resourceId, name, description, typeId, parentId);
     
+    CB_Event ev;
+    
+    ev.TypeEvent = CB_CH_RES;
+    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.resourceId = resourceId;
+    ev.username = "";
+    
+    EvQueuePtr->push_back(ev);
+    
     return status;
 }
 
@@ -108,6 +135,15 @@ LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
     
     status = dbPtr->lockResourse(resourceId, User.name, duration);
     
+    CB_Event ev;
+    
+    ev.TypeEvent = CB_LOCK;
+    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.resourceId = resourceId;
+    ev.username = "";
+    
+    EvQueuePtr->push_back(ev);
+    
     return status;
 }
 
@@ -118,6 +154,15 @@ LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
     ::std::cout << "ResourceManagerI::unlockResource() called" << ::std::endl;
     
     dbPtr->unlockResource(resourceId, User.name);
+    
+    CB_Event ev;
+    
+    ev.TypeEvent = CB_UNLOCK;
+    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.resourceId = resourceId;
+    ev.username = "";
+    
+    EvQueuePtr->push_back(ev);
 }
 
 ::LabrestAPI::ResourceTypeIdList
@@ -214,6 +259,8 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
 
 ::LabrestAPI::ResourceManagerI::ResourceManagerI(::LabrestAPI::User user)
 {
+    ::std::cout << "ResourceManagerI::ResourceManagerI() called" << ::std::endl;
+    
     User = user;
 }
 

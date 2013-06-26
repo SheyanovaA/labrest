@@ -1,15 +1,11 @@
-/* 
- * File:   UserCommand.h
- * Author: alina
- *
- * Created on May 13, 2013, 11:36 AM
- */
+#ifndef UserCommand_H
+#define	UserCommand_H
 
-#ifndef USERCOMMAND_H
-#define	USERCOMMAND_H
+#include <Ice/Communicator.h>
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "LabrestAPI.h"
 
@@ -197,7 +193,18 @@ class lock_history_command : public base_command
 public:
     virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
 };
+//
+//class reg_callback_command : public base_command
+//{
+//public:
+//    virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+//};
+//
+//class unreg_callback_command : public base_command
+//{
+//public:
+//    virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+//};
 
-
-#endif	/* USERCOMMAND_H */
+#endif	/* UserCommand_H */
 

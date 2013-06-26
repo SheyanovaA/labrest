@@ -1,6 +1,7 @@
+#include <Ice/Identity.ice>
+
 module LabrestAPI 
 {
-
 	struct User 
         {
 		string name;
@@ -36,6 +37,14 @@ module LabrestAPI
                 int parentId;
 		int typeId;
 	};
+
+        struct Event
+        {
+                int id;
+                int TypeEvent;
+                int resourceId;
+                
+        };
 
         interface ResourceManager;
 	interface UserManager;
@@ -139,13 +148,16 @@ module LabrestAPI
                         throws AccessDenied;
 	};
 
-        interface CallbackManager {
-                bool registerCallback(Callback * cb);
-                bool unregisterCallback(Callback * cb);
+        interface CallbackManager 
+        {
+                bool registerCallback(Ice::Identity ident);
+
+                bool unregisterCallback(Ice::Identity ident);
         };
 
-        interface Callback {
-                void doCallback();
+        interface Callback 
+        {
+                void doCallback(Event ev);
         };
 	
 };

@@ -1,6 +1,3 @@
-#include <iostream>
-#include <Ice/Ice.h>
-
 #include "SessionI.h"
 
 LabrestAPI::SessionI::SessionI(::std::string sessionId, ::std::string username) : Session() 
@@ -12,6 +9,8 @@ LabrestAPI::SessionI::SessionI(::std::string sessionId, ::std::string username) 
     this->hasRsMgrPrx = false;
 
     this->hasUsMgrPrx = false;
+    
+    this->hasCbMgrPrx = false;
 }
 
 LabrestAPI::SessionI::~SessionI()
@@ -62,7 +61,18 @@ LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 }
 
 ::LabrestAPI::CallbackManagerPrx
- LabrestAPI::SessionI::getCallbackManager(const Ice::Current&)
+LabrestAPI::SessionI::getCallbackManager(const Ice::Current& current)
 {
-    return NULL;
+    ::std::cout<<"SessionI::getCallbackManager() called"<<::std::endl;
+
+    if(!hasCbMgrPrx) 
+    {
+        Ice::ObjectPtr object = new ::LabrestAPI::CallbackManagerI(current_user);
+        
+        cbMgrPrx = ::LabrestAPI::CallbackManagerPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId + "-CallBackManager")));
+
+        hasCbMgrPrx = true;
+    }
+
+    return cbMgrPrx;
 }

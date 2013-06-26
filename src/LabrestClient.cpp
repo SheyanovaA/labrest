@@ -5,6 +5,7 @@
 #include "LabrestAPI.h"
 #include "EntryI.h"
 #include "UserCommand.h"
+#include "CallbackThreadCl.h"
 
 
 class LabrestClientApp : public Ice::Application 
@@ -28,16 +29,29 @@ LabrestClientApp::run(int argc, char* argv[])
 {
     int status = 0;
 
-        Ice::ObjectPrx base = communicator()->stringToProxy("SimpleEntry:default -p 10000");
+        Ice::ObjectPrx base = communicator()->propertyToProxy("LabrestClient.Proxy");
 
         ::LabrestAPI::EntryPrx Entry = ::LabrestAPI::EntryPrx::checkedCast(base);
-
 
         if (!Entry)
             throw "Invalid proxy";
 
-        ::LabrestAPI::SessionPrx Session; 
-
+        ::LabrestAPI::SessionPrx Session;
+                
+        Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("");
+   
+        Ice::Identity ident;
+   
+        ident.name = IceUtil::generateUUID();
+   
+        ident.category = "";
+   
+        LabrestAPI::CallbackPtr cb = new LabrestAPI::CallbackI;
+   
+        adapter->add(cb, ident);
+    
+        adapter->activate();
+   
         try
         {
             ::std::string name, auth;
@@ -76,13 +90,19 @@ LabrestClientApp::run(int argc, char* argv[])
 	    }
               
 	    Session = Entry->login(name, auth);
-              
+            
         }
         catch(LabrestAPI::LoginException & ex)
         {
             ::std::cerr << "Login error" << ::std::endl;
            return 1;
         }
+        
+        Session->getCallbackManager()->ice_getConnection()->setAdapter(adapter);
+        
+        LabrestAPI::CallbackThreadCl cb_thread(communicator());
+        
+        cb_thread.start();
         
         ::std::string full_command;
 
@@ -105,6 +125,7 @@ LabrestClientApp::run(int argc, char* argv[])
         commands["lock_history"] = new lock_history_command();
         commands["lock_res"] = new lock_resource_command();
         commands["unlock_res"] = new unlock_resource_command();
+
         
         while (true) 
 	{
@@ -137,7 +158,10 @@ LabrestClientApp::run(int argc, char* argv[])
                     vector_command.push_back(t);
                 }
             }
-                      
+            
+//            if ((vector_command[0]=="reg")|| (vector_command[0] == "unreg")) 
+//            vector_command.push_back(ident.name);   
+               
             base_command * cmd = commands[vector_command[0]];
             if(cmd != NULL) 
             {
@@ -171,8 +195,12 @@ LabrestClientApp::run(int argc, char* argv[])
                 }
             }
             else
-            {
-                commands["help"]->run(vector_command, Session);
+            {         
+                if (vector_command[0]=="reg") Session->getCallbackManager()->registerCallback(ident);
+                else 
+                    if (vector_command[0]=="unreg") Session->getCallbackManager()->unregisterCallback(ident);
+                    else
+                        commands["help"]->run(vector_command, Session);
             }
 	}
         for (::std::map<std::string, base_command*>::iterator it = commands.begin(); it!=commands.end(); ++it)

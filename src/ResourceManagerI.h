@@ -1,10 +1,11 @@
-#ifndef __ResourceManagerI_H__
-#define __ResourceManagerI_H__
+#ifndef ResourceManagerI_H
+#define ResourceManagerI_H
 
 #include <string.h>
 
 #include "LabrestAPI.h"
 #include "LabrestDB.h"
+#include "EventsQueue.h"
 
 namespace LabrestAPI
 {
@@ -72,6 +73,6 @@ public:
 
 };
 
-#endif /* __ResourceManagerI_H__ */
+#endif /* ResourceManagerI_H */
 
 

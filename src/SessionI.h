@@ -1,9 +1,13 @@
-#ifndef __SessionI_H__
-#define __SessionI_H__
+#ifndef SessionI_H
+#define SessionI_H
+
+#include <iostream>
+#include <Ice/Ice.h>
 
 #include "LabrestAPI.h"
 #include "UserManagerI.h"
 #include "ResourceManagerI.h"
+#include "CallbackManagerI.h"
 
 namespace LabrestAPI
 {
@@ -37,8 +41,13 @@ private:
     ::LabrestAPI::UserManagerPrx usMgrPrx;
 
     bool hasUsMgrPrx;
+    
+    ::LabrestAPI::CallbackManagerPrx cbMgrPrx;
+
+    bool hasCbMgrPrx;
+    
 };
 
 };
 
-#endif /* __SessionI_H__ */
+#endif /* SessionI_H */

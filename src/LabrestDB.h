@@ -1,5 +1,5 @@
-#ifndef __LabrestDB_H__
-#define __LabrestDB_H__
+#ifndef LabrestDB_H
+#define LabrestDB_H
 
 #include <iostream>
 #include <sqlite3.h>
@@ -94,5 +94,5 @@ public:
 extern LabrestAPI::LabrestDB * dbPtr;
 
 
-#endif /* __LabrestDB_H__ */
+#endif /* LabrestDB_H */
 

@@ -1,6 +1,11 @@
-#ifndef __ENTRYI_H__
-#define __ENTRYI_H__
+#ifndef EntryI_H
+#define EntryI_H
 
+#include <iostream>
+#include <string>
+#include <Ice/Ice.h>
+
+#include "SessionI.h"
 #include "LabrestAPI.h"
 
 namespace LabrestAPI 
@@ -20,4 +25,4 @@ private:
 };
 
 };
-#endif /* __ENTRYI_H__ */
+#endif /* EntryI_H */

@@ -1,5 +1,5 @@
-#ifndef __UserManagerI_H__
-#define __UserManagerI_H__
+#ifndef UserManagerI_H
+#define UserManagerI_H
 
 #include "LabrestAPI.h"
 #include "LabrestDB.h"
@@ -36,4 +36,4 @@ public:
 
 };
 
-#endif /* __UserManagerI_H__ */
+#endif /* UserManagerI_H */

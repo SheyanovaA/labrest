@@ -1,10 +1,5 @@
-#include <iostream>
-#include <string>
-#include <Ice/Ice.h>
-
-#include "LabrestAPI.h"
 #include "EntryI.h"
-#include "SessionI.h"
+
 
 ::LabrestAPI::EntryI::EntryI()
 {
