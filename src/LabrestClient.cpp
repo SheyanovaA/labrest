@@ -98,7 +98,7 @@ LabrestClientApp::run(int argc, char* argv[])
            return 1;
         }
         
-        Session->getCallbackManager()->ice_getConnection()->setAdapter(adapter);
+        Session->ice_getConnection()->setAdapter(adapter);
         
         LabrestAPI::CallbackThreadCl cb_thread(communicator());
         

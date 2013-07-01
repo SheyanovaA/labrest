@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <sqlite3.h>
-#include <LabrestAPI.h>
+
+#include "LabrestAPI.h"
+#include "EventsQueue.h"
 
 namespace LabrestAPI 
 {

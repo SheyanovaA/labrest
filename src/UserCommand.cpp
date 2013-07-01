@@ -105,7 +105,9 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
             "14. all_restypes\n"
             "15. lock_history\n"
             "16. lock_res <resource id> [<duration>]\n"
-            "17. unlock_res <resource id>\n";
+            "17. unlock_res <resource id>\n"
+            "18. reg"
+            "19. unreg";
     return true;
 }
 

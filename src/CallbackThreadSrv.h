@@ -11,16 +11,9 @@
 
 namespace LabrestAPI
 {
-
-struct CB
+ 
+class CallbackThreadSrv : public IceUtil::Thread 
 {
-    CallbackPrx callback;
-    
-    ::std::string username;
-};
-    
-class CallbackThreadSrv : public IceUtil::Thread {
-
 public:
 
     CallbackThreadSrv();
@@ -37,7 +30,6 @@ private:
     
     IceUtil::Mutex lock;
     
-//    std::set<CB> callbacks;
     std::set<CallbackPrx> callbacks;
 };
 

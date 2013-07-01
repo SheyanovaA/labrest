@@ -206,6 +206,8 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
     ::std::cout << "LabrestDB::addResourse()  called" << ::std::endl;
     
     bool status, stat2;
+    
+    int id;
 
     sqlite3_stmt *ppStmt;
     
@@ -242,6 +244,23 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
             status = false;
         }
         sqlite3_finalize(ppStmt);
+        
+        if (status)
+        {
+             sqlite3_prepare(db,"select max(id) from resource;",-1,&ppStmt,0);
+
+        if (sqlite3_step(ppStmt) == SQLITE_ROW)
+        {       
+            id = sqlite3_column_int(ppStmt,0);
+            
+            status = true;
+        }
+        else
+        {
+            status = false;
+        }
+        sqlite3_finalize(ppStmt);
+        }
       
         sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
@@ -253,7 +272,7 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
         
         iv.ice_throw();
     }
-    return status;
+    return id;
 }
 
 bool LabrestAPI::LabrestDB::deleteResource(int id)
@@ -640,6 +659,15 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
                 sqlite3_finalize(ppStmt);          
         }
         
+        CB_Event ev;
+    
+        ev.TypeEvent = CB_LOCK;
+        ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+        ev.resourceId = resourceId;
+        ev.username = "";
+    
+        EvQueuePtr->push_back(ev);
+        
         sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }
     else
@@ -732,6 +760,15 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string usernam
                 sqlite3_finalize(ppStmt);  
             };
         }
+        CB_Event ev;
+    
+        ev.TypeEvent = CB_UNLOCK;
+        ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+        ev.resourceId = resourceId;
+        ev.username = "";
+    
+        EvQueuePtr->push_back(ev);
+        
         sqlite3_exec(db, "COMMIT", 0, 0, 0);
     }                   
     else

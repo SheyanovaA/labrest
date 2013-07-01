@@ -134,16 +134,7 @@ LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
     ::std::cout << "ResourceManagerI::lockResource() called" << ::std::endl;
     
     status = dbPtr->lockResourse(resourceId, User.name, duration);
-    
-    CB_Event ev;
-    
-    ev.TypeEvent = CB_LOCK;
-    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
-    ev.resourceId = resourceId;
-    ev.username = "";
-    
-    EvQueuePtr->push_back(ev);
-    
+     
     return status;
 }
 
@@ -154,15 +145,6 @@ LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
     ::std::cout << "ResourceManagerI::unlockResource() called" << ::std::endl;
     
     dbPtr->unlockResource(resourceId, User.name);
-    
-    CB_Event ev;
-    
-    ev.TypeEvent = CB_UNLOCK;
-    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
-    ev.resourceId = resourceId;
-    ev.username = "";
-    
-    EvQueuePtr->push_back(ev);
 }
 
 ::LabrestAPI::ResourceTypeIdList
