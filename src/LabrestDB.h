@@ -9,7 +9,8 @@
 
 namespace LabrestAPI 
 {
-
+    
+    
 class LabrestDB 
 {
 
@@ -89,6 +90,8 @@ public:
         ::LabrestAPI::LockStatus getLockStatus(int Id);
         
         ::LabrestAPI::History getLockHistry();
+        
+        void TimeOutCallbacks();
 };
 
 };

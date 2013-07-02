@@ -104,6 +104,8 @@ LabrestClientApp::run(int argc, char* argv[])
         
         cb_thread.start();
         
+        ::LabrestAPI::CallbackManagerPrx CallBackMgr = Session->getCallbackManager();
+        
         ::std::string full_command;
 
         ::std::map<std::string, base_command *> commands;
@@ -196,9 +198,9 @@ LabrestClientApp::run(int argc, char* argv[])
             }
             else
             {         
-                if (vector_command[0]=="reg") Session->getCallbackManager()->registerCallback(ident);
+                if (vector_command[0]=="reg") CallBackMgr->registerCallback(ident);
                 else 
-                    if (vector_command[0]=="unreg") Session->getCallbackManager()->unregisterCallback(ident);
+                    if (vector_command[0]=="unreg") CallBackMgr->unregisterCallback(ident);
                     else
                         commands["help"]->run(vector_command, Session);
             }

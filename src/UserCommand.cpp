@@ -345,7 +345,14 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " || " << temp.resLockStatus.username << " | " << temp.resLockStatus.starTime << " || " << temp.typeId << " | " << temp.parentId << ::std::endl;
+        time_t start = temp.resLockStatus.startTime;
+        
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description
+                << " || " << temp.resLockStatus.username << " | " ;
+        if (temp.resLockStatus.startTime == -1) 
+            ::std::cout << "" ; 
+        else ::std::cout << ctime(&start) ;
+        ::std::cout   << " || " << temp.typeId << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
@@ -485,8 +492,18 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
         ::LabrestAPI::LockStatus temp;
            
         temp = *it;
+        
+        time_t start, end;
+        
+        start = temp.startTime;
+        
+        end = temp.endTime;
             
-        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId << " | " << temp.starTime << " | " << temp.duration << " | " << temp.endTime << " | " << temp.unlockComment << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.username << " | " << temp.resourceId 
+                << " | " << ctime(&start) << " | " << temp.duration << " | " ;
+        if (temp.endTime ==-1) ::std::cout << "";
+        else ::std::cout << ctime(&end) ;
+        ::std::cout<< " | " << temp.unlockComment << ::std::endl;
     };
     
     return true;

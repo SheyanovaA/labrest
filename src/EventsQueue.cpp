@@ -3,9 +3,9 @@
 LabrestAPI::CB_Event
 LabrestAPI::EventsQueue::back()
 {
-    while (!this->lock.tryLock()) {::std::cout << "back 1" << ::std::endl;sleep(1);};
+    while (!this->lock.tryLock()) {};
     
-    ::std::cout << "EventsQueue::back() called" << ::std::endl;
+//    ::std::cout << "EventsQueue::back() called" << ::std::endl;
     
     LabrestAPI::CB_Event event = this->ev_queue.back();
     
@@ -17,9 +17,9 @@ LabrestAPI::EventsQueue::back()
 bool
 LabrestAPI::EventsQueue::empty()
 {
-    while (!this->lock.tryLock()) {::std::cout << "empty 1" << ::std::endl;sleep(1);};
+    while (!this->lock.tryLock()) {};
     
-    ::std::cout << "EventsQueue::empty() called" << ::std::endl;
+//    ::std::cout << "EventsQueue::empty() called" << ::std::endl;
     
     bool emp = this->ev_queue.empty();
     
@@ -33,7 +33,7 @@ LabrestAPI::EventsQueue::front()
 {
     while (!this->lock.tryLock()) {};
     
-    ::std::cout << "EventsQueue::front() called" << ::std::endl;
+//    ::std::cout << "EventsQueue::front() called" << ::std::endl;
     
     LabrestAPI::CB_Event event = this->ev_queue.front();
     
@@ -47,7 +47,7 @@ LabrestAPI::EventsQueue::size()
 {
     while (!this->lock.tryLock()) {};
     
-    ::std::cout << "EventsQueue::size() called" << ::std::endl;
+//    ::std::cout << "EventsQueue::size() called" << ::std::endl;
     
     int size = this->ev_queue.size();
     

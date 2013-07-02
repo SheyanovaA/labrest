@@ -22,9 +22,9 @@ module LabrestAPI
 		int id;
 		string username;
                 int resourceId;
-		string starTime;
+		int startTime;
                 int duration; 
-		string endTime;
+		int endTime;
                 string unlockComment;
 	};
 

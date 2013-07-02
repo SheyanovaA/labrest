@@ -20,8 +20,6 @@ public:
 
     virtual ~SessionI();
 
-    virtual void test(const Ice::Current&);
-
     virtual ::LabrestAPI::ResourceManagerPrx getResourceManager(const Ice::Current&);
 
     virtual ::LabrestAPI::UserManagerPrx getUserManager(const Ice::Current&);

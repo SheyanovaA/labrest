@@ -22,8 +22,6 @@ public:
     
 private:
     ::LabrestAPI::User User;
-    
-    CallbackThreadSrv callbackThreadSrv;
 };
 
 };

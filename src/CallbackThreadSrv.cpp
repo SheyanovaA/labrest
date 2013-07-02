@@ -19,7 +19,7 @@ LabrestAPI::CallbackThreadSrv::addCallback(CallbackPrx & callback, std::string u
 {
     ::std::cout << "CallbackThreadSrv::addCallback() called" << ::std::endl;
     this->lock.lock(); 
-    this->callbacks.insert(callback); 
+    this->callbacks[callback] = username; 
     this->lock.unlock();
 }
 
@@ -35,7 +35,7 @@ void
 LabrestAPI::CallbackThreadSrv::notifyAll() {
     this->lock.lock();
    
-    ::std::cout << "CallbackThreadSrv::notifyAll() called" << ::std::endl;
+//    ::std::cout << "CallbackThreadSrv::notifyAll() called" << ::std::endl;
     while (!EvQueuePtr->empty())
     {
         CB_Event temp_ev = EvQueuePtr->pop();
@@ -43,21 +43,17 @@ LabrestAPI::CallbackThreadSrv::notifyAll() {
         ev.TypeEvent = temp_ev.TypeEvent;
         ev.id =  temp_ev.id;
         ev.resourceId = temp_ev.resourceId;
-        for(std::set<CallbackPrx>::iterator it = this->callbacks.begin(); it != this->callbacks.end(); it++) 
+        for(std::map<CallbackPrx, std::string>::iterator it = this->callbacks.begin(); it != this->callbacks.end(); it++) 
         {
-//            for(std::set<CallbackPrx>::iterator it = this->callbacks.begin(); it != this->callbacks.end(); it++) {
             try
             {
-                   // it->callback->doCallback(ev);
-                    
-                   /**/
-                    
-                    (*it)->doCallback(ev);
+                if ((temp_ev.username == "") ||(temp_ev.username == (*it).second))
+                    (*it).first->doCallback(ev);
             }
             catch (const Ice::Exception& ex)
             {
-                    std::cerr << ex << std::endl;
-                    this->callbacks.erase(it);
+                std::cerr << ex << std::endl;
+                this->callbacks.erase(it);
             }
         }
     }

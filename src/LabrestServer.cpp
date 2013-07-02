@@ -6,9 +6,11 @@
 #include "SessionI.h"
 #include "EntryI.h"
 #include "EventsQueue.h"
+#include "MonitorThread.h"
 
 LabrestAPI::LabrestDB * dbPtr;
 LabrestAPI::EventsQueue * EvQueuePtr;
+LabrestAPI::CallbackThreadSrv * CbThreadPtr;
 
 class LabrestServerApp : public Ice::Application 
 {
@@ -52,6 +54,16 @@ LabrestServerApp::run(int argc, char* argv[])
     ::LabrestAPI::EventsQueue queue;
     
     EvQueuePtr = &queue;
+    
+    LabrestAPI::CallbackThreadSrv CbThread;
+    
+    CbThreadPtr = &CbThread;
+    
+    CbThreadPtr->start();
+    
+    ::LabrestAPI::MonitorThread monitor;
+    
+    monitor.start();
 
     communicator()->waitForShutdown();
 

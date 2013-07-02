@@ -4,6 +4,9 @@
 #include <IceUtil/Thread.h>
 #include <IceUtil/Time.h>
 
+#include "LabrestDB.h"
+
+
 namespace LabrestAPI
 {
 

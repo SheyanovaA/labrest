@@ -18,7 +18,7 @@ LabrestAPI::UserManagerI::addUser(const ::std::string& username,
     }
     bool status = true;
 
-    std::cout << "UserManagerI::addUser() called \n";
+//    std::cout << "UserManagerI::addUser() called \n";
 
     status = dbPtr->addUser(username,authdata,group);
 
@@ -31,7 +31,7 @@ LabrestAPI::UserManagerI::getAllUsers(const Ice::Current& current)
 
     ::LabrestAPI::UserList list;
 
-    ::std::cout << "UserManagerI::getAllUsers() called" << ::std::endl;
+//    ::std::cout << "UserManagerI::getAllUsers() called" << ::std::endl;
     
     list = dbPtr->getAllUsers();
     
@@ -44,7 +44,7 @@ LabrestAPI::UserManagerI::getUser(const ::std::string& username,
 {
     ::LabrestAPI::User user;
 
-    ::std::cout << "UserManagerI::getUser() called" << ::std::endl;
+//    ::std::cout << "UserManagerI::getUser() called" << ::std::endl;
     
     user = dbPtr->getUser(username);
     
@@ -64,7 +64,7 @@ LabrestAPI::UserManagerI::modifyUser(const ::std::string& username,
     }
     bool status = true;
 
-    std::cout << "UserManagerI::modifyUser() called \n";
+//    std::cout << "UserManagerI::modifyUser() called \n";
 
     status = dbPtr->modifyUser(username, authdata,group);
     
@@ -83,7 +83,7 @@ LabrestAPI::UserManagerI::deleteUser(const ::std::string& username,
     }
     bool status = true;
 
-    std::cout << "UserManagerI::deleteUser() called \n";
+//    std::cout << "UserManagerI::deleteUser() called \n";
 
     status = dbPtr->deleteUser(username);
 

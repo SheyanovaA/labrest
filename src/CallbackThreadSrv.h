@@ -11,7 +11,7 @@
 
 namespace LabrestAPI
 {
- 
+        
 class CallbackThreadSrv : public IceUtil::Thread 
 {
 public:
@@ -30,10 +30,12 @@ private:
     
     IceUtil::Mutex lock;
     
-    std::set<CallbackPrx> callbacks;
+    std::map<CallbackPrx, std::string> callbacks;
 };
 
 };
+
+extern LabrestAPI::CallbackThreadSrv * CbThreadPtr;
 
 #endif	/* CallbackThreadSrv_H */
 

@@ -10,7 +10,7 @@ LabrestAPI::CallbackManagerI::registerCallback(const ::Ice::Identity& ident,
    
     std::string username = User.name;
     
-    callbackThreadSrv.addCallback(client, username);
+    CbThreadPtr->addCallback(client, username);
     
     return true;
 }
@@ -23,8 +23,8 @@ LabrestAPI::CallbackManagerI::unregisterCallback(const ::Ice::Identity& ident,
     
     LabrestAPI::CallbackPrx client = LabrestAPI::CallbackPrx::uncheckedCast(current.con->createProxy(ident));  
     
-    callbackThreadSrv.removeCallback(client);
-        
+    CbThreadPtr->removeCallback(client);
+    
     return true;
 }
 
@@ -33,6 +33,4 @@ LabrestAPI::CallbackManagerI::CallbackManagerI(LabrestAPI::User user)
     ::std::cout << "CallbackManagerI::CallbackManagerI() called" << ::std::endl;
     
     User = user;
-    
-    callbackThreadSrv.start();
 }

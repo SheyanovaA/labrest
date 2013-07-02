@@ -15,20 +15,15 @@ LabrestAPI::SessionI::SessionI(::std::string sessionId, ::std::string username) 
 
 LabrestAPI::SessionI::~SessionI()
 {
-    ::std::cout<<"SessionI::~SessionI() called"<<::std::endl;
+//    ::std::cout<<"SessionI::~SessionI() called"<<::std::endl;
 }
 
-void
-LabrestAPI::SessionI::test(const ::Ice::Current&)
-{
-    ::std::cout<<"SessionI::test() called"<<::std::endl;
-}
 
 ::LabrestAPI::ResourceManagerPrx
 LabrestAPI::SessionI::getResourceManager(const Ice::Current& current)
 {
 
-    ::std::cout<<"SessionI::getResourceManager() called"<<::std::endl;
+//    ::std::cout<<"SessionI::getResourceManager() called"<<::std::endl;
 
     if(!hasRsMgrPrx) 
     {
@@ -46,7 +41,7 @@ LabrestAPI::SessionI::getResourceManager(const Ice::Current& current)
 LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 {
 
-    ::std::cout<<"SessionI::getUserManager() called"<<::std::endl;
+//    ::std::cout<<"SessionI::getUserManager() called"<<::std::endl;
 
     if(!hasUsMgrPrx) 
     {
@@ -63,7 +58,7 @@ LabrestAPI::SessionI::getUserManager(const Ice::Current& current)
 ::LabrestAPI::CallbackManagerPrx
 LabrestAPI::SessionI::getCallbackManager(const Ice::Current& current)
 {
-    ::std::cout<<"SessionI::getCallbackManager() called"<<::std::endl;
+//    ::std::cout<<"SessionI::getCallbackManager() called"<<::std::endl;
 
     if(!hasCbMgrPrx) 
     {
