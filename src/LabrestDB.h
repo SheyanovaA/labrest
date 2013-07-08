@@ -27,6 +27,8 @@ class LabrestDB
         bool ExistsResourceType(int resTypeId);
         
         bool ExistsResource(int resourceId);
+        
+        ::IceUtil::Mutex lock;
 
 public:
 

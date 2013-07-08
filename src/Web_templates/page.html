@@ -1,0 +1,44 @@
+$def with (ress, form)
+<html>
+ <head>
+  <title>Labrest</title>
+ </head>
+ <body>
+  <div>
+    <form name="loginbox" method="get">
+      $:form.render()
+      <input type="submit" value="login"/>
+    </form>
+  </div>
+ <u> All Resources: <u>
+<br>
+  <div>
+   <table>
+    $for res in ress:               	
+     <tr>
+	<td >  
+	$code:
+          c = []
+	  def layer(l):
+	      while l>0:
+		  c.append('|')
+		  l=l-1
+	      c.append('-- ')
+	      sep = '  '
+	      return sep.join(c)
+   
+	$layer(res['layer'])
+        $res['resource'].name</td>
+        <td >$res['resource'].description</td>
+	<td >$res['resource'].typeId</td>
+	<td >$res['resource'].parentId</td>
+	$if res['resource'].resLockStatus.startTime == -1:
+	 <td >[<a href="/lock/$res['resource'].id">_</a>]</td>
+	$else:
+	 <td >[<a href="/unlock/$res['resource'].id">X</a>]</td>	
+	 <td >by $res['resource'].resLockStatus.username</td>
+      </tr>
+   </table>
+  </div>
+ </body>
+</html>

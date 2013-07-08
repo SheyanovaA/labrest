@@ -17,7 +17,7 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
     
     ::std::string sessionId = "SimpleSession" + index++;
 
-//    ::std::cout<<"EntryI::login() called"<<::std::endl;
+    ::std::cout<<"EntryI::login() called"<<::std::endl;
 
     Ice::ObjectPtr object = new ::LabrestAPI::SessionI(sessionId, username);
 

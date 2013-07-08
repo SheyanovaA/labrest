@@ -15,7 +15,7 @@ OBJS=LabrestAPI.o \
      SessionI.o \
      EntryI.o \
      CallbackI.o \
-     CallbackMnagerI.o \
+     CallbackManagerI.o \
      CallbackThreadSrv.o \
      CallbackThreadCl.o \
      EventsQueue.o \

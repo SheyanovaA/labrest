@@ -1,1 +1,1 @@
-LabrestClient.Proxy=SimpleEntry:default -p 10000
+LabrestClient.Proxy=SimpleEntry:tcp -p 10000
