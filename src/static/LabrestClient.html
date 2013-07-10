@@ -1,0 +1,29 @@
+$def with (ress, form)
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Labrest</title>
+  <link rel="stylesheet" type="text/css" href="static/LabrestClient.css">
+ </head>
+ <body>
+ <div id="container">
+  <div id="rightcol">
+    <form name="loginbox" method="get">
+      $:form.render()
+      <input type="submit" value="login"/>
+    </form>
+  </div>
+
+  <div id="leftcol">
+    $c=-1
+    $for res in ress:               	
+        $if c<res['layer']:
+	    1
+	$elif c>res['layer']:
+	    2
+	$else:
+	    0
+  </div>
+</div>
+ </body>
+</html>

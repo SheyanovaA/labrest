@@ -10,10 +10,10 @@ $def with (ress, form)
   <div id="rightcol">
     <form name="loginbox" method="get" size=auto>
       <h4> Авторизация </h4><br>
-      <input type="text" value="Логин" id=name />
-      <input type="password" value="Пароль" id=auth />
-      <input type="submit" value="Войти"/><br>
-<p font-size="2" align="center">Lля резервирования ресурсов необходима авторизация.</p>
+      <input type="text" value="Логин" id=name size="22" />
+      <input type="password" value="Пароль" id=auth size ="22" />
+      <p align="right" ><input type="submit" value="Вход"  size = "15" /></p>
+<p font-size="2" align="center">Для резервирования ресурсов необходима авторизация.</p>
     </form>
   </div>
     $code 
@@ -46,9 +46,9 @@ $def with (ress, form)
 	    <li><span><div>
 		$res['resource'].name $res['resource'].typeId $res['resource'].description
 		$if res['resource'].resLockStatus.startTime == -1:
-	 		[<a href="/lock/$res['resource'].id">_</a>]
+	 		[_]
 		$else:
-			[<a href="/unlock/$res['resource'].id">X</a>]	
+			[X]	
 	 		by $res['resource'].resLockStatus.username
 	    </div></span>
 

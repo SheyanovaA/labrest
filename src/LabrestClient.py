@@ -19,6 +19,7 @@ myform = form.Form(
     form.Textbox('authdata')
 )
 
+
 ic = Ice.initialize(sys.argv)
 
 session_icl_map = {}
@@ -41,7 +42,7 @@ def ressToTree(ress):
 	            break
     return lres
 		
-def getIceSession(self,username,authdate):
+def getIceSession(self):
     print 'getIceSession() called'
     icl = session_icl_map.get(self.session_id, None)
     if not icl:
@@ -50,30 +51,32 @@ def getIceSession(self,username,authdate):
     	entry = LabrestAPI.EntryPrx.checkedCast(base)
 	if not entry:
 	    raise RuntimeError('Invalid proxy')
-	icl = entry.login(username,authdate)
+	icl = entry.login(self.username,self.authdata)
 	session_icl_map[self.session_id] = icl
     return icl	
 
+username = 'guest'
+authdata = 'guest'
 web.session.Session.getIceSession = getIceSession
+web.session.Session.username = username
+web.session.Session.authdata = authdata
 web.session.Session.__icl = None
 
 session = web.session.Session(app,  web.session.DiskStore('sessions'))
 
 class index:
     def GET(self):
-	ress = ressToTree(session.getIceSession('us','1').getResourceManager().getAllResources())
-	return render.page(ress,myform)
+	ress = ressToTree(session.getIceSession().getResourceManager().getAllResources())
+	return render.guest_page(ress,myform)
 
 class lock_res:
     def GET(self,res_id):
-#	return res_id
-	session.getIceSession('us','1').getResourceManager().lockResource(res_id,-1)
+	session.getIceSession().getResourceManager().lockResource(res_id,-1)
 	raise web.seeother('/') 
 
 class unlock_res:
     def GET(self,res_id):
-#	return res_id
-	session.getIceSession('us','1').getResourceManager().unlockResource(res_id)
+	session.getIceSession().getResourceManager().unlockResource(res_id)
 	raise web.seeother('/')
 
 if __name__ == '__main__':
