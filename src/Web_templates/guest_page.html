@@ -4,15 +4,45 @@ $def with (ress, form)
  <head>
   <title>Labrest</title>
   <link rel="stylesheet" type="text/css" href="static/LabrestClient.css">
+  <script type="text/javascript" src="/static/jquery.js"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+                                $$("input#login_button").click(function() {
+                                        var user_name = $$("input#username").val();
+					var user_auth = $$("input#authdata").val();
+                                        //jQuery.ajax({
+                                        //        type: "POST",
+                                        //        data: {username : user_name, authdata :user_auth},
+                                        //        success: function(data) {
+                                        //        jQuery('#foo').html(data);
+                                        //        },
+                                        //        });
+
+					
+                                        return false;
+                                });
+                        });
+  </script>
+<script type="text/javascript">
+  var i = 1;
+  var timer = setInterval(jQuery.getJSON('/tree', {},
+	function(json) {
+		jQuery('#foo').html(json['id']);
+	}), 
+	5000)
+	
+</script>
  </head>
  <body>
+<span id='foo'> Guest</span>
  <div id="container">
   <div id="rightcol">
-    <form name="loginbox" method="get" size=auto>
+    <form name="loginbox" size=auto>
       <h4> Авторизация </h4><br>
-      <input type="text" value="Логин" id=name size="22" onfocus="if(this.value=='Логин') this.value='';" />
-      <input type="password" value="Пароль" id=auth size ="22" onfocus="if(this.value=='Пароль') this.value='';"/>
-      <p align="right" ><input type="submit" value="Вход"  size = "15" /></p>
+      $:form.username.render()
+      $:form.authdata.render()
+      <p align="right" ><input id="login_button" type="submit" value="Вход"  size = "15" /></p>
+
 <p font-size="2" align="center">Для резервирования ресурсов необходима авторизация.</p>
     </form>
   </div>
