@@ -1,4 +1,4 @@
-$def with (ress, form)
+$def with (form)
 <!DOCTYPE HTML>
 <html>
  <head>
@@ -6,38 +6,63 @@ $def with (ress, form)
   <link rel="stylesheet" type="text/css" href="static/LabrestClient.css">
   <script type="text/javascript" src="/static/jquery.js"></script>
   <script type="text/javascript">
+// функция постороения дерева ресурсов
+   function tree() {jQuery.getJSON('/tree',
+			      {},
+			      function(json) {
+					jQuery('#leftcol').html("");
+					jQuery('#leftcol').append("<h4>Доступные ресурсы:</h4>"); 
+					jQuery('#leftcol').append("<ul id=-1>");
+					for (i in json.resources) {
+						var res = json.resources[i]
+						jQuery("ul#"+res.parentId).append("<li><ul id="+res.id+"><span><div>" + res.name + " " + res.typeName + " " + res.description);
+						if (res.logined_user=="guest") {
+							if (res.startTime ==-1) {
+								jQuery("ul#"+res.id+" span div").append(" [_]");
+							} else {
+								jQuery("ul#"+res.id+" span div").append(" [x] by "+ res.username); // добавить дату и время блокировки и 
+							}
+						} else {
+							if (res.startTime ==-1) {
+								jQuery("ul#"+res.id+" span div").append("<a href=/lock/"+res.id+"> [_] </a>");
+							} else {
+								jQuery("ul#"+res.id+" span div").append("<a href=/unlock/"+res.id+"> [x] </a> by "+ res.username); // добавить дату и время блокировки и 
+							}	
+						}
+					};
+					json = 0;
+				});
+		}
+    var timer = setInterval(tree,30000);
+
     jQuery(document).ready(function() {
+				tree();
                                 $$("input#login_button").click(function() {
                                         var user_name = $$("input#username").val();
 					var user_auth = $$("input#authdata").val();
-                                        //jQuery.ajax({
-                                        //        type: "POST",
-                                        //        data: {username : user_name, authdata :user_auth},
-                                        //        success: function(data) {
-                                        //        jQuery('#foo').html(data);
-                                        //        },
-                                        //        });
+                                        jQuery.ajax({
+						url: "/login",
+                                                type: "POST",
+						data: {username : user_name, authdata :user_auth},
+						dataType: "",
+                                                success: function(data) {
+                                                tree();
+						jQuery("form#loginbox").hide();
+						jQuery("form#Userbox").show();
+						jQuery('#Username').html(data.name);
+                                                }
+                                                });
 
 					
                                         return false;
                                 });
                         });
   </script>
-<script type="text/javascript">
-  var i = 1;
-  var timer = setInterval(jQuery.getJSON('/tree', {},
-	function(json) {
-		jQuery('#foo').html(json['id']);
-	}), 
-	5000)
-	
-</script>
  </head>
  <body>
-<span id='foo'> Guest</span>
  <div id="container">
   <div id="rightcol">
-    <form name="loginbox" size=auto>
+    <form name="loginbox" id="loginbox"  method="POST" size=auto>
       <h4> Авторизация </h4><br>
       $:form.username.render()
       $:form.authdata.render()
@@ -45,48 +70,12 @@ $def with (ress, form)
 
 <p font-size="2" align="center">Для резервирования ресурсов необходима авторизация.</p>
     </form>
+    <form name="Userbox" id="Userbox" size=auto style="display: none;">
+	<div id = "Username"> </div>
+	<p align="right" ><input id="exit_button" type="submit" value="Выход"  size = "15" /></p>
+    </form>
   </div>
-    $code 
-	c=-1
-	count=0
   <div id="leftcol">
-
-<h4>Доступные ресурсы:</h4>
-	$for res in ress:               	
-            $if c<res['layer']: 
-		$code
-		    count = count+1
-
-		<ul>
-	
-	    $elif c>res['layer']:
-		$code
-		    count = count-1    	
-		</ul>
-
-		$if count>0: 
-		    </li>
-
-	    $else:
-		</li>
-	
-	    $code 
-		c=res['layer']
- 
-	    <li><span><div>
-		$res['resource'].name $res['resource'].typeId $res['resource'].description
-		$if res['resource'].resLockStatus.startTime == -1:
-	 		[_]
-		$else:
-			[X]	
-	 		by $res['resource'].resLockStatus.username
-	    </div></span>
-
-	$while count >0:
-		$code
-		    count = count-1
-		</li>
-		</ul>
   </div>
 </div>
  </body>

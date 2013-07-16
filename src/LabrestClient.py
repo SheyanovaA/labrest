@@ -2,10 +2,8 @@ import web
 import json
 import sys, traceback, Ice
 import LabrestAPI
-import re
 
 from web import form
-
 
 urls = (
 	'/', 'index',
@@ -25,93 +23,117 @@ myform = form.Form(
 )
 
 
-ic = Ice.initialize(sys.argv)
 
 session_icl_map = {}
-
-def ressToTree(ress):
-    lres = []
-    l = len(ress)
-    stk = []
-    stk.append(-1)
-    while l>len(lres):
-	p_id = stk.pop()
-	for res in ress:
-	    if res.parentId == p_id:
-	        r = {'layer':len(stk), 'resource':res}
-		if r not in lres:
-		    stk.append(p_id)
-		    stk.append(res.id)
-	            del res
-		    lres.append(r)
-	            break
-    return lres
+session_user_map = {}
+User = {'username':'guest', 'authdata':'guest'}
 		
-def getIceSession(self):
-    print 'getIceSession() called'
-    ice_proxy_id = self.session_id + self.username
-    icl = session_icl_map.get(ice_proxy_id, None)
-    if not icl:
+def getIceSession(self,user):
+    uslogin = self.getUser()
+    icl = session_icl_map.get(self.session_id, None)
+    if not icl or user != uslogin:
+	print uslogin
+	print user
         print 'create new Ice session'
+	ic = Ice.initialize(sys.argv)
 	base  = ic.stringToProxy("SimpleEntry:tcp -p 10000")
     	entry = LabrestAPI.EntryPrx.checkedCast(base)
 	if not entry:
 	    raise RuntimeError('Invalid proxy')
-	icl = entry.login(self.username,self.authdata)
-	session_icl_map[ice_proxy_id] = icl
+	icl = entry.login(uslogin['username'],uslogin['authdata'])
+	session_icl_map[self.session_id] = icl
     return icl	
 
+def setUser(self,new_user):
+    session_user_map[self.session_id]=new_user;
+    return None
 
+def getUser(self):
+    user = session_user_map.get(self.session_id, None)
+    return user
 
 web.session.Session.getIceSession = getIceSession
-web.session.Session.username = 'guest'
-web.session.Session.authdata = 'guest'
+web.session.Session.setUser = setUser
+web.session.Session.getUser = getUser
 web.session.Session.__icl = None
 
 session = web.session.Session(app,  web.session.DiskStore('sessions'))
 
 class index:
     def GET(self):
-	ress = ressToTree(session.getIceSession().getResourceManager().getAllResources())
-	return render.guest_page(ress,myform)
+	session.setUser(User)
+	return render.guest_page(myform)
 
 class login:
     def GET(self):
+	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['username'])
+	s = json.dumps({"user":s.__dict__})
+	user_ = {}
+	user_['name'] = s.name
+	user_['auth'] = s.auth 
+	user_['group'] = s.group
+	print json.dumps(user_)
+	return json.dumps(user_)
+
+    def POST(self):
 	form = myform()
         form.validates()
-	print form.value['username']
-	session.username = form.value['username']
-	session.authdata = form.value['authdata']
-	print session.username
-	s = session.getIceSession().getUserManager().getUser('admin')
-	w = json.dumps(s.__dict__)
-	print w
-	return w
+	user = {'username':form.value['username'], 'authdata':form.value['authdata']}
+	session.getIceSession(user)
+	session.setUser(user)
+	return None
 
 class tree:
+
+    def ress2Tree(self,ress):
+        lres = []
+        l = len(ress)
+        stk = []
+        stk.append(-1)
+        while l>len(lres):
+	    p_id = stk.pop()
+	    for res in ress:
+	        if res.parentId == p_id:
+	            r = {'layer':len(stk), 'resource':res}
+		    if r not in lres:
+		        stk.append(p_id)
+		        stk.append(res.id)
+	                del res
+		        lres.append(r)
+	                break
+        return lres    
+
     def res2dict(self, res):
-	result = {};
-	result = res.__dict__
-	result['resLockStatus'] = res.resLockStatus.__dict__
+	result = {}
+	result['logined_user'] = session.getUser()['username'];
+	result['id'] = res['resource'].id
+	result['name'] = res['resource'].name
+	result['description'] = res['resource'].description
+	result['parentId'] = res['resource'].parentId
+	result['typeName'] = session.getIceSession(session.getUser()).getResourceManager().getResourceType(res['resource'].typeId).name
+	result['startTime'] = res['resource'].resLockStatus.startTime
+	result['duration'] = res['resource'].resLockStatus.duration
+	result['username'] = res['resource'].resLockStatus.username
 	return result
 
     def GET(self):
-	ress = session.getIceSession().getResourceManager().getAllResources()
+	ress = self.ress2Tree(session.getIceSession(session.getUser()).getResourceManager().getAllResources())
 	res_list = []
 	for res in ress:
             res_list.append(self.res2dict(res))
-	w = json.dumps(res_list)
+	w = {"resources":res_list}
+	w = json.dumps(w)
 	return w
 
 class lock_res:
     def GET(self,res_id):
-	session.getIceSession().getResourceManager().lockResource(res_id,-1)
-	raise web.seeother('/') 
+	session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,-1)
+	raise web.seeother('/tree') 
 
 class unlock_res:
     def GET(self,res_id):
-	session.getIceSession().getResourceManager().unlockResource(res_id)
-	raise web.seeother('/')
+	session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)
+	raise web.seeother('/tree')
 
 if __name__ == '__main__':
     app.run()
