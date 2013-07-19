@@ -1,9 +1,10 @@
 #include "EntryI.h"
 
 
-::LabrestAPI::EntryI::EntryI()
+::LabrestAPI::EntryI::EntryI(const ReapTaskPtr& reapTask) :
+    _reaper(reapTask), 
+    index(0)
 {
-    index = 0;
 }
 
 ::LabrestAPI::SessionPrx
@@ -19,9 +20,11 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
 
     ::std::cout<<"EntryI::login() called"<<::std::endl;
 
-    Ice::ObjectPtr object = new ::LabrestAPI::SessionI(sessionId, username);
+    ::LabrestAPI::SessionIPtr object = new ::LabrestAPI::SessionI(sessionId, username);
 
     ::LabrestAPI::SessionPrx SessionProxy = ::LabrestAPI::SessionPrx::checkedCast(current.adapter->add(object, current.adapter->getCommunicator()->stringToIdentity(sessionId)));
 
+    _reaper->add(SessionProxy, object);
+    
     return SessionProxy;
 }

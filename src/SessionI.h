@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <Ice/Ice.h>
+#include <IceUtil/Mutex.h>
 
 #include "LabrestAPI.h"
 #include "UserManagerI.h"
@@ -25,6 +26,12 @@ public:
     virtual ::LabrestAPI::UserManagerPrx getUserManager(const Ice::Current&);
 
     virtual ::LabrestAPI::CallbackManagerPrx getCallbackManager(const Ice::Current&);
+    
+    virtual void Refresh(const Ice::Current&);
+
+    virtual void destroy(const Ice::Current&);
+    
+    IceUtil::Time timestamp() const;
 
 private:
 
@@ -44,7 +51,14 @@ private:
 
     bool hasCbMgrPrx;
     
+    IceUtil::Mutex lock; 
+
+    IceUtil::Time _timestamp; // The last time the session was refreshed.
+   
+    bool _destroy;
 };
+
+typedef IceUtil::Handle<SessionI> SessionIPtr;
 
 };
 

@@ -24,10 +24,10 @@ public:
     virtual ::LabrestAPI::Resource getResource(::Ice::Int,
                                                   const Ice::Current&);
 
-    virtual ::Ice::Int addResource(const ::std::string&,
+     virtual ::Ice::Int addResource(const ::std::string&,
                                    const ::std::string&,
                                    ::Ice::Int,
-                                   ::Ice::Int,
+                                   const ::LabrestAPI::ResourceType&,
                                    const Ice::Current&);
 
     virtual bool deleteResource(::Ice::Int,
@@ -37,7 +37,7 @@ public:
                                 const ::std::string&,
                                 const ::std::string&,
                                 ::Ice::Int,
-                                ::Ice::Int,
+                                const ::LabrestAPI::ResourceType&,
                                 const Ice::Current&);
 
     virtual bool lockResource(::Ice::Int,

@@ -14,6 +14,7 @@ OBJS=LabrestAPI.o \
      UserManagerI.o \
      SessionI.o \
      EntryI.o \
+     ReapTask.o \
      CallbackI.o \
      CallbackManagerI.o \
      CallbackThreadSrv.o \
@@ -33,10 +34,11 @@ LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 %.o: %.cpp
 	$(CXX) -c -I. -I$(ICE_INC) $<
 
-LabrestClient.cpp: LabrestAPI.h UserCommand.h CallbackI.h CallbackThreadCl.h
-LabrestServer.cpp: LabrestAPI.h CallbackManagerI.h CallbackThreadSrv.h MonitorThread.h EventsQueue.h LabrestDB.h EntryI.h SessionI.h ResourceManagerI.h UserManagerI.h 
 
-labrest_server: LabrestServer.o LabrestAPI.o LabrestDB.o CallbackManagerI.o CallbackThreadSrv.o MonitorThread.o EventsQueue.o EntryI.o SessionI.o  ResourceManagerI.o UserManagerI.o 
+LabrestClient.cpp: LabrestAPI.h UserCommand.h CallbackI.h CallbackThreadCl.h
+LabrestServer.cpp: LabrestAPI.h CallbackManagerI.h CallbackThreadSrv.h MonitorThread.h EventsQueue.h LabrestDB.h EntryI.h SessionI.h ResourceManagerI.h UserManagerI.h ReapTask.h
+
+labrest_server: LabrestServer.o LabrestAPI.o LabrestDB.o CallbackManagerI.o CallbackThreadSrv.o MonitorThread.o EventsQueue.o EntryI.o SessionI.o ReapTask.o ResourceManagerI.o UserManagerI.o 
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 labrest_client: LabrestClient.o LabrestAPI.o UserCommand.o CallbackI.o CallbackThreadCl.o

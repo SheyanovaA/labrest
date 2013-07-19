@@ -35,7 +35,7 @@ module LabrestAPI
 		string description;
 		LockStatus resLockStatus; 
                 int parentId;
-		int typeId;
+		ResourceType type;
 	};
 
         struct Event
@@ -70,6 +70,10 @@ module LabrestAPI
 		UserManager * getUserManager();
 
                 CallbackManager * getCallbackManager();
+
+                idempotent void Refresh();
+
+                void destroy();
 	};
 
 	interface Entry 
@@ -89,7 +93,7 @@ module LabrestAPI
 		int addResource(string name,
                             string description,
                             int parentId,
-                            int typeId)
+                            ResourceType type)
                         throws AccessDenied, InvalidValue;
 
 		bool deleteResource(int resourceId)
@@ -99,7 +103,7 @@ module LabrestAPI
                             string name,
                             string description,
                             int parentId,
-                            int typeId)
+                            ResourceType type)
                         throws AccessDenied, InvalidValue;
 		
 		bool lockResource(int resourceId, int duration)

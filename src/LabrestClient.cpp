@@ -7,11 +7,46 @@
 #include "UserCommand.h"
 #include "CallbackThreadCl.h"
 
+class RefreshTask : public IceUtil::TimerTask
+{
+public:
+
+    RefreshTask(const Ice::LoggerPtr& logger, const LabrestAPI::SessionPrx& session) :
+        _logger(logger),
+        _session(session)
+    {
+    }
+
+    virtual void
+    runTimerTask()
+    {
+        try
+        {
+            _session->Refresh();
+        }
+        catch(const Ice::Exception& ex)
+        {
+            Ice::Warning warn(_logger);
+            warn << "RefreshTask: " << ex;
+        }
+    }
+
+private:
+
+    const Ice::LoggerPtr _logger;
+    const LabrestAPI::SessionPrx _session;
+};
+
 
 class LabrestClientApp : public Ice::Application 
 {
 public:        
     virtual int run(int argc, char* argv[]);
+    
+private:
+    IceUtil::Mutex _mutex;
+    IceUtil::TimerPtr _timer;
+    LabrestAPI::SessionPrx _session;
 };
 
 
@@ -36,7 +71,7 @@ LabrestClientApp::run(int argc, char* argv[])
         if (!Entry)
             throw "Invalid proxy";
 
-        ::LabrestAPI::SessionPrx Session;
+        ::LabrestAPI::SessionPrx _session;
                 
         Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("");
    
@@ -88,9 +123,15 @@ LabrestClientApp::run(int argc, char* argv[])
 		    }
 		}
 	    }
-              
-	    Session = Entry->login(name, auth);
+            {
+                IceUtil::Mutex::Lock sync(_mutex);
+        
+                _session = Entry->login(name, auth);
             
+                _timer = new IceUtil::Timer();
+        
+                _timer->scheduleRepeated(new RefreshTask(communicator()->getLogger(), _session), IceUtil::Time::seconds(5));
+            }
         }
         catch(LabrestAPI::LoginException & ex)
         {
@@ -98,13 +139,21 @@ LabrestClientApp::run(int argc, char* argv[])
            return 1;
         }
         
-        Session->ice_getConnection()->setAdapter(adapter);
+        IceUtil::Mutex::Lock sync(_mutex);
+        
+        
+        
+        _timer = new IceUtil::Timer();
+        
+        _timer->scheduleRepeated(new RefreshTask(communicator()->getLogger(), _session), IceUtil::Time::seconds(5));
+    
+        _session->ice_getConnection()->setAdapter(adapter);
         
         LabrestAPI::CallbackThreadCl cb_thread(communicator());
         
         cb_thread.start();
         
-        ::LabrestAPI::CallbackManagerPrx CallBackMgr = Session->getCallbackManager();
+        ::LabrestAPI::CallbackManagerPrx CallBackMgr = _session->getCallbackManager();
         
         ::std::string full_command;
 
@@ -171,7 +220,7 @@ LabrestClientApp::run(int argc, char* argv[])
                 
                 try
                 {
-                    shouldContinue = cmd->run(vector_command, Session);
+                    shouldContinue = cmd->run(vector_command, _session);
                 }
                 catch (LabrestAPI::AccessDenied & ex)
                 {
@@ -202,7 +251,7 @@ LabrestClientApp::run(int argc, char* argv[])
                 else 
                     if (vector_command[0]=="unreg") CallBackMgr->unregisterCallback(ident);
                     else
-                        commands["help"]->run(vector_command, Session);
+                        commands["help"]->run(vector_command, _session);
             }
 	}
         for (::std::map<std::string, base_command*>::iterator it = commands.begin(); it!=commands.end(); ++it)

@@ -1,4 +1,4 @@
-$def with (form)
+$def with (form, user)
 <!DOCTYPE HTML>
 <html>
  <head>
@@ -7,54 +7,76 @@ $def with (form)
   <script type="text/javascript" src="/static/jquery.js"></script>
   <script type="text/javascript">
 // функция постороения дерева ресурсов
-   function tree() {jQuery.getJSON('/tree',
-			      {},
-			      function(json) {
-					jQuery('#leftcol').html("");
-					jQuery('#leftcol').append("<h4>Доступные ресурсы:</h4>"); 
-					jQuery('#leftcol').append("<ul id=-1>");
-					for (i in json.resources) {
-						var res = json.resources[i]
-						jQuery("ul#"+res.parentId).append("<li><ul id="+res.id+"><span><div>" + res.name + " " + res.typeName + " " + res.description);
-						if (res.logined_user=="guest") {
-							if (res.startTime ==-1) {
-								jQuery("ul#"+res.id+" span div").append(" [_]");
-							} else {
-								jQuery("ul#"+res.id+" span div").append(" [x] by "+ res.username); // добавить дату и время блокировки и 
-							}
-						} else {
-							if (res.startTime ==-1) {
-								jQuery("ul#"+res.id+" span div").append("<a href=/lock/"+res.id+"> [_] </a>");
-							} else {
-								jQuery("ul#"+res.id+" span div").append("<a href=/unlock/"+res.id+"> [x] </a> by "+ res.username); // добавить дату и время блокировки и 
-							}	
-						}
-					};
-					json = 0;
-				});
+    function tree() {
+	jQuery.getJSON('/tree',
+		      {},
+		      function(json) {
+			  jQuery('#leftcol').html("");
+			  jQuery('#leftcol').append("<h4>Доступные ресурсы:</h4>"); 
+			  jQuery('#leftcol').append("<ul id=-1>");
+			  for (i in json.resources) {
+			      var res = json.resources[i];
+			      var startTime = new Date(res.startTime*1000);
+			      jQuery("ul#"+res.parentId).append("<li><ul id="+res.id+"><span><div>" + res.name + " " + res.typeName + " " + res.description);
+			      if (res.logined_user=="guest") {
+			  	  if (res.startTime ==-1) {
+					jQuery("ul#"+res.id+" span div").append(" [_]");
+				  } else {
+					jQuery("ul#"+res.id+" span div").append(" [x] by "+ res.username + " since " + startTime.toString()); // добавить дату и время блокировки и 
+			      }} else {
+				  if (res.startTime ==-1) {
+					jQuery("ul#"+res.id+" span div").append("<a href=/lock/"+res.id+"> [_] </a>");
+				  } else {
+				 	jQuery("ul#"+res.id+" span div").append("<a href=/unlock/"+res.id+"> [x] </a> by "+ res.username); // добавить дату и время блокировки и 
+			  }}};
+			  json = 0;
+		      });
 		}
+
+    function userbox() {
+	jQuery.getJSON('/userbox', 
+	               {},
+		       function(json) {
+				if (json.user.name != 'guest') {
+				    jQuery("#user").html("Логин: " + json.user.name);
+				    if (json.user.group == 1) {
+				   	 jQuery("#group").html("Администратор");
+				    } else {
+					 jQuery("#group").html("Пользователь");
+				    }
+				    jQuery("form#loginbox").hide();
+				    jQuery("form#Userbox").show();
+				} else {
+				    jQuery("form#loginbox").show();
+				    jQuery("form#Userbox").hide();
+				};
+			  json = 0;
+		      });
+	}
     var timer = setInterval(tree,30000);
 
     jQuery(document).ready(function() {
+				userbox();
 				tree();
                                 $$("input#login_button").click(function() {
                                         var user_name = $$("input#username").val();
 					var user_auth = $$("input#authdata").val();
-                                        jQuery.ajax({
-						url: "/login",
-                                                type: "POST",
-						data: {username : user_name, authdata :user_auth},
-						dataType: "",
-                                                success: function(data) {
+                                        jQuery.getJSON("/login", {username : user_name, authdata :user_auth},
+                                            function(data) {
+						userbox();
                                                 tree();
-						jQuery("form#loginbox").hide();
-						jQuery("form#Userbox").show();
-						jQuery('#Username').html(data.name);
-                                                }
-                                                });
-
-					
-                                        return false;
+					    });
+					return false;
+                                });
+				$$("input#exit_button").click(function() {
+                                        var user_name = "guest";
+					var user_auth = "guest";
+                                        jQuery.getJSON("/login", {username : user_name, authdata :user_auth},
+                                            function(data) {
+                                                userbox();
+						tree();
+                                            });
+					return false;
                                 });
                         });
   </script>
@@ -62,7 +84,7 @@ $def with (form)
  <body>
  <div id="container">
   <div id="rightcol">
-    <form name="loginbox" id="loginbox"  method="POST" size=auto>
+    <form name="loginbox" id="loginbox"  size=auto>
       <h4> Авторизация </h4><br>
       $:form.username.render()
       $:form.authdata.render()
@@ -71,7 +93,9 @@ $def with (form)
 <p font-size="2" align="center">Для резервирования ресурсов необходима авторизация.</p>
     </form>
     <form name="Userbox" id="Userbox" size=auto style="display: none;">
-	<div id = "Username"> </div>
+	<h4> Информация </h4><br>
+	<div id="user">Логин: $user["name"] </div><br>
+	<div id="group"> $user["group"] </div>
 	<p align="right" ><input id="exit_button" type="submit" value="Выход"  size = "15" /></p>
     </form>
   </div>

@@ -37,7 +37,7 @@ LabrestAPI::ResourceManagerI::getResource(::Ice::Int resourceId,
 LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
                                           const ::std::string& description,
                                           ::Ice::Int parentId,
-                                          ::Ice::Int typeId,
+                                          const ::LabrestAPI::ResourceType& type,
                                           const Ice::Current& current)
 {
     if (User.group == 0)
@@ -50,7 +50,7 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
 
     int new_resource_id;
     
-    new_resource_id = dbPtr->addResourse(name,description, typeId, parentId);
+    new_resource_id = dbPtr->addResourse(name,description, type.id, parentId);
     
     CB_Event ev;
     
@@ -97,7 +97,7 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
                                              const ::std::string& name,
                                              const ::std::string& description,
                                              ::Ice::Int parentId,
-                                             ::Ice::Int typeId,
+                                             const ::LabrestAPI::ResourceType& type,
                                              const Ice::Current& current)
 {
     if (User.group == 0)
@@ -110,7 +110,7 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
     
     ::std::cout << "ResourceManagerI::modifyResource() called" << ::std::endl;
     
-    status = dbPtr->modifyResource(resourceId, name, description, typeId, parentId);
+    status = dbPtr->modifyResource(resourceId, name, description, type.id, parentId);
     
     CB_Event ev;
     

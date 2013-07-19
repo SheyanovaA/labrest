@@ -200,7 +200,7 @@ void change_res_name::run(::std::vector<std::string> parameters, ::LabrestAPI::S
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    session->getResourceManager()->modifyResource(resource.id,parameters[3],resource.description,resource.parentId,resource.typeId);
+    session->getResourceManager()->modifyResource(resource.id,parameters[3],resource.description,resource.parentId,resource.type);
 }
 
 
@@ -216,7 +216,7 @@ void change_res_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::
          
     resource = session->getResourceManager()->getResource(res_id);
     
-    session->getResourceManager()->modifyResource(resource.id,resource.name, parameters[3],resource.parentId,resource.typeId);
+    session->getResourceManager()->modifyResource(resource.id,resource.name, parameters[3],resource.parentId,resource.type);
 }
 
 
@@ -234,7 +234,7 @@ void change_res_typeId::run(::std::vector<std::string> parameters, ::LabrestAPI:
     
     s2 >> new_type_id;
     
-    session->getResourceManager()->modifyResource(resource.id,resource.name, resource.description,resource.parentId,new_type_id);
+    session->getResourceManager()->modifyResource(resource.id,resource.name, resource.description,resource.parentId,session->getResourceManager()->getResourceType(new_type_id));
 }
 
 
@@ -252,7 +252,7 @@ void change_res_parentId::run(::std::vector<std::string> parameters, ::LabrestAP
     
     s2 >> new_parent_id;
         
-    session->getResourceManager()->modifyResource(resource.id,resource.name,resource.description,new_parent_id,resource.typeId);
+    session->getResourceManager()->modifyResource(resource.id,resource.name,resource.description,new_parent_id,resource.type);
 }
 
 bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
@@ -267,7 +267,7 @@ bool add_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
     
     s2 >> type_id; 
 
-    session->getResourceManager()->addResource(parameters[1],parameters[2],parent_id, type_id);
+    session->getResourceManager()->addResource(parameters[1],parameters[2],parent_id, session->getResourceManager()->getResourceType(type_id));
     
     return true;
 }
@@ -352,7 +352,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
         if (temp.resLockStatus.startTime == -1) 
             ::std::cout << "" ; 
         else ::std::cout << ctime(&start) ;
-        ::std::cout   << " || " << temp.typeId << " | " << temp.parentId << ::std::endl;
+        ::std::cout   << " || " << temp.type.id << " | " << temp.parentId << ::std::endl;
     };
     
     return true;

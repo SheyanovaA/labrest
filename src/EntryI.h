@@ -7,6 +7,7 @@
 
 #include "SessionI.h"
 #include "LabrestAPI.h"
+#include "ReapTask.h"
 
 namespace LabrestAPI 
 {
@@ -15,13 +16,15 @@ class EntryI : public Entry
 {
 public:
 
-    EntryI();
+    EntryI(const ReapTaskPtr&);
 
     virtual ::LabrestAPI::SessionPrx login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
 
 private:
 
     int index;
+    
+    const ReapTaskPtr _reaper;
 };
 
 };

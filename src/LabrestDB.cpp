@@ -14,7 +14,7 @@ int LabrestAPI::LabrestDB::connect()
     {
         std::cout << "Open database successfully\n";
 
-        ::std::string sql[5];
+        ::std::string sql[6];
 
         sql[0] = "create table if not exists user(username text primary key, "
                 "authdata text, admin_group boolean);";
@@ -34,11 +34,12 @@ int LabrestAPI::LabrestDB::connect()
                 "duration integer, end_time datetime, unlock_comment text);";
 
         //add test user 'us' with password '1':
-        sql[4] = "insert or replace into user values('us','1','1');";
+        sql[4] = "insert or replace into user values('admin','admin','1');";
+        sql[5] = "insert or replace into user values('guest','guest','1');";
 
          sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
 //            ::std::cout << sql[i] << ::std::endl;
                 
@@ -897,7 +898,7 @@ LabrestAPI::LabrestDB::getResource(int id)
         
         resource.resLockStatus = getLockStatus(sqlite3_column_int(ppStmt, 3));
         
-        resource.typeId = sqlite3_column_int_or_null(ppStmt, 4);
+        resource.type = getResourceType(sqlite3_column_int_or_null(ppStmt, 4));
         
         resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);    
   

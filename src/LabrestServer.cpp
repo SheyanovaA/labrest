@@ -7,6 +7,7 @@
 #include "EntryI.h"
 #include "EventsQueue.h"
 #include "MonitorThread.h"
+#include "ReapTask.h"
 
 LabrestAPI::LabrestDB * dbPtr;
 LabrestAPI::EventsQueue * EvQueuePtr;
@@ -41,7 +42,13 @@ LabrestServerApp::run(int argc, char* argv[])
     
     Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapter("LabrestServer");
 
-    Ice::ObjectPtr object = new ::LabrestAPI::EntryI;
+    IceUtil::TimerPtr timer = new IceUtil::Timer();
+    
+    LabrestAPI::ReapTaskPtr reapTask = new LabrestAPI::ReapTask;
+    
+    timer->scheduleRepeated(reapTask, IceUtil::Time::seconds(1));
+
+    Ice::ObjectPtr object = new ::LabrestAPI::EntryI(reapTask);
 
     adapter->add(object, communicator()->stringToIdentity("SimpleEntry"));
 
@@ -66,8 +73,6 @@ LabrestServerApp::run(int argc, char* argv[])
     monitor.start();
 
     communicator()->waitForShutdown();
-
-    db.disconnect();
     
     return status;
 }

@@ -10,7 +10,8 @@ urls = (
 	'/lock/(.*)', 'lock_res',
 	'/unlock/(.*)', 'unlock_res',
 	'/login', 'login',
-	'/tree', 'tree'
+	'/tree', 'tree',
+	'/userbox', 'userbox'
 )
 
 web.config.debug = False
@@ -22,11 +23,9 @@ myform = form.Form(
     form.Password('authdata', value="Passwd", id='authdata', size ="22", onfocus="if(this.value=='Passwd') this.value='';", onblur="if(this.value=='') this.value='Passwd'")
 )
 
-
-
 session_icl_map = {}
 session_user_map = {}
-User = {'username':'guest', 'authdata':'guest'}
+User = {'name':'guest', 'auth':'guest', 'group':0}
 		
 def getIceSession(self,user):
     uslogin = self.getUser()
@@ -40,7 +39,13 @@ def getIceSession(self,user):
     	entry = LabrestAPI.EntryPrx.checkedCast(base)
 	if not entry:
 	    raise RuntimeError('Invalid proxy')
-	icl = entry.login(uslogin['username'],uslogin['authdata'])
+	if not user:
+	    user = User
+	try:
+	    icl = entry.login(user['name'],user['auth'])
+	except LabrestAPI.LoginException:
+	    print "Login error!"
+	    user = User
 	session_icl_map[self.session_id] = icl
     return icl	
 
@@ -61,27 +66,27 @@ session = web.session.Session(app,  web.session.DiskStore('sessions'))
 
 class index:
     def GET(self):
-	session.setUser(User)
-	return render.guest_page(myform)
+	if not session.getUser():
+		session.setUser(User)
+	print session.getUser()
+	return render.guest_page(myform,session.getUser())
 
 class login:
     def GET(self):
-	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['username'])
-	s = json.dumps({"user":s.__dict__})
+	form = myform()
+        form.validates()
+	user = {'name':form.value['username'], 'auth':form.value['authdata']}
+	session.getIceSession(user)
+	session.setUser(user)
+	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['name'])
 	user_ = {}
 	user_['name'] = s.name
 	user_['auth'] = s.auth 
 	user_['group'] = s.group
+	session.setUser(user_)
 	print json.dumps(user_)
 	return json.dumps(user_)
 
-    def POST(self):
-	form = myform()
-        form.validates()
-	user = {'username':form.value['username'], 'authdata':form.value['authdata']}
-	session.getIceSession(user)
-	session.setUser(user)
-	return None
 
 class tree:
 
@@ -105,12 +110,12 @@ class tree:
 
     def res2dict(self, res):
 	result = {}
-	result['logined_user'] = session.getUser()['username'];
+	result['logined_user'] = session.getUser()['name'];
 	result['id'] = res['resource'].id
 	result['name'] = res['resource'].name
 	result['description'] = res['resource'].description
 	result['parentId'] = res['resource'].parentId
-	result['typeName'] = session.getIceSession(session.getUser()).getResourceManager().getResourceType(res['resource'].typeId).name
+	result['typeName'] = res['resource'].type.name
 	result['startTime'] = res['resource'].resLockStatus.startTime
 	result['duration'] = res['resource'].resLockStatus.duration
 	result['username'] = res['resource'].resLockStatus.username
@@ -118,6 +123,7 @@ class tree:
 
     def GET(self):
 	ress = self.ress2Tree(session.getIceSession(session.getUser()).getResourceManager().getAllResources())
+	session.getIceSession(session.getUser()).Refresh()
 	res_list = []
 	for res in ress:
             res_list.append(self.res2dict(res))
@@ -125,15 +131,25 @@ class tree:
 	w = json.dumps(w)
 	return w
 
+class userbox:
+    def GET(self):
+	user_=session.getUser()
+	return json.dumps({'user':user_})
+	
+
 class lock_res:
     def GET(self,res_id):
-	session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,-1)
-	raise web.seeother('/tree') 
+	try:
+	    session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,-1)
+	except LabrestAPI.ResourceIsLock:
+	    print "Resource already is lock!"
+	    return 'alert("Resource already is lock!")'
+	raise web.seeother('/') 
 
 class unlock_res:
     def GET(self,res_id):
 	session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)
-	raise web.seeother('/tree')
+	raise web.seeother('/')
 
 if __name__ == '__main__':
     app.run()
