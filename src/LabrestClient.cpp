@@ -91,38 +91,16 @@ LabrestClientApp::run(int argc, char* argv[])
         {
             ::std::string name, auth;
 
-	    if (argc == 1) 
-	    {
-		::std::cerr << "Login required! \n";
-
-		::std::cout <<  "Login: "; ::std::cin >> name;
-	
-		::std::cout <<  "password: "; ::std::cin >> auth;
-	    }
-	    else
-	    {
-		if (argc == 2)
-		{
-		    name = argv[1];
-
-		    ::std::cout <<  "password: "; ::std::cin >> auth;
-		} 
-		else 
-		{
-		    if (argc == 3) 
-		    {
-		        name = argv[1];
+	    if (argc == 3) 
+            {
+                name = argv[1];
  		
-  			auth = argv[2];
-		    }
-		    else
-		    {
-			name = " "; auth = " ";
-
-			::std::cout << "Wrong number of parameters!\nNeed only 2 parameters!\n";
-		    }
-		}
-	    }
+                auth = argv[2];
+            }
+            else
+            {
+                return 1;
+            }
             {
                 IceUtil::Mutex::Lock sync(_mutex);
         
