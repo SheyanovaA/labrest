@@ -116,11 +116,6 @@ LabrestClientApp::run(int argc, char* argv[])
             ::std::cerr << "Login error" << ::std::endl;
            return 1;
         }
-        catch(LabrestAPI::ADCLoginTrue & ex)
-        {
-            ::std::cerr << "ADC Login" << ::std::endl;
-           return 1;
-        }
         IceUtil::Mutex::Lock sync(_mutex);
         
         

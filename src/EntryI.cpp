@@ -26,8 +26,7 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
             }
             else
             {
-                ADCLoginTrue al;
-                al.ice_throw();
+                dbPtr->addUser(username, auth, 0);
             }
               
         }

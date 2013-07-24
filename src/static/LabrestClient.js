@@ -1,39 +1,82 @@
-function lock(res_id) {
-    var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах)");
-    if (d=="") { d = -1;} else {d=3600*d;};
-    jQuery.getJSON("/lock/"+res_id+"/"+d,{},
+function ch_lock(res_id, sel_stat) {
+    var error = 0;
+    if (!sel_stat) {
+        var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах)");
+        if (d=="") { d = -1;} else {d=3600*d;};
+        jQuery.getJSON("/lock/"+res_id+"/"+d,{},
 		   function(data) {
-		       tree();
+		       if (data.error == 0) {
+		           tree();
+		       } else {
+			   error = 1;
+			   jQuery("#res-lock-"+res_id).attr('checked', false);
+			   alert("Данный ресурс уже используется!");
+		       }
+			data=0;
+		   });}
+    else {
+	jQuery.getJSON("/unlock/"+res_id,{},
+		   function(data) {
+		       if (data.error == 0) {
+		           tree();
+		       } else {
+			   error = 1;
+			   jQuery("#res-lock-"+res_id).attr('checked', false);
+			   alert("Данный ресурс уже используется!");
+		       }
+			data=0;
 		   });
+    }
 }
+
+
+createLine = function(res) {
+    var d = $('<div>');
+    d.attr('id', 'res-' + res.id);
+    d.css('margin-left', '' + (res.layer * 30) + 'px');
+
+    var s_lock = $('<input>');
+    s_lock.attr('type', 'checkbox');
+    s_lock.attr('id', 'res-lock-' + res.id);
+    s_lock.attr('checked', (res.startTime == -1) ? false : true);
+    s_lock.click(function() {ch_lock(res.id, (res.startTime == -1) ? false : true);});
+    d.append(s_lock);
+
+    var s_name = $('<span>');
+    s_name.attr('id', 'res-name-' + res.id);
+    s_name.html(res.name);
+    d.append(s_name);
+
+    var s_type_name = $('<span>');
+    s_type_name.attr('id', 'res-type-name-' + res.id);
+    s_type_name.html(res.typeName);
+    d.append(s_type_name);
+
+    var s_discr = $('<span>');
+    s_discr.attr('id', 'res-discr-' + res.id);
+    s_discr.html(res.discription);
+    d.append(s_discr);
+
+    return d;
+}
+
+var oldJson = null;
+
 // функция постороения дерева ресурсов
 function tree() {
     jQuery.getJSON('/tree',
 		   {},
 		   function(json) {
-		       jQuery('#leftcol').html("");
-		       jQuery('#leftcol').append("<h4>Доступные ресурсы:</h4>"); 
-		       jQuery('#leftcol').append("<ul id=-1>");
+		       if (!oldJson) {
 		       for (i in json.resources) {
 			   var res = json.resources[i];
-			   var startTime = new Date(res.startTime*1000);
-			   jQuery("ul#"+res.parentId).append("<li><ul id="+res.id+"><span><div>" + res.name + " " + res.typeName + " " + res.description);
-			   if (res.logined_user=="guest") {
-			       if (res.startTime ==-1) {
-				   jQuery("ul#"+res.id+" span div").append(" [_]");
-			       } else {
-				   jQuery("ul#"+res.id+" span div").append(" [x] использует: "+ res.username + ",  с " + startTime.toLocaleFormat('%H:%M:%S %d.%m.%y,')); 
-			       }} else {
-				   if (res.startTime ==-1) {
-				       jQuery("ul#"+res.id+" span div").append("<a onclick=lock("+res.id+")> [_] </a>");
-				   } else {
-				       jQuery("ul#"+res.id+" span div").append("<a id="+res.id+" href=/unlock/"+res.id+"> [x] </a> использует: "+ res.username + ",  с " + startTime.toLocaleFormat('%H:%M:%S %d.%m.%y,'));  
-				   }}
-			   if (res.duration != -1 && res.startTime !=-1) {
-			       var remain =new Date(new Date(res.startTime*1000+res.duration*1000) - new Date() -new Date(3600*3*1000));
-			       jQuery("ul#"+res.id+" span div").append("осталось: " + (remain.toLocaleFormat('%H:%M:%S')));
-			   }
-		       };
+			   var line = createLine(res);
+			   jQuery('#leftcol').append(line);
+		       }
+		       } else {
+			   alert('already tree is created!');
+		       }
+		       oldJson = json;
 		       json = 0;
 		   });
 }
@@ -62,23 +105,23 @@ var timer = setInterval(tree,30000);
 jQuery(document).ready(function() {
     userbox();
     tree();
-    $$("input#login_button").click(function() {
-	var user_name = $$("input#username").val();
-	var user_auth = $$("input#authdata").val();
+    jQuery("input#login_button").click(function() {
+	var user_name = jQuery("input#username").val();
+	var user_auth = jQuery("input#authdata").val();
 	jQuery.getJSON("/login", {username : user_name, authdata :user_auth},
-		       function(data) {
-			   userbox();
-			   tree();
+		       function(json) {
+			   if (json.error == 1) { alert ("Неверное имя пользователя или пароль!");}
+			else { userbox();};
 		       });
 	return false;
     });
-    $$("input#exit_button").click(function() {
+    jQuery("input#exit_button").click(function() {
 	var user_name = "guest";
 	var user_auth = "guest";
 	jQuery.getJSON("/login", {username : user_name, authdata :user_auth},
 		       function(data) {
-			   userbox();
-			   tree();
+			userbox();
+			tree()
 		       });
 	return false;
     });

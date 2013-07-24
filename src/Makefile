@@ -30,6 +30,7 @@ all: labrest_server labrest_client
 
 LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 	$(SLICE2CPP) -I/usr/share/Ice-3.4.2/slice $^
+	slice2py -I/usr/share/Ice-3.4.2/slice $^
 
 %.o: %.cpp
 	$(CXX) -c -I. -I$(ICE_INC) $<
@@ -45,4 +46,4 @@ labrest_client: LabrestClient.o LabrestAPI.o UserCommand.o CallbackI.o CallbackT
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 clean:
-	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPI.h LabrestAPI.cpp
+	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPII.h LabrestAPII.cpp LabrestAPI.h LabrestAPI.cpp sessions LabrestAPI LabrestAPI_ice.py LabrestAPI_ice.pyc

@@ -16,7 +16,7 @@ urls = (
 
 web.config.debug = False
 app = web.application(urls,globals())
-render  = web.template.render('Web_templates')
+render  = web.template.render('templates')
 
 myform = form.Form(
     form.Textbox('username',  value='Login', id="username", size="22", onfocus="if(this.value=='Login') this.value='';", onblur="if(this.value=='') this.value='Login'"),
@@ -41,11 +41,7 @@ def getIceSession(self,user):
 	    raise RuntimeError('Invalid proxy')
 	if not user:
 	    user = User
-	try:
-	    icl = entry.login(user['name'],user['auth'])
-	except LabrestAPI.ADCLoginTrue:
-	    entry.login('admin','admin').getUserManager().addUser(user['name'],user['auth'],0)
-	    icl = entry.login(user['name'],user['auth'])
+	icl = entry.login(user['name'],user['auth'])
 	session_icl_map[self.session_id] = icl
     return icl	
 
@@ -68,15 +64,18 @@ class index:
     def GET(self):
 	if not session.getUser():
 		session.setUser(User)
-	print session.getUser()
-	return render.guest_page(myform,session.getUser())
+	return render.index(myform,session.getUser())
 
 class login:
     def GET(self):
+	error = 0
 	form = myform()
         form.validates()
-	user = {'name':form.value['username'], 'auth':form.value['authdata']}
-	session.getIceSession(user)
+	user = {'name':form.value['username'], 'auth':form.value['authdata'], 'group':0}
+	try:
+	    session.getIceSession(user)
+	except:
+	    error = 1
 	session.setUser(user)
 	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['name'])
 	user_ = {}
@@ -84,8 +83,7 @@ class login:
 	user_['auth'] = s.auth 
 	user_['group'] = s.group
 	session.setUser(user_)
-	print json.dumps(user_)
-	return json.dumps(user_)
+	return json.dumps({'error':error})
 
 
 class tree:
@@ -119,6 +117,7 @@ class tree:
 	result['startTime'] = res['resource'].resLockStatus.startTime
 	result['duration'] = res['resource'].resLockStatus.duration
 	result['username'] = res['resource'].resLockStatus.username
+	result['layer'] = res['layer']
 	return result
 
     def GET(self):
@@ -139,8 +138,12 @@ class userbox:
 
 class lock_res:
     def GET(self,res_id,dur):
-	print dur
-	session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,dur)
+	error = 0
+	try:
+	    session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,dur)
+	except:
+	    error = 1
+	return json.dumps({'error':error})
  
 
 class unlock_res:
