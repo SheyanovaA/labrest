@@ -46,4 +46,4 @@ labrest_client: LabrestClient.o LabrestAPI.o UserCommand.o CallbackI.o CallbackT
 	$(LD) $^ -Wl,-rpath=$(ICE_LIB) -L$(ICE_LIB) -lIce -lIceUtil -lsqlite3 -o $@
 
 clean:
-	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPII.h LabrestAPII.cpp LabrestAPI.h LabrestAPI.cpp sessions LabrestAPI LabrestAPI_ice.py LabrestAPI_ice.pyc
+	$(RMRF) $(OBJS) *~ labrest_server labrest_client LabrestAPII.h LabrestAPII.cpp LabrestAPI.h LabrestAPI.cpp sessions LabrestAPI LabrestAPI_ice.py LabrestAPI_ice.pyc */*~
