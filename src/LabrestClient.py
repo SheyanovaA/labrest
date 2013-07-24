@@ -7,7 +7,7 @@ from web import form
 
 urls = (
 	'/', 'index',
-	'/lock/(.*)', 'lock_res',
+	'/lock/(.*)/(.*)', 'lock_res',
 	'/unlock/(.*)', 'unlock_res',
 	'/login', 'login',
 	'/tree', 'tree',
@@ -43,9 +43,9 @@ def getIceSession(self,user):
 	    user = User
 	try:
 	    icl = entry.login(user['name'],user['auth'])
-	except LabrestAPI.LoginException:
-	    print "Login error!"
-	    user = User
+	except LabrestAPI.ADCLoginTrue:
+	    entry.login('admin','admin').getUserManager().addUser(user['name'],user['auth'],0)
+	    icl = entry.login(user['name'],user['auth'])
 	session_icl_map[self.session_id] = icl
     return icl	
 
@@ -138,13 +138,10 @@ class userbox:
 	
 
 class lock_res:
-    def GET(self,res_id):
-	try:
-	    session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,-1)
-	except LabrestAPI.ResourceIsLock:
-	    print "Resource already is lock!"
-	    return 'alert("Resource already is lock!")'
-	raise web.seeother('/') 
+    def GET(self,res_id,dur):
+	print dur
+	session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,dur)
+ 
 
 class unlock_res:
     def GET(self,res_id):

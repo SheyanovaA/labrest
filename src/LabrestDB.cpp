@@ -1,5 +1,19 @@
 #include "LabrestDB.h"
 
+
+int LabrestAPI::LabrestDB::adc_pwd_check(const char * login, const char * password) {
+    char cmd[256];
+    int status;
+
+    snprintf(cmd, 255, "smbclient -L //ADC -U%s%%%s >/dev/null 2>&1", login, password);
+
+    status = system(cmd);
+
+    return status;
+}
+
+
+
 int LabrestAPI::LabrestDB::connect() 
 {
 //    ::std::cout << "LabrestDB::connect() called" << ::std::endl;
@@ -115,6 +129,33 @@ LabrestAPI::LabrestDB::authUser(::std::string username, ::std::string authdate)
     return status;
 }
 
+
+bool 
+LabrestAPI::LabrestDB::existsUser(::std::string username)
+{
+//    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
+    
+    bool status;
+
+    sqlite3_stmt *ppStmt;
+
+    sqlite3_prepare(db,"select username from user where (username = ? ) ",-1,&ppStmt,0);
+
+    sqlite3_bind_text(ppStmt, 1, username.c_str(), username.length(),NULL);
+
+    if (sqlite3_step(ppStmt) == SQLITE_ROW) 
+    {
+        status = true;
+    }
+    else
+    {
+        status = false;
+    };
+
+    sqlite3_finalize(ppStmt);
+
+    return status;
+}
 
 bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authdate, int group)
 {

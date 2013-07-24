@@ -1,6 +1,8 @@
 #ifndef LabrestDB_H
 #define LabrestDB_H
 
+#include<stdlib.h>
+#include<stdio.h>
 #include <iostream>
 #include <sqlite3.h>
 
@@ -39,8 +41,12 @@ public:
 	int connect();
 
 	int disconnect();
-
+                
+        int adc_pwd_check(const char * login, const char * password);
+        
         bool authUser(::std::string username, ::std::string authdate);
+        
+        bool existsUser(::std::string username);
         
 	::LabrestAPI::UserList getAllUsers();
         

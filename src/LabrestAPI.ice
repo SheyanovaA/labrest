@@ -59,6 +59,7 @@ module LabrestAPI
         sequence<LockStatus> History;
 	
 	exception LoginException {};
+        exception ADCLoginTrue {};
         exception AccessDenied {};
         exception InvalidValue {};
         exception ResourceIsLock {};
@@ -79,7 +80,7 @@ module LabrestAPI
 	interface Entry 
         {
 		Session * login(string username, string authdata)
-			throws LoginException;
+			throws LoginException, ADCLoginTrue;
 	};
 
         interface ResourceManager 

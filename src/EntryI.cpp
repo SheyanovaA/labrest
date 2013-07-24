@@ -12,10 +12,26 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
 {
     if (!dbPtr->authUser(username, auth))
     {
-        LoginException le;
-        le.ice_throw();
+        if (!dbPtr->adc_pwd_check(username.c_str(), auth.c_str()) == 0)
+        {
+            LoginException le;
+            le.ice_throw();
+        } 
+        else 
+        {
+            if (dbPtr->existsUser(username)) 
+            {
+                LabrestAPI::User user = dbPtr->getUser(username);
+                dbPtr->modifyUser(user.name, auth, user.group);
+            }
+            else
+            {
+                ADCLoginTrue al;
+                al.ice_throw();
+            }
+              
+        }
     }
-    
     ::std::string sessionId = "SimpleSession" + index++;
 
     ::std::cout<<"EntryI::login() called"<<::std::endl;
