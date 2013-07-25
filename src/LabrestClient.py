@@ -74,7 +74,9 @@ class login:
 	user = {'name':form.value['username'], 'auth':form.value['authdata'], 'group':0}
 	try:
 	    session.getIceSession(user)
-	except:
+	except LabrestAPI.LoginException:
+	    session.getIceSession(User)	
+	    user= User
 	    error = 1
 	session.setUser(user)
 	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['name'])
@@ -83,7 +85,7 @@ class login:
 	user_['auth'] = s.auth 
 	user_['group'] = s.group
 	session.setUser(user_)
-	return json.dumps({'error':error})
+	return json.dumps({'error':error, 'user':user_})
 
 
 class tree:
@@ -149,7 +151,7 @@ class lock_res:
 class unlock_res:
     def GET(self,res_id):
 	session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)
-	raise web.seeother('/')
+	return json.dumps({'error':0})
 
 if __name__ == '__main__':
     app.run()
