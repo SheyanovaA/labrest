@@ -2,7 +2,7 @@ import web
 import json
 import sys, traceback, Ice
 import LabrestAPI
-
+import time
 from web import form
 
 urls = (
@@ -117,7 +117,8 @@ class tree:
 	result['parentId'] = res['resource'].parentId
 	result['typeName'] = res['resource'].type.name
 	result['startTime'] = res['resource'].resLockStatus.startTime
-	result['duration'] = res['resource'].resLockStatus.duration
+        result['duration'] = res['resource'].resLockStatus.duration
+	result['remainTime'] = res['resource'].resLockStatus.startTime + res['resource'].resLockStatus.duration - time.time()
 	result['username'] = res['resource'].resLockStatus.username
 	result['layer'] = res['layer']
 	return result

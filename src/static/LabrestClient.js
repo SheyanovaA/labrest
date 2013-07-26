@@ -1,7 +1,11 @@
 function ch_lock(res_id, sel_stat) {
     var error = 0;
     if (!sel_stat) {
-        var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах)");
+        var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах)",2);
+	if (d === null) {
+	    jQuery("#res-lock-"+res_id).attr('checked', false);
+            return; 
+	}
         if (d=="") { d = -1;} else {d=3600*d;};
         jQuery.getJSON("/lock/"+res_id+"/"+d,{},
 		   function(data) {
@@ -29,11 +33,25 @@ insertBeforeLine = function(old_res, new_res) { //insert new line bafore old
 
 var visible_na = true;
 
+to2digit = function(num) {
+    if (num > 9 ) { return ''+num;}
+    else {return '0'+num;}
+}
+
 createTimeStr = function(seconds) {
-    
+    var time = new Date(seconds*1000);
+    var day = time.getDate();
+    var month = time.getMonth();
+    var year = time.getFullYear();
+    var hours = (year == 1970) ? time.getUTCHours() : time.getHours(); 
+    var minutes = (year == 1970) ? time.getUTCMinutes() : time.getMinutes(); 
+    var second =  (year == 1970) ? time.getUTCSeconds() :time.getSeconds();
+    var time_str = (year == 1970) ? ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ' : ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ('+to2digit(day)+'.'+to2digit(month)+'.'+year+') ';
+    return time_str;
 }
 
 change_vis_na = function() {
+    jQuery('input#na_button').val((visible_na) ? "Скрыть N/A Cards" : "Показать N/A Cards");
     jQuery("#leftcol div:contains('N/A')").css('display', (visible_na) ? "block":"none");
 }
 
@@ -51,9 +69,7 @@ updateLine = function(old_res,new_res) {
     	s_lock.click(function() {ch_lock(new_res.id, (new_res.startTime == -1) ? false : true);});
 	jQuery("#res-lock-"+new_res.id).replaceWith(s_lock);
 	jQuery("#res-temp0-"+new_res.id).css('display', (new_res.startTime == -1) ? "none" : "inline");
-	var StartTime = new Date(new_res.startTime*1000);
-        var remainTime = new Date(new_res.startTime*1000 + new_res.duration*1000 - new Date() - 1000*3*3600);
-    jQuery("#res-time-"+new_res.id).html((new_res.startTime == -1)?"":((new_res.duration == -1)? " c "+ StartTime.toLocaleFormat('%H:%M:%S, (date %d.%m.%y) ' ):" на "+remainTime.toLocaleFormat('%H:%M:%S ')));
+	jQuery("#res-time-"+new_res.id).html((new_res.startTime == -1)?"":((new_res.duration == -1)? " c "+ createTimeStr(new_res.startTime):" на "+createTimeStr(new_res.remainTime)));
     };
     if (old_res.typeName != new_res.typeName) {jQuery("#res-type-name-"+new_res.id).html(" "+new_res.typeName);}
     if (old_res.username != new_res.username) {
@@ -130,12 +146,9 @@ createLine = function(res) {
     s_temp0.css('display', (res.startTime == -1) ?'none':"inline")
     d.append(s_temp0);
 
-    var StartTime = new Date(res.startTime*1000);
-    var remainTime = new Date(res.startTime*1000 + res.duration*1000 - new Date() - 1000*3*3600);
-
     var s_time = $('<span>');
     s_time.attr('id', 'res-time-' + res.id);
-    s_time.html((res.startTime == -1)?"":((res.duration == -1)? " c "+ StartTime.toLocaleFormat('%H:%M:%S, (date %d.%m.%y)' ):" на "+remainTime.toLocaleFormat('%H:%M:%S')))
+    s_time.html((res.startTime == -1)?"":((res.duration == -1)? " c "+ createTimeStr(res.startTime):" на "+createTimeStr(res.remainTime)));
     d.append(s_time);
 
     var s_temp1 = $('<span>');
@@ -180,6 +193,7 @@ access2lock =  function(user) {
 		       } else {
 		           jQuery("#leftcol div input").attr('disabled', false);
 		       }
+	change_vis_na();
 };
 
 userbox = function() {

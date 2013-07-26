@@ -19,15 +19,10 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
         } 
         else 
         {
-            if (dbPtr->existsUser(username)) 
+            if (!dbPtr->existsUser(username)) 
             {
-                LabrestAPI::User user = dbPtr->getUser(username);
-                dbPtr->modifyUser(user.name, auth, user.group);
-            }
-            else
-            {
-                dbPtr->addUser(username, auth, 0);
-            }
+                dbPtr->addUser(username, "  ", 0);
+            };
               
         }
     }
