@@ -30,6 +30,9 @@ User = {'name':'guest', 'auth':'guest', 'group':0}
 def getIceSession(self,user):
     uslogin = self.getUser()
     icl = session_icl_map.get(self.session_id, None)
+    if not user:
+        user=User
+        session.setUser(user)
     if not icl or user != uslogin:
 	print uslogin
 	print user
@@ -64,7 +67,7 @@ class index:
     def GET(self):
 	if not session.getUser():
 		session.setUser(User)
-	return render.index(myform,session.getUser())
+	return render.indexnew(myform,session.getUser())
 
 class login:
     def GET(self):
@@ -72,14 +75,14 @@ class login:
 	form = myform()
         form.validates()
 	user = {'name':form.value['username'], 'auth':form.value['authdata'], 'group':0}
+	print user
 	try:
 	    session.getIceSession(user)
 	except LabrestAPI.LoginException:
 	    session.getIceSession(User)	
 	    user= User
 	    error = 1
-	session.setUser(user)
-	s = session.getIceSession(session.getUser()).getUserManager().getUser(session.getUser()['name'])
+	s = session.getIceSession(session.getUser()).getUserManager().getUser(user['name'])
 	user_ = {}
 	user_['name'] = s.name
 	user_['auth'] = s.auth 
@@ -135,7 +138,7 @@ class tree:
 
 class userbox:
     def GET(self):
-	user_=session.getUser()
+	user_= session.getUser()
 	return json.dumps({'user':user_})
 	
 

@@ -5,7 +5,7 @@ int LabrestAPI::LabrestDB::adc_pwd_check(const char * login, const char * passwo
     char cmd[256];
     int status;
 
-    snprintf(cmd, 255, "smbclient -L //ADC -U%s%%%s >/dev/null 2>&1", login, password);
+    snprintf(cmd, 255, "smbclient -L adc.tecom.nnov.ru -U%s%%%s >/dev/null 2>&1", login, password);
 
     status = system(cmd);
 
@@ -49,7 +49,7 @@ int LabrestAPI::LabrestDB::connect()
 
         //add test user 'us' with password '1':
         sql[4] = "insert or replace into user values('admin','admin','1');";
-        sql[5] = "insert or replace into user values('guest','guest','1');";
+        sql[5] = "insert or replace into user values('guest','guest','0');";
 
          sqlite3_exec(db, "BEGIN", 0, 0, 0);
     

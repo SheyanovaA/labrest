@@ -21,7 +21,7 @@ LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& au
         {
             if (!dbPtr->existsUser(username)) 
             {
-                dbPtr->addUser(username, "  ", 0);
+                dbPtr->addUser(username, "__", 0);
             };
               
         }
