@@ -54,6 +54,9 @@ def setUser(self,new_user):
 
 def getUser(self):
     user = session_user_map.get(self.session_id, None)
+    if not user:
+        setUser(self, User)
+        return User
     return user
 
 web.session.Session.getIceSession = getIceSession
@@ -88,6 +91,8 @@ class login:
 	user_['auth'] = s.auth 
 	user_['group'] = s.group
 	session.setUser(user_)
+        web.header('content-type','application/json')
+        web.header('cache-control','no-cache')
 	return json.dumps({'error':error, 'user':user_})
 
 
@@ -134,11 +139,15 @@ class tree:
             res_list.append(self.res2dict(res))
 	w = {"resources":res_list}
 	w = json.dumps(w)
+        web.header('content-type','application/json')
+        web.header('cache-control','no-cache')
 	return w
 
 class userbox:
     def GET(self):
 	user_= session.getUser()
+        web.header('content-type','application/json')
+        web.header('cache-control','no-cache')
 	return json.dumps({'user':user_})
 	
 
@@ -154,8 +163,12 @@ class lock_res:
 
 class unlock_res:
     def GET(self,res_id):
-	session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)
-	return json.dumps({'error':0})
+	error =0
+	try: 
+	    session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)
+	except:
+	    error = 1
+	return json.dumps({'error':error})
 
 if __name__ == '__main__':
     app.run()

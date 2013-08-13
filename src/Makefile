@@ -33,7 +33,7 @@ LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 	slice2py -I/usr/share/Ice-3.4.2/slice $^
 
 %.o: %.cpp
-	$(CXX) -c -I. -I$(ICE_INC) $<
+	$(CXX) $(CXX_FLAGS) -c -I. -I$(ICE_INC) $<
 
 
 LabrestClient.cpp: LabrestAPI.h UserCommand.h CallbackI.h CallbackThreadCl.h

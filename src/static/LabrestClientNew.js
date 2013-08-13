@@ -1,6 +1,6 @@
 var oldJson = null;
 
-var visible_na = true;
+var visible_na = false;
 
 
 change_vis_na = function() {
@@ -54,7 +54,7 @@ createLine = function(res) {
 
     var s_time = $('<span>');
     s_time.attr('id', 'res-time-' + res.id);
-    s_time.html((res.startTime == -1)?"":((res.duration == -1)? " c "+ createTimeStr(res.startTime):" на "+createTimeStr(res.remainTime)));
+    s_time.html((res.startTime == -1)?"":((res.duration == -1 || res.remainTime > 86400)? " c "+ createTimeStr(res.startTime):" на "+createTimeStr(res.remainTime)));
     d.append(s_time);
 
     var s_temp1 = $('<span>');
@@ -109,10 +109,11 @@ updateLine = function(old_res,new_res) {
     	s_lock.attr('checked', (new_res.startTime == -1) ? false : true);
     	s_lock.attr('disabled', true);
     	s_lock.click(function() {ch_lock(new_res.id, (new_res.startTime == -1) ? false : true);});
-	jQuery("#res-lock-"+new_res.id).replaceWith(s_lock);
-	jQuery("#res-temp0-"+new_res.id).css('display', (new_res.startTime == -1) ? "none" : "inline");
-	jQuery("#res-time-"+new_res.id).html((new_res.startTime == -1)?"":((new_res.duration == -1)? " c "+ createTimeStr(new_res.startTime):" на "+createTimeStr(new_res.remainTime)));
+	jQuery("#res-lock-"+new_res.id).replaceWith(s_lock);    
     };
+    jQuery("#res-temp0-"+new_res.id).css('display', (new_res.startTime == -1) ? "none" : "inline");
+    jQuery("#res-time-"+new_res.id).html((new_res.startTime == -1)?"":((new_res.duration == -1 || new_res.remainTime > 86400)? " c "+ createTimeStr(new_res.startTime):" на "+createTimeStr(new_res.remainTime)));
+
     if (old_res.typeName != new_res.typeName) {jQuery("#res-type-name-"+new_res.id).html(" "+new_res.typeName);}
     if (old_res.username != new_res.username) {
 	jQuery("#res-temp1-"+new_res.id).css('display', (new_res.startTime == -1) ? "none" : "inline");
@@ -136,10 +137,10 @@ createTimeStr = function(seconds) {
     var day = time.getDate();
     var month = time.getMonth();
     var year = time.getFullYear();
-    var hours = (year == 1970) ? time.getUTCHours() : time.getHours(); 
-    var minutes = (year == 1970) ? time.getUTCMinutes() : time.getMinutes(); 
-    var second =  (year == 1970) ? time.getUTCSeconds() :time.getSeconds();
-    var time_str = (year == 1970) ? ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ' : ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ('+to2digit(day)+'.'+to2digit(month)+'.'+year+') ';
+    var hours = (seconds < 86400) ? time.getUTCHours() : time.getHours(); 
+    var minutes = (seconds < 86400) ? time.getUTCMinutes() : time.getMinutes(); 
+    var second =  (seconds < 86400) ? time.getUTCSeconds() :time.getSeconds();
+    var time_str = (seconds < 86400) ? ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ' : ''+to2digit(hours)+':'+to2digit(minutes)+':'+to2digit(second)+' ('+to2digit(day)+'.'+to2digit(month)+'.'+year+') ';
     return time_str;
 }
 
@@ -159,6 +160,7 @@ tree = function() {
 		       }
 		       oldJson = json;
                        access2lock(json.resources[0].logined_user);
+		       updateUserInfo();
 		       json = 0;
 		   });
                   
@@ -215,12 +217,19 @@ access2lock =  function(user) {
 ch_lock = function(res_id, sel_stat) {
     var error = 0;
     if (!sel_stat) {
-        var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах)",2);
+        var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах), пустое поле - для резервирования на бесконечный срок",2);
 	if (d == null) {
+		
 	    jQuery("#res-lock-"+res_id).attr('checked', false);
+	    jQuery("#res-lock-"+res_id).prop('checked', false);
             return; 
 	}
-        if (d=="") { d = -1;} else {d=3600*d;};
+	if (d <=0) {
+	    jQuery("#res-lock-"+res_id).attr('checked', false);
+	    jQuery("#res-lock-"+res_id).prop('checked', false);
+            return; 
+	}
+        if (d=="" || d==-1 ) { d = -1;} else {d=3600*d;};
         jQuery.getJSON("/lock/"+res_id+"/"+d,{},
 		   function(data) {
 		       if (data.error == 0) {
@@ -228,14 +237,27 @@ ch_lock = function(res_id, sel_stat) {
 		       } else {
 			   error = 1;
 			   jQuery("#res-lock-"+res_id).attr('checked', false);
+			   jQuery("#res-lock-"+res_id).prop('checked', false);
 			   alert("Данный ресурс уже используется!");
 		       }
 			data=0;
 		   });}
     else {
-	jQuery.getJSON("/unlock/"+res_id,{},
-		   function(data) {
-			   tree();
+	jQuery.getJSON("/unlock/"+res_id,{}, 
+		function(data) {
+			if (data.error == 0) {
+		           tree();
+		       } else {
+			   var s_lock = $('<input>');
+    			   s_lock.attr('type', 'checkbox');
+    			   s_lock.attr('id', 'res-lock-' + res_id);
+    			   s_lock.attr('checked', true);
+    			   s_lock.attr('disabled', false );  
+    			   s_lock.click(function() {ch_lock(res_id, true);});
+			   jQuery("#res-lock-"+res_id).attr('checked', true);
+			   jQuery("#res-lock-"+res_id).replaceWith(s_lock); 
+			   alert("Данный ресурс занят другим пользователем!");
+		       }
 			data=0;
 		   });
     }

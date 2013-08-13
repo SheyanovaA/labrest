@@ -21,7 +21,12 @@ LabrestAPI::SessionI::SessionI(::std::string sessionId, ::std::string username) 
 
 LabrestAPI::SessionI::~SessionI()
 {
+    while (!this->lock.tryLock()) {};
+    
+
     ::std::cout<<"SessionI::~SessionI() called"<<::std::endl;
+    
+    this->lock.unlock();
 }
 
 

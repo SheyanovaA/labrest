@@ -9,6 +9,7 @@
 void
 ::LabrestAPI::MonitorThread::run()
 {       
+    std::cout << "MonitorThread::run() called" << std::endl;
     while (true)
     {
     ::LabrestAPI::ResourceList temp_res_list = dbPtr->getAllResources();

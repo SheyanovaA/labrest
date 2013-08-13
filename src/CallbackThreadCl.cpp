@@ -8,5 +8,7 @@ LabrestAPI::CallbackThreadCl::CallbackThreadCl(Ice::CommunicatorPtr ic) : IC(ic)
 void 
 LabrestAPI::CallbackThreadCl::run()
 {
+    std::cout << "CallbackThreadCl::run() called" << std::endl;
+    
     IC->waitForShutdown();
 }

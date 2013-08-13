@@ -33,6 +33,8 @@ LabrestAPI::CallbackThreadSrv::removeCallback(CallbackPrx & callback) {
 
 void
 LabrestAPI::CallbackThreadSrv::notifyAll() {
+    
+    std::cout << "CallbackThreadSrv::notifyAll() called" << std::endl;
     this->lock.lock();
    
 //    ::std::cout << "CallbackThreadSrv::notifyAll() called" << ::std::endl;

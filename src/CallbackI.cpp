@@ -5,6 +5,7 @@ void
 LabrestAPI::CallbackI::doCallback(const ::LabrestAPI::Event& ev,
                                   const Ice::Current& current)
 {
+    std::cout << "CallbackI::doCallback() called" << std::endl; 
     switch(ev.TypeEvent)
     {
         case CB_ADD_RES: ::std::cout << "Added new resource with id = " << ev.resourceId << ::std::endl; break;

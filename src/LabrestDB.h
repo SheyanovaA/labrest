@@ -41,8 +41,6 @@ public:
 	int connect();
 
 	int disconnect();
-                
-        int adc_pwd_check(const char * login, const char * password);
         
         bool authUser(::std::string username, ::std::string authdate);
         

@@ -1,22 +1,9 @@
 #include "LabrestDB.h"
 
 
-int LabrestAPI::LabrestDB::adc_pwd_check(const char * login, const char * password) {
-    char cmd[256];
-    int status;
-
-    snprintf(cmd, 255, "smbclient -L adc.tecom.nnov.ru -U%s%%%s >/dev/null 2>&1", login, password);
-
-    status = system(cmd);
-
-    return status;
-}
-
-
-
 int LabrestAPI::LabrestDB::connect() 
 {
-//    ::std::cout << "LabrestDB::connect() called" << ::std::endl;
+    ::std::cout << "LabrestDB::connect() called" << ::std::endl;
     
     int rc = sqlite3_open("labrest.db", &db);
 
@@ -71,7 +58,7 @@ int LabrestAPI::LabrestDB::connect()
 
 int LabrestAPI::LabrestDB::disconnect()
 {
-//    ::std::cout << "LabrestDB::disconnect() called" << ::std::endl;
+    ::std::cout << "LabrestDB::disconnect() called" << ::std::endl;
 
     if(db)
     {
@@ -86,7 +73,7 @@ int LabrestAPI::LabrestDB::disconnect()
 
 LabrestAPI::LabrestDB::~LabrestDB() 
 {
-//    ::std::cout << "LabrestDB::~LabrestDB()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::~LabrestDB()  called" << ::std::endl;
 
     this->disconnect();
 
@@ -94,7 +81,7 @@ LabrestAPI::LabrestDB::~LabrestDB()
 
 LabrestAPI::LabrestDB::LabrestDB() 
 {
-//    ::std::cout << "LabrestDB::LabrestDB()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::LabrestDB()  called" << ::std::endl;
     
     this->connect();
 }
@@ -102,7 +89,7 @@ LabrestAPI::LabrestDB::LabrestDB()
 bool 
 LabrestAPI::LabrestDB::authUser(::std::string username, ::std::string authdate)
 {
-//    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
     
     bool status;
 
@@ -133,7 +120,7 @@ LabrestAPI::LabrestDB::authUser(::std::string username, ::std::string authdate)
 bool 
 LabrestAPI::LabrestDB::existsUser(::std::string username)
 {
-//    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::authUser()  called" << ::std::endl;
     
     bool status;
 
@@ -159,7 +146,7 @@ LabrestAPI::LabrestDB::existsUser(::std::string username)
 
 bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authdate, int group)
 {
-//    ::std::cout << "LabrestDB::addUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::addUser()  called" << ::std::endl;
     
     bool status;
 
@@ -188,7 +175,7 @@ bool LabrestAPI::LabrestDB::addUser(::std::string username, ::std::string authda
 
 bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
 {
-//    ::std::cout << "LabrestDB::deleteUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::deleteUser()  called" << ::std::endl;
     
     bool status;
     int s;
@@ -214,7 +201,7 @@ bool LabrestAPI::LabrestDB::deleteUser(::std::string username)
 
 bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string authdata, int group)
 {
-//    ::std::cout << "LabrestDB::modifyUser()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::modifyUser()  called" << ::std::endl;
     
     bool status;
 
@@ -245,7 +232,7 @@ bool LabrestAPI::LabrestDB::modifyUser(::std::string username, ::std::string aut
 
 int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string description, int typeId, int parentId)
 {
-//    ::std::cout << "LabrestDB::addResourse()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::addResourse()  called" << ::std::endl;
     
     bool status, stat2;
     
@@ -319,7 +306,7 @@ int  LabrestAPI::LabrestDB::addResourse(::std::string name, ::std::string descri
 
 bool LabrestAPI::LabrestDB::deleteResource(int id)
 {
-//    ::std::cout << "LabrestDB::deleteResource()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::deleteResource()  called" << ::std::endl;
     
     bool status;
 
@@ -365,7 +352,7 @@ bool LabrestAPI::LabrestDB::deleteResource(int id)
 
 bool LabrestAPI::LabrestDB::modifyResource(int id, ::std::string name, ::std::string description, int typeId, int parentId)
 {
-//    ::std::cout << "LabrestDB::modifyResource()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::modifyResource()  called" << ::std::endl;
    
     bool status, stat2;
 
@@ -417,7 +404,7 @@ bool LabrestAPI::LabrestDB::modifyResource(int id, ::std::string name, ::std::st
 
 int  LabrestAPI::LabrestDB::addResourceType(::std::string name, ::std::string description, int parentId)
 {
-//    ::std::cout << "LabrestDB::addResourceType()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::addResourceType()  called" << ::std::endl;
     
     bool status = true;
     
@@ -467,7 +454,7 @@ int  LabrestAPI::LabrestDB::addResourceType(::std::string name, ::std::string de
 
 bool LabrestAPI::LabrestDB::deleteResourceType(int id)
 {
-//    ::std::cout << "LabrestDB::deleteResourceType()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::deleteResourceType()  called" << ::std::endl;
     
     bool status;
     
@@ -536,7 +523,7 @@ bool LabrestAPI::LabrestDB::deleteResourceType(int id)
 
 bool LabrestAPI::LabrestDB::modifyResourceType(int id, ::std::string name, ::std::string description, int parentId)
 {
-//    ::std::cout << "LabrestDB::modifyResourceType()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::modifyResourceType()  called" << ::std::endl;
     
     bool status;
 
@@ -589,7 +576,7 @@ bool LabrestAPI::LabrestDB::modifyResourceType(int id, ::std::string name, ::std
 
 bool LabrestAPI::LabrestDB::ResourceIsNotLock(int resourceId)
 {
-//    ::std::cout << "LabrestDB::ResourceIsLock()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::ResourceIsLock()  called" << ::std::endl;
     
     bool status;
 
@@ -631,7 +618,7 @@ bool LabrestAPI::LabrestDB::ResourceIsNotLock(int resourceId)
 
 bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username, int duration)
 {
-//    ::std::cout << "LabrestDB::lockResourse()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::lockResourse()  called" << ::std::endl;
     
     bool status;
     
@@ -735,7 +722,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
 
 bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string username)
 {
-//    ::std::cout << "LabrestDB::unlockResource()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::unlockResource()  called" << ::std::endl;
         
     bool status;
     
@@ -802,6 +789,14 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string usernam
                 sqlite3_finalize(ppStmt);  
             };
         }
+        else
+        {
+            sqlite3_exec(db, "COMMIT", 0, 0, 0);
+
+            ::LabrestAPI::AccessDenied iv;
+
+            iv.ice_throw();
+        }
         CB_Event ev;
     
         ev.TypeEvent = CB_UNLOCK;
@@ -827,7 +822,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string usernam
 ::LabrestAPI::UserList
 LabrestAPI::LabrestDB::getAllUsers()
 {
-//    ::std::cout << "LabrestDB::getAllUsers()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::getAllUsers()  called" << ::std::endl;
     
     int s;
     
@@ -857,7 +852,7 @@ LabrestAPI::LabrestDB::getAllUsers()
 ::LabrestAPI::User
 LabrestAPI::LabrestDB::getUser(::std::string username)
 {    
-//    ::std::cout << "LabrestDB::getUser() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getUser() called" << ::std::endl;
     
     int s;
     
@@ -885,7 +880,7 @@ LabrestAPI::LabrestDB::getUser(::std::string username)
 ::LabrestAPI::ResourceList
 LabrestAPI::LabrestDB::getAllResources()
 {
-//    ::std::cout << "LabrestDB::getAllResources() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getAllResources() called" << ::std::endl;
    
     int s;
     
@@ -919,7 +914,7 @@ LabrestAPI::LabrestDB::getResource(int id)
     
     ::LabrestAPI::Resource resource;
     
-//    ::std::cout << "LabrestDB::getResource() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getResource() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
 
@@ -955,7 +950,7 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
     
     ::LabrestAPI::ResourceTypeList resource_types;
     
-//    ::std::cout << "LabrestDB::getAllResourceTypes() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getAllResourceTypes() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
     
@@ -987,7 +982,7 @@ LabrestAPI::LabrestDB::getResourceType(int id)
     
     ::LabrestAPI::ResourceType resource_type;
     
-//    ::std::cout << "LabrestDB::getResourceType() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getResourceType() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
 
@@ -1018,7 +1013,7 @@ LabrestAPI::LabrestDB::getLockHistry()
     
     ::LabrestAPI::History lock_history;
     
-//    ::std::cout << "LabrestDB::getLockHistry() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getLockHistry() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
     
@@ -1071,7 +1066,7 @@ LabrestAPI::LabrestDB::getLockStatus(int Id)
     
     temp.startTime = -1;
     
-//    ::std::cout << "LabrestDB::getLockStatus() called" << ::std::endl;
+    ::std::cout << "LabrestDB::getLockStatus() called" << ::std::endl;
     
     sqlite3_stmt * ppStmt;
 
@@ -1106,7 +1101,7 @@ LabrestAPI::LabrestDB::getLockStatus(int Id)
 bool 
 ::LabrestAPI::LabrestDB::ExistsResourceType(int resTypeId)
 {
-//    ::std::cout << "LabrestDB::ExistResourceType()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::ExistsResourceType()  called" << ::std::endl;
     
     bool status;
 
@@ -1134,7 +1129,7 @@ bool
 bool 
 ::LabrestAPI::LabrestDB::ExistsResource(int resourceId)
 {
-//    ::std::cout << "LabrestDB::ExistResourceType()  called" << ::std::endl;
+    ::std::cout << "LabrestDB::ExistsResource()  called" << ::std::endl;
     
     bool status;
 

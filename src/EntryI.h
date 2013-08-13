@@ -21,6 +21,8 @@ public:
     virtual ::LabrestAPI::SessionPrx login(const ::std::string&, const ::std::string&, const ::Ice::Current&);
 
 private:
+    
+    int adc_pwd_check(const char * login, const char * password);
 
     int index;
     

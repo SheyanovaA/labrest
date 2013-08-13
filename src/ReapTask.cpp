@@ -5,11 +5,13 @@ using namespace std;
 LabrestAPI::ReapTask::ReapTask() :
     _timeout(IceUtil::Time::seconds(60))
 {
+    std::cout << "ReapTask::ReapTask() called" << std::endl;
 }
 
 void
 LabrestAPI::ReapTask::runTimerTask()
 {
+    std::cout << "ReapTask::runTimerTask() called" << std::endl;
     Lock sync(*this);
 
     list<SessionProxyPair>::iterator p = _sessions.begin();
@@ -36,12 +38,19 @@ LabrestAPI::ReapTask::runTimerTask()
         {
             p = _sessions.erase(p);
         }
+        catch(...)
+        {
+        	std::cout<<"... :) ..."<<std::endl;
+        	std::cout<<"... :) ..."<<std::endl;
+        	std::cout<<"... :) ..."<<std::endl;
+        }
     }
 }
 
 void
 LabrestAPI::ReapTask::add(const SessionPrx& proxy, const SessionIPtr& session)
 {
+    std::cout << "ReapTask::add() called" << std::endl;
     Lock sync(*this);
     _sessions.push_back(SessionProxyPair(proxy, session));
 }
