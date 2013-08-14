@@ -40,16 +40,13 @@ LabrestAPI::CallbackThreadSrv::notifyAll() {
 //    ::std::cout << "CallbackThreadSrv::notifyAll() called" << ::std::endl;
     while (!EvQueuePtr->empty())
     {
-        CB_Event temp_ev = EvQueuePtr->pop();
-        Event ev;
-        ev.TypeEvent = temp_ev.TypeEvent;
-        ev.id =  temp_ev.id;
-        ev.resourceId = temp_ev.resourceId;
+        Event ev = EvQueuePtr->pop();
+
         for(std::map<CallbackPrx, std::string>::iterator it = this->callbacks.begin(); it != this->callbacks.end(); it++) 
         {
             try
             {
-                if ((temp_ev.username == "") ||(temp_ev.username == (*it).second))
+                if ((ev.username == "") ||(ev.username == (*it).second))
                     (*it).first->doCallback(ev);
             }
             catch (const Ice::Exception& ex)

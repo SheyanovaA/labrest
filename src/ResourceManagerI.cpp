@@ -52,7 +52,7 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
     
     new_resource_id = dbPtr->addResourse(name,description, type.id, parentId);
     
-    CB_Event ev;
+    Event ev;
     
     ev.TypeEvent = CB_ADD_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
@@ -80,7 +80,7 @@ LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
     
     status = dbPtr->deleteResource(resourceId);
     
-    CB_Event ev;
+    Event ev;
     
     ev.TypeEvent = CB_DEL_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
@@ -112,7 +112,7 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
     
     status = dbPtr->modifyResource(resourceId, name, description, type.id, parentId);
     
-    CB_Event ev;
+    Event ev;
     
     ev.TypeEvent = CB_CH_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;

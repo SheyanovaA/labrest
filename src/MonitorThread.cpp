@@ -26,7 +26,7 @@ void
             else
             if (difftime(time(t),start) >= it->resLockStatus.duration - 30)
             {
-                CB_Event ev;
+                Event ev;
     
                 ev.TypeEvent = CB_TIMEOUT;
                 ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;

@@ -43,7 +43,7 @@ module LabrestAPI
                 int id;
                 int TypeEvent;
                 int resourceId;
-                
+                string username;
         };
 
         interface ResourceManager;

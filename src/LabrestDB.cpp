@@ -688,7 +688,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
                 sqlite3_finalize(ppStmt);          
         }
         
-        CB_Event ev;
+        Event ev;
     
         ev.TypeEvent = CB_LOCK;
         ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
@@ -797,7 +797,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string usernam
 
             iv.ice_throw();
         }
-        CB_Event ev;
+        Event ev;
     
         ev.TypeEvent = CB_UNLOCK;
         ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;

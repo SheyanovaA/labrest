@@ -4,7 +4,7 @@ bool
 LabrestAPI::CallbackManagerI::registerCallback(const ::Ice::Identity& ident,
                                                const Ice::Current& current)
 {
-    ::std::cout << "CallbackManagerI::registerCallback() called" << ::std::endl;
+    ::std::cout << "CallbackManagerI::registerCallback() called " << ident.name<< ::std::endl;
     
     LabrestAPI::CallbackPrx client = LabrestAPI::CallbackPrx::uncheckedCast(current.con->createProxy(ident));
    

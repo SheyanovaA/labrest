@@ -1,13 +1,13 @@
 #include "EventsQueue.h"
 
-LabrestAPI::CB_Event
+LabrestAPI::Event
 LabrestAPI::EventsQueue::back()
 {
     while (!this->lock.tryLock()) {};
     
     ::std::cout << "EventsQueue::back() called" << ::std::endl;
     
-    LabrestAPI::CB_Event event = this->ev_queue.back();
+    LabrestAPI::Event event = this->ev_queue.back();
     
     this->lock.unlock();
     
@@ -28,14 +28,14 @@ LabrestAPI::EventsQueue::empty()
     return emp;
 }
 
-LabrestAPI::CB_Event
+LabrestAPI::Event
 LabrestAPI::EventsQueue::front()
 {
     while (!this->lock.tryLock()) {};
     
     ::std::cout << "EventsQueue::front() called" << ::std::endl;
     
-    LabrestAPI::CB_Event event = this->ev_queue.front();
+    LabrestAPI::Event event = this->ev_queue.front();
     
     this->lock.unlock();
     
@@ -57,7 +57,7 @@ LabrestAPI::EventsQueue::size()
 }
 
 void
-LabrestAPI::EventsQueue::push_back(CB_Event ev)
+LabrestAPI::EventsQueue::push_back(Event ev)
 {
     while (!this->lock.tryLock()) {};
     
@@ -68,14 +68,14 @@ LabrestAPI::EventsQueue::push_back(CB_Event ev)
     this->lock.unlock();
 }
 
-LabrestAPI::CB_Event
+LabrestAPI::Event
 LabrestAPI::EventsQueue::pop()
 {
     while (!this->lock.tryLock()) {};
     
     ::std::cout << "EventsQueue::pop() called" << ::std::endl;
     
-    LabrestAPI::CB_Event temp = this->ev_queue.front();
+    LabrestAPI::Event temp = this->ev_queue.front();
     
     this->ev_queue.pop_front();
    

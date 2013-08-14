@@ -42,11 +42,25 @@ def getIceSession(self,user):
     	entry = LabrestAPI.EntryPrx.checkedCast(base)
 	if not entry:
 	    raise RuntimeError('Invalid proxy')
-	if not user:
-	    user = User
 	icl = entry.login(user['name'],user['auth'])
 	session_icl_map[self.session_id] = icl
     return icl	
+
+def checkExistIceSession(self):
+    try:
+	session.getIceSession(session.getUser()).getResourceManager()
+    except Ice.ObjectNotExistException:
+        print 'create new Ice session'
+        ic = Ice.initialize(sys.argv)
+        base  = ic.stringToProxy("SimpleEntry:tcp -p 10000")
+        entry = LabrestAPI.EntryPrx.checkedCast(base)
+        if not entry:
+            raise RuntimeError('Invalid proxy')
+        icl = entry.login(User['name'],User['auth'])
+	session.setUser(User)
+        session_icl_map[self.session_id] = icl
+
+	
 
 def setUser(self,new_user):
     session_user_map[self.session_id]=new_user;
@@ -59,6 +73,7 @@ def getUser(self):
         return User
     return user
 
+web.session.Session.checkExistIceSession = checkExistIceSession
 web.session.Session.getIceSession = getIceSession
 web.session.Session.setUser = setUser
 web.session.Session.getUser = getUser
@@ -74,6 +89,7 @@ class index:
 
 class login:
     def GET(self):
+	session.checkExistIceSession()
 	error = 0
 	form = myform()
         form.validates()
@@ -132,6 +148,7 @@ class tree:
 	return result
 
     def GET(self):
+	session.checkExistIceSession()
 	ress = self.ress2Tree(session.getIceSession(session.getUser()).getResourceManager().getAllResources())
 	session.getIceSession(session.getUser()).Refresh()
 	res_list = []
@@ -145,6 +162,7 @@ class tree:
 
 class userbox:
     def GET(self):
+	session.checkExistIceSession()
 	user_= session.getUser()
         web.header('content-type','application/json')
         web.header('cache-control','no-cache')
@@ -153,6 +171,7 @@ class userbox:
 
 class lock_res:
     def GET(self,res_id,dur):
+	session.checkExistIceSession()
 	error = 0
 	try:
 	    session.getIceSession(session.getUser()).getResourceManager().lockResource(res_id,dur)
@@ -163,6 +182,7 @@ class lock_res:
 
 class unlock_res:
     def GET(self,res_id):
+	session.checkExistIceSession()
 	error =0
 	try: 
 	    session.getIceSession(session.getUser()).getResourceManager().unlockResource(res_id)

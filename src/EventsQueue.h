@@ -17,28 +17,23 @@
 namespace LabrestAPI
 {
 
-    struct CB_Event : public Event
-    {
-        std::string username;
-    };
-    
 class EventsQueue 
 {
-    std::deque<CB_Event> ev_queue;
+    std::deque<Event> ev_queue;
     
     IceUtil::Mutex lock;
     
 public:
    
-    void push_back(CB_Event ev);
+    void push_back(Event ev);
     
-    CB_Event back();
+    Event back();
     
     bool empty();
     
-    CB_Event front();
+    Event front();
     
-    CB_Event pop();
+    Event pop();
     
     int size();
 };

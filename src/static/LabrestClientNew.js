@@ -218,18 +218,18 @@ ch_lock = function(res_id, sel_stat) {
     var error = 0;
     if (!sel_stat) {
         var d = prompt("Введите время, на которое вы резервируете данный ресурс: (время вводится в часах), пустое поле - для резервирования на бесконечный срок",2);
-	if (d == null) {
+	if ( d == null) {
 		
 	    jQuery("#res-lock-"+res_id).attr('checked', false);
 	    jQuery("#res-lock-"+res_id).prop('checked', false);
             return; 
 	}
-	if (d <=0) {
+	if (d!="" || d <0 || d=="0") {
 	    jQuery("#res-lock-"+res_id).attr('checked', false);
 	    jQuery("#res-lock-"+res_id).prop('checked', false);
             return; 
 	}
-        if (d=="" || d==-1 ) { d = -1;} else {d=3600*d;};
+        if (d=="") { d = -1;} else {d=3600*d;};
         jQuery.getJSON("/lock/"+res_id+"/"+d,{},
 		   function(data) {
 		       if (data.error == 0) {

@@ -113,7 +113,7 @@ LabrestAPI::SessionI::Refresh(const Ice::Current& current)
 {
     while (!this->lock.tryLock()) {};
     
-    ::std::cout<<"SessionI::Refresh() called"<<::std::endl;
+//    ::std::cout<<"SessionI::Refresh() called"<<::std::endl;
     
     if(_destroy)
     {
