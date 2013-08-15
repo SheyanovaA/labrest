@@ -49,25 +49,26 @@ def call2skype():
     while 1:
 	while not events.empty():
 	    ev = events.pop()
-	    res = res_info(ev.resourceId)
-            res_d = []
-	    while res.parentId != -1:
-		res_d.append("["+ res.name + " " + res.type.name+"] ")
-		res = res_info(res.parentId)
- 	    res_d.append("["+ res.name + " " + res.type.name+"] ")
-	    res_descr = ""
-	    while len(res_d) > 0:
-		res_descr = res_descr + res_d.pop()
-	    lock_stat = ""
-	    if ev.TypeEvent == 4:
-		lock_stat = "LOCK"
-	    if ev.TypeEvent == 5:
-		lock_stat = "UNLOCK"
-	    msg = "*** "+ev.userSrc+ " " + lock_stat +" "+res_descr+" ***"
-	    print msg
-	    skypeClient.SendMessage('alina_shejanova',msg)
-#	    for chat in skypeClient.BookmarkedChats:
-#                chat.SendMessage(msg)
+	    if ev.TypeEvent==4 or ev.TypeEvent==5:
+	        res = res_info(ev.resourceId)
+                res_d = []
+	        while res.parentId != -1:
+		    res_d.append("["+ res.name + " " + res.type.name+"] ")
+		    res = res_info(res.parentId)
+ 	    	res_d.append("["+ res.name + " " + res.type.name+"] ")
+	    	res_descr = ""
+	    	while len(res_d) > 0:
+		    res_descr = res_descr + res_d.pop()
+	    	lock_stat = ""
+	    	if ev.TypeEvent == 4:
+		    lock_stat = "LOCK"
+	    	if ev.TypeEvent == 5:
+		    lock_stat = "UNLOCK"
+	    	msg = "*** "+ev.userSrc+ " " + lock_stat +" "+res_descr+" ***"
+	    	print msg
+	    	skypeClient.SendMessage('alina_shejanova',msg)
+	    	for chat in skypeClient.BookmarkedChats:
+                   chat.SendMessage(msg)
 	sleep(5)
 
 
