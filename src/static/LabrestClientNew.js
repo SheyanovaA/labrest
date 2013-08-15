@@ -229,6 +229,7 @@ ch_lock = function(res_id, sel_stat) {
 	if (String(i) != d) {
 	    jQuery("#res-lock-"+res_id).attr('checked', false);
 	    jQuery("#res-lock-"+res_id).prop('checked', false);
+	    alert("Некорректное значение, введите целое число, либо оставьте поле пустым!");
             return; 
 	} else {d=3600*d;}}};
         jQuery.getJSON("/lock/"+res_id+"/"+d,{},
