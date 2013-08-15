@@ -74,6 +74,7 @@ createLine = function(res) {
 
 updateTree = function(oldTree, newTree) {
     var n = 0;
+    var count = oldTree.length;
     for (i=0; i<oldTree.length; i++) {
         var ins_mas = [];
 	var findInNew = false;
@@ -90,11 +91,20 @@ updateTree = function(oldTree, newTree) {
 	if (findInNew) {
 	    for (j=0; j<ins_mas.length; j++) {
 		insertBeforeLine(oldTree[i],ins_mas[j]);
+		count++;
 	    }
 	} else {
 	    deleteLine(oldTree[i]);
+	    count--;
 	}
-    }    
+    }
+    if (count < newTree.length ) {
+	for (j=count; j<newTree.length; j++) {
+		var res = newTree[j];
+		var line = createLine(res);
+		jQuery('#leftcol').append(line);
+	    }
+    }
 }
 
 updateLine = function(old_res,new_res) {
