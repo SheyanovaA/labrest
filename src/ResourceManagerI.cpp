@@ -57,7 +57,8 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
     ev.TypeEvent = CB_ADD_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
     ev.resourceId = new_resource_id;
-    ev.username = "";
+    ev.userDest = "";
+    ev.userSrc = User.name;
     
     EvQueuePtr->push_back(ev);
     
@@ -85,7 +86,8 @@ LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
     ev.TypeEvent = CB_DEL_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
     ev.resourceId = resourceId;
-    ev.username = "";
+    ev.userDest = "";
+    ev.userSrc = User.name;
     
     EvQueuePtr->push_back(ev);
     
@@ -117,7 +119,8 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
     ev.TypeEvent = CB_CH_RES;
     ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
     ev.resourceId = resourceId;
-    ev.username = "";
+    ev.userDest = "";
+    ev.userSrc = User.name;
     
     EvQueuePtr->push_back(ev);
     

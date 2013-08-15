@@ -23,6 +23,8 @@ LabrestAPI::EventsQueue::empty()
     
     bool emp = this->ev_queue.empty();
     
+    if (emp) {::std::cout << "empty" << ::std::endl;};
+
     this->lock.unlock();
     
     return emp;

@@ -48,19 +48,59 @@ events = EventsQueue()
 def call2skype():
     while 1:
 	while not events.empty():
-	    ev = events.pop();
+	    ev = events.pop()
 	    res = res_info(ev.resourceId)
+            res_d = []
+	    while res.parentId != -1:
+		res_d.append("["+ res.name + " " + res.type.name+"] ")
+		res = res_info(res.parentId)
+ 	    res_d.append("["+ res.name + " " + res.type.name+"] ")
 	    res_descr = ""
-	    msg = "*** "+ev.username+ " "+res_dscr
+	    while len(res_d) > 0:
+		res_descr = res_descr + res_d.pop()
+	    lock_stat = ""
+	    if ev.TypeEvent == 4:
+		lock_stat = "LOCK"
+	    if ev.TypeEvent == 5:
+		lock_stat = "UNLOCK"
+	    msg = "*** "+ev.userSrc+ " " + lock_stat +" "+res_descr+" ***"
 	    print msg
+	    skypeClient.SendMessage('alina_shejanova',msg)
+#	    for chat in skypeClient.BookmarkedChats:
+#                chat.SendMessage(msg)
 	sleep(5)
 
 
 def do_refresh():
     while 1:
-	session.Refresh()
-	print "refresh"
+        try:
+	    session.Refresh()
+	except Ice.ConnectionRefusedException:
+    	    print '!!!'
+	except Ice.ObjectNotExistException:
+	    xxx()
 	sleep(15)
+
+def xxx():
+    ic = Ice.initialize(sys.argv)
+    base  = ic.stringToProxy("SimpleEntry:tcp -p 10000")
+    entry = LabrestAPI.EntryPrx.checkedCast(base)
+    if not entry:
+	raise RuntimeError('Invalid proxy')
+    session = entry.login('guest','guest')
+    t=Thread(target=do_refresh)
+    t.start()
+    adapter = ic.createObjectAdapter("")
+    ident = Ice.Identity()
+    ident.name = Ice.generateUUID()
+    ident.category = ""
+    print ident.name
+    cb = LabrestAPI.CallbackI()
+    adapter.add(cb, ident)
+    adapter.activate();
+    session.ice_getConnection().setAdapter(adapter)
+    session.getCallbackManager().registerCallback(ident)
+
 
 def res_info(res_id):
     res = session.getResourceManager().getResource(res_id)
@@ -69,7 +109,6 @@ def res_info(res_id):
 
 class CallbackI(LabrestAPI.Callback):
     def doCallback(self, ev, current=None):
-	print ev
 	events.push(ev)
 	
 
@@ -97,6 +136,8 @@ try:
     cbThread = Thread(target = call2skype)
     cbThread.start()
     ic.waitForShutdown()
+except Ice.ConnectionRefusedException:
+    	    print '!!!!!'
 except:
     traceback.print_exc()
     status = 1

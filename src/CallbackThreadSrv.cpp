@@ -41,12 +41,11 @@ LabrestAPI::CallbackThreadSrv::notifyAll() {
     while (!EvQueuePtr->empty())
     {
         Event ev = EvQueuePtr->pop();
-
         for(std::map<CallbackPrx, std::string>::iterator it = this->callbacks.begin(); it != this->callbacks.end(); it++) 
         {
             try
             {
-                if ((ev.username == "") ||(ev.username == (*it).second))
+                if ((ev.userDest == "") ||(ev.userDest == (*it).second))
                     (*it).first->doCallback(ev);
             }
             catch (const Ice::Exception& ex)
