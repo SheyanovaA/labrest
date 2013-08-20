@@ -24,6 +24,7 @@ class EventsQueue
     IceUtil::Mutex lock;
     
 public:
+    EventsQueue();
    
     void push_back(Event ev);
     
@@ -36,6 +37,8 @@ public:
     Event pop();
     
     int size();
+
+    int next_id;
 };
 
 };

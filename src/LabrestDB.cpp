@@ -617,9 +617,9 @@ bool LabrestAPI::LabrestDB::ResourceIsNotLock(int resourceId)
     return status;
 }
 
-bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username, int duration)
+bool LabrestAPI::LabrestDB::lockResource(int resourceId, ::std::string username, int duration)
 {
-//    ::std::cout << "LabrestDB::lockResourse()  called" << ::std::endl;
+//    ::std::cout << "LabrestDB::lockResource()  called" << ::std::endl;
     
     bool status;
     
@@ -684,7 +684,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
                 
                 while (sqlite3_step(ppStmt) == SQLITE_ROW)
                 {
-                    lockResourse(sqlite3_column_int(ppStmt,0), username, duration);
+                    lockResource(sqlite3_column_int(ppStmt,0), username, duration);
                 }
                 sqlite3_finalize(ppStmt);          
         }
@@ -692,7 +692,7 @@ bool LabrestAPI::LabrestDB::lockResourse(int resourceId, ::std::string username,
         Event ev;
     
         ev.TypeEvent = CB_LOCK;
-        ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+        ev.id = EvQueuePtr->next_id;
         ev.resourceId = resourceId;
         ev.userDest = "";
         ev.userSrc = username;
@@ -802,7 +802,7 @@ bool LabrestAPI::LabrestDB::unlockResource(int resourceId, ::std::string usernam
         Event ev;
     
         ev.TypeEvent = CB_UNLOCK;
-        ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+        ev.id = EvQueuePtr->next_id;
         ev.resourceId = resourceId;
         ev.userDest = "";
         ev.userSrc = username;
@@ -847,6 +847,8 @@ LabrestAPI::LabrestDB::getAllUsers()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_finalize(ppStmt);
+
     sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return users;
@@ -876,6 +878,7 @@ LabrestAPI::LabrestDB::getUser(::std::string username)
         
         user.group = sqlite3_column_int(ppStmt,2);
     }
+    sqlite3_finalize(ppStmt);
 
     return user;
 }
@@ -904,6 +907,8 @@ LabrestAPI::LabrestDB::getAllResources()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_finalize(ppStmt);
+
     sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return resources;
@@ -942,6 +947,7 @@ LabrestAPI::LabrestDB::getResource(int id)
         resource.parentId = sqlite3_column_int_or_null(ppStmt, 5);    
   
     }
+    sqlite3_finalize(ppStmt);
 
     return resource;
 }
@@ -971,6 +977,8 @@ LabrestAPI::LabrestDB::getAllResourceTypes()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_finalize(ppStmt);
+
     sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return resource_types;
@@ -1005,6 +1013,7 @@ LabrestAPI::LabrestDB::getResourceType(int id)
         
         resource_type.parentId = sqlite3_column_int_or_null(ppStmt, 3);      
     }
+    sqlite3_finalize(ppStmt);
 
     return resource_type;
 }
@@ -1034,6 +1043,8 @@ LabrestAPI::LabrestDB::getLockHistry()
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_finalize(ppStmt);
+
     sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
     return lock_history;
@@ -1097,6 +1108,7 @@ LabrestAPI::LabrestDB::getLockStatus(int Id)
 
         s = sqlite3_step(ppStmt);
     }
+    sqlite3_finalize(ppStmt);
 
     return temp;
 }

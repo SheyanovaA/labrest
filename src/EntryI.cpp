@@ -39,7 +39,7 @@ int LabrestAPI::EntryI::adc_pwd_check(const char * login, const char * password)
 LabrestAPI::EntryI::login(const ::std::string& username, const ::std::string& auth, const ::Ice::Current& current) 
 {
 	::LabrestAPI::SessionPrx SessionProxy;
-	::std::string sessionId = "SimpleSession" + t_to_string(index++);
+	::std::string sessionId = "SimpleSession" + username + t_to_string(index++);
 	std::cout<<"---"<<sessionId<<std::endl;
 
     std::cout << "EntryI::login() called" << std::endl;

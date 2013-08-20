@@ -29,7 +29,7 @@ void
                 Event ev;
     
                 ev.TypeEvent = CB_TIMEOUT;
-                ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+                ev.id = EvQueuePtr->next_id;
                 ev.resourceId = it->id;
                 ev.userDest = it->resLockStatus.username;
     

@@ -1,5 +1,8 @@
 #include "EventsQueue.h"
 
+LabrestAPI::EventsQueue::EventsQueue():next_id(0){};
+
+
 LabrestAPI::Event
 LabrestAPI::EventsQueue::back()
 {
@@ -67,6 +70,8 @@ LabrestAPI::EventsQueue::push_back(Event ev)
     
     this->ev_queue.push_back(ev);
     
+    this->next_id++;
+
     this->lock.unlock();
 }
 

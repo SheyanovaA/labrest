@@ -55,7 +55,7 @@ LabrestAPI::ResourceManagerI::addResource(const ::std::string& name,
     Event ev;
     
     ev.TypeEvent = CB_ADD_RES;
-    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.id = EvQueuePtr->next_id;
     ev.resourceId = new_resource_id;
     ev.userDest = "";
     ev.userSrc = User.name;
@@ -84,7 +84,7 @@ LabrestAPI::ResourceManagerI::deleteResource(::Ice::Int resourceId,
     Event ev;
     
     ev.TypeEvent = CB_DEL_RES;
-    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.id = EvQueuePtr->next_id;
     ev.resourceId = resourceId;
     ev.userDest = "";
     ev.userSrc = User.name;
@@ -117,7 +117,7 @@ LabrestAPI::ResourceManagerI::modifyResource(::Ice::Int resourceId,
     Event ev;
     
     ev.TypeEvent = CB_CH_RES;
-    ev.id = (EvQueuePtr->empty())? 1 : EvQueuePtr->back().id+1;
+    ev.id = EvQueuePtr->next_id;
     ev.resourceId = resourceId;
     ev.userDest = "";
     ev.userSrc = User.name;
@@ -136,7 +136,7 @@ LabrestAPI::ResourceManagerI::lockResource(::Ice::Int resourceId,
     
     ::std::cout << "ResourceManagerI::lockResource() called" << ::std::endl;
     
-    status = dbPtr->lockResourse(resourceId, User.name, duration);
+    status = dbPtr->lockResource(resourceId, User.name, duration);
      
     return status;
 }
