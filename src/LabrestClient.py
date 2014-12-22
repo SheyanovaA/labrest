@@ -79,7 +79,7 @@ web.session.Session.setUser = setUser
 web.session.Session.getUser = getUser
 web.session.Session.__icl = None
 
-session = web.session.Session(app,  web.session.DiskStore('sessions'))
+session = web.session.Session(app,  web.session.DiskStore('/tmp/sessions'))
 
 class index:
     def GET(self):

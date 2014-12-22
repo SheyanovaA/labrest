@@ -1,0 +1,31 @@
+EntryI::EntryI() called
+Open database successfully
+CallbackThreadSrv::CallbackThreadSrv() called
+MonitorThread::MonitorThread() called
+CallbackThreadSrv::run() called
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+MonitorThread::run() called
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+CallbackThreadSrv::notifyAll() called
+EventsQueue::empty() called
+empty
+Close database
