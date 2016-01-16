@@ -3,89 +3,98 @@
 module LabrestAPI 
 {
 	struct User 
-        {
+	{
 		string name;
 		string auth;
-                int group;
+		int group;
 	};
 
 	struct ResourceType 
-        {
+	{
 		int id;
 		string name;
 		string description;
+		int writeLimit;
 		int parentId;
 	};
 
-        struct LockStatus 
-        {
+	struct LockStatus 
+	{
 		int id;
 		string username;
-                int resourceId;
+		int resourceId;
 		int startTime;
-                int duration; 
+		int duration; 
 		int endTime;
-                string unlockComment;
+		string unlockComment;
 	};
 
-        struct Resource 
-        {
+	struct Resource 
+	{
 		int id;
 		string name;
 		string description;
 		LockStatus resLockStatus; 
-                int parentId;
+		int parentId;
 		ResourceType type;
 	};
 
-        struct Event
-        {
-                int id;
-                int TypeEvent;
-                int resourceId;
-                string userDest;
-                string userSrc;
-        };
+	struct Event
+	{
+		int id;
+		int TypeEvent;
+		int resourceId;
+		int resourceIdExt;
+		string userDest;
+		string userSrc;
+	};
+	
+	struct Link
+	{
+		int resourceId1;
+		int resourceId2;
+	};
 
-        interface ResourceManager;
+	interface ResourceManager;
 	interface UserManager;
-        interface CallbackManager;
-        interface Callback;
+	interface CallbackManager;
+	interface Callback;
 
-	sequence<int> ResourceIdList;
+	sequence<int> IntList;
 	sequence<Resource> ResourceList;
-	sequence<int> ResourceTypeIdList;
 	sequence<ResourceType> ResourceTypeList;
 	sequence<User> UserList;
-        sequence<LockStatus> History;
+	sequence<LockStatus> History;
+	sequence<ResourceList> SequenceVariants;
+	sequence<Link> LinkList;
 	
 	exception LoginException {};
-        exception AccessDenied {};
-        exception InvalidValue {};
-        exception ResourceIsLock {};
+	exception AccessDenied {};
+	exception InvalidValue {};
+	exception ResourceIsLock {};
 
 	interface Session 
-        {
+	{
 		ResourceManager * getResourceManager();
 
 		UserManager * getUserManager();
 
-                CallbackManager * getCallbackManager();
+		CallbackManager * getCallbackManager();
 
-                idempotent void Refresh();
+		idempotent void Refresh();
 
-                void destroy();
+		void destroy();
 	};
 
 	interface Entry 
-        {
+	{
 		Session * login(string username, string authdata)
 			throws LoginException;
 	};
 
-        interface ResourceManager 
-        {
-		ResourceIdList getAllResourceIds();
+	interface ResourceManager 
+	{
+		IntList getAllResourceIds();
 
 		ResourceList getAllResources();
 
@@ -109,14 +118,37 @@ module LabrestAPI
 		
 		bool lockResource(int resourceId, int duration)
                         throws InvalidValue, ResourceIsLock;
+                        
+		void connectResources(int resource1Id, int resource2Id)
+						throws InvalidValue;
+						
+		void disconnectResources(int resource1Id, int resource2Id)
+						throws InvalidValue;
+						
+		bool isConnectedResources(int resource1Id, int resource2Id)
+						throws InvalidValue;
+
+		LinkList getAllConnections();
+                        
+        ResourceList findResource(int resourceTypeId)
+        				throws InvalidValue;
+        				
+        Resource findBestResource(int resourceTypeId)
+        				throws InvalidValue;
+        				
+        SequenceVariants findResources(IntList resourceTypeIds)
+        				throws InvalidValue;
+        				
+        ResourceList findBestResources(IntList resourceTypeIds)
+        				throws InvalidValue;
 
 		void unlockResource(int resourceId)
                         throws InvalidValue;
 
-                History getLockHistory()
+		History getLockHistory()
                         throws AccessDenied;
 		
-		ResourceTypeIdList getAllResourceTypeIds();
+		IntList getAllResourceTypeIds();
 
 		ResourceTypeList getAllResourceTypes();
 
@@ -124,6 +156,7 @@ module LabrestAPI
 
 		int addResourceType(string name,
                             string description,
+                            int writeLimit,
                             int parentId)
                         throws AccessDenied, InvalidValue;
 
@@ -133,12 +166,13 @@ module LabrestAPI
 		bool modifyResourceType(int resourceTypeId,
                             string name,
                             string description,
+                            int writeLimit,
                             int parentId)
                         throws AccessDenied, InvalidValue;
 	};
 
 	interface UserManager 
-        {
+	{
 		bool addUser(string username, string authdata, int group)
                         throws AccessDenied;
 
@@ -147,22 +181,22 @@ module LabrestAPI
 
 		UserList getAllUsers();
 
-                User getUser(string username);
+		User getUser(string username);
 
 		bool modifyUser(string username, string authdata, int group)
                         throws AccessDenied;
 	};
 
-        interface CallbackManager 
-        {
-                bool registerCallback(Ice::Identity ident);
+	interface CallbackManager 
+	{
+		bool registerCallback(Ice::Identity ident);
 
-                bool unregisterCallback(Ice::Identity ident);
-        };
+		bool unregisterCallback(Ice::Identity ident);
+	};
 
-        interface Callback 
-        {
-                void doCallback(Event ev);
-        };
+	interface Callback 
+	{
+		void doCallback(Event ev);
+	};
 	
 };

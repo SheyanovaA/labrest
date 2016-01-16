@@ -11,6 +11,8 @@
 #define CB_LOCK     4
 #define CB_UNLOCK   5
 #define CB_TIMEOUT  6
+#define CB_ADD_CON	7
+#define CB_DEL_CON	8
 
 
 

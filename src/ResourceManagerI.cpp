@@ -1,11 +1,11 @@
 #include "ResourceManagerI.h"
 
-::LabrestAPI::ResourceIdList
+::LabrestAPI::IntList
 LabrestAPI::ResourceManagerI::getAllResourceIds(const Ice::Current& current) 
 {
     ::std::cout << "ResourceManagerI::getAllResourceIds() called" << ::std::endl;
     
-    return ::LabrestAPI::ResourceIdList();
+    return ::LabrestAPI::IntList();
 }
 
 ::LabrestAPI::ResourceList
@@ -150,12 +150,12 @@ LabrestAPI::ResourceManagerI::unlockResource(::Ice::Int resourceId,
     dbPtr->unlockResource(resourceId, User.name);
 }
 
-::LabrestAPI::ResourceTypeIdList
+::LabrestAPI::IntList
 LabrestAPI::ResourceManagerI::getAllResourceTypeIds(const Ice::Current& current)
 {
     ::std::cout << "ResourceManagerI::getAllResourceTypeIds() called" << ::std::endl;
     
-    return ::LabrestAPI::ResourceTypeIdList();
+    return ::LabrestAPI::IntList();
 }
 
 ::LabrestAPI::ResourceTypeList
@@ -186,6 +186,7 @@ LabrestAPI::ResourceManagerI::getResourceType(::Ice::Int resourceTypeId,
 ::Ice::Int
 LabrestAPI::ResourceManagerI::addResourceType(const ::std::string& name,
                                               const ::std::string& description,
+                                              ::Ice::Int writeLimit,
                                               ::Ice::Int parentId,
                                               const Ice::Current& current)
 {
@@ -198,7 +199,7 @@ LabrestAPI::ResourceManagerI::addResourceType(const ::std::string& name,
     
     ::std::cout << "ResourceManagerI::addResourceType() called" << ::std::endl;
     
-    new_resource_type_id =   dbPtr->addResourceType(name, description, parentId);
+    new_resource_type_id =   dbPtr->addResourceType(name, description, writeLimit, parentId);
     
     return new_resource_type_id;
 }
@@ -225,6 +226,7 @@ bool
 LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
                                                  const ::std::string& name,
                                                  const ::std::string& description,
+                                                 ::Ice::Int writeLimit,
                                                  ::Ice::Int parentId,
                                                  const Ice::Current& current)
 {
@@ -237,7 +239,7 @@ LabrestAPI::ResourceManagerI::modifyResourceType(::Ice::Int resourceTypeId,
     
     ::std::cout << "ResourceManagerI::modifyResourceType() called" << ::std::endl;
     
-    status = dbPtr->modifyResourceType(resourceTypeId, name, description, parentId);
+    status = dbPtr->modifyResourceType(resourceTypeId, name, description, writeLimit, parentId);
     
     return status;
 }
@@ -259,4 +261,129 @@ LabrestAPI::ResourceManagerI::getLockHistory(const Ice::Current&)
     history = dbPtr->getLockHistry();
     
     return history;   
+}
+
+
+::LabrestAPI::ResourceList
+LabrestAPI::ResourceManagerI::findResource(::Ice::Int resourceTypeId,
+                                           const Ice::Current& current)
+{
+	::LabrestAPI::ResourceList resources;
+
+	::std::cout << "ResourceManagerI::findResource() called" << ::std::endl;
+
+	resources = resFinder->findFreeResources(resourceTypeId);
+
+	return resources;
+}
+
+::LabrestAPI::Resource
+LabrestAPI::ResourceManagerI::findBestResource(::Ice::Int resourceTypeId,
+                                               const Ice::Current& current)
+{
+	::LabrestAPI::Resource resource;
+
+	::std::cout << "ResourceManagerI::findResource() called" << ::std::endl;
+
+	resource = resFinder->findBestFreeResource(resourceTypeId);
+
+	return resource;
+}
+
+::LabrestAPI::SequenceVariants
+LabrestAPI::ResourceManagerI::findResources(const ::LabrestAPI::IntList& resourceTypeIds,
+                                            const Ice::Current& current)
+{
+	::LabrestAPI::SequenceVariants result;
+
+	::std::cout << "ResourceManagerI::findResources() called" << ::std::endl;
+
+	result = resFinder->findFreeResources(resourceTypeIds);
+
+	return result;
+}
+
+::LabrestAPI::ResourceList
+LabrestAPI::ResourceManagerI::findBestResources(const ::LabrestAPI::IntList& resourceTypeIds,
+                                                const Ice::Current& current)
+{
+	::LabrestAPI::ResourceList resources;
+
+	::std::cout << "ResourceManagerI::findBestResources() called" << ::std::endl;
+
+	resources = resFinder->findBestFreeResources(resourceTypeIds);
+
+	return resources;
+}
+
+void
+LabrestAPI::ResourceManagerI::connectResources(::Ice::Int resource1Id,
+                                               ::Ice::Int resource2Id,
+                                               const Ice::Current& current)
+{
+	::std::cout << "ResourceManagerI::connectResources() called" << ::std::endl;
+
+	bool status = dbPtr->connectResources(resource1Id,resource2Id);
+
+	if (status)
+	{
+		Event ev;
+
+		ev.TypeEvent = CB_ADD_CON;
+		ev.id = EvQueuePtr->next_id;
+		ev.resourceId = resource1Id;
+		ev.resourceIdExt = resource1Id;
+		ev.userDest = "";
+		ev.userSrc = User.name;
+
+		EvQueuePtr->push_back(ev);
+	}
+}
+
+void
+LabrestAPI::ResourceManagerI::disconnectResources(::Ice::Int resource1Id,
+                                                  ::Ice::Int resource2Id,
+                                                  const Ice::Current& current)
+{
+	::std::cout << "ResourceManagerI::connectResources() called" << ::std::endl;
+
+	bool status = dbPtr->disconnectResources(resource1Id,resource2Id);
+
+	if (status)
+	{
+		Event ev;
+
+		ev.TypeEvent = CB_DEL_CON;
+		ev.id = EvQueuePtr->next_id;
+		ev.resourceId = resource1Id;
+		ev.resourceIdExt = resource1Id;
+		ev.userDest = "";
+		ev.userSrc = User.name;
+
+		EvQueuePtr->push_back(ev);
+	}
+}
+
+bool
+LabrestAPI::ResourceManagerI::isConnectedResources(::Ice::Int resource1Id,
+                                                   ::Ice::Int resource2Id,
+                                                   const Ice::Current& current)
+{
+	::std::cout << "ResourceManagerI::isConnectedResources() called" << ::std::endl;
+
+	bool status = dbPtr->disconnectResources(resource1Id,resource2Id);
+
+	return status;
+}
+
+::LabrestAPI::LinkList
+LabrestAPI::ResourceManagerI::getAllConnections(const Ice::Current& current)
+{
+	::LabrestAPI::LinkList connections;
+
+	::std::cout << "ResourceManagerI::getAllConnections() called" << ::std::endl;
+
+	connections = dbPtr->getAllConnections();
+
+	return connections;
 }

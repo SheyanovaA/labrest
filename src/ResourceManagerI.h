@@ -6,6 +6,7 @@
 #include "LabrestAPI.h"
 #include "LabrestDB.h"
 #include "EventsQueue.h"
+#include "ResourceFinder.h"
 
 namespace LabrestAPI
 {
@@ -17,7 +18,7 @@ public:
     
     ResourceManagerI(::LabrestAPI::User user);
 
-    virtual ::LabrestAPI::ResourceIdList getAllResourceIds(const Ice::Current&);
+    virtual ::LabrestAPI::IntList getAllResourceIds(const Ice::Current&);
 
     virtual ::LabrestAPI::ResourceList getAllResources(const Ice::Current&);
 
@@ -44,10 +45,37 @@ public:
                               ::Ice::Int,
                               const Ice::Current&);
 
+    virtual void connectResources(::Ice::Int,
+                                     ::Ice::Int,
+                                     const Ice::Current&);
+
+    virtual void disconnectResources(::Ice::Int,
+                                        ::Ice::Int,
+                                        const Ice::Current&);
+
+    virtual bool isConnectedResources(::Ice::Int,
+                                         ::Ice::Int,
+                                         const Ice::Current&);
+
+    virtual ::LabrestAPI::LinkList getAllConnections(const Ice::Current&);
+
+
+    virtual ::LabrestAPI::ResourceList findResource(::Ice::Int,
+                                                        const Ice::Current&);
+
+    virtual ::LabrestAPI::Resource findBestResource(::Ice::Int,
+                                                        const Ice::Current&);
+
+    virtual ::LabrestAPI::SequenceVariants findResources(const ::LabrestAPI::IntList&,
+                                                             const Ice::Current&);
+
+    virtual ::LabrestAPI::ResourceList findBestResources(const ::LabrestAPI::IntList&,
+                                                             const Ice::Current&);
+
     virtual void unlockResource(::Ice::Int,
                                 const Ice::Current&);
 
-    virtual ::LabrestAPI::ResourceTypeIdList getAllResourceTypeIds(const Ice::Current&);
+    virtual ::LabrestAPI::IntList getAllResourceTypeIds(const Ice::Current&);
 
     virtual ::LabrestAPI::ResourceTypeList getAllResourceTypes(const Ice::Current&);
 
@@ -57,6 +85,7 @@ public:
     virtual ::Ice::Int addResourceType(const ::std::string&,
                                        const ::std::string&,
                                        ::Ice::Int,
+                                       ::Ice::Int,
                                        const Ice::Current&);
 
     virtual bool deleteResourceType(::Ice::Int,
@@ -65,6 +94,7 @@ public:
     virtual bool modifyResourceType(::Ice::Int,
                                     const ::std::string&,
                                     const ::std::string&,
+                                    ::Ice::Int,
                                     ::Ice::Int,
                                     const Ice::Current&);
     

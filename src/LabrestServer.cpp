@@ -8,8 +8,10 @@
 #include "EventsQueue.h"
 #include "MonitorThread.h"
 #include "ReapTask.h"
+#include "ResourceFinder.h"
 
 LabrestAPI::LabrestDB * dbPtr;
+LabrestAPI::ResourceFinder * resFinder;
 LabrestAPI::EventsQueue * EvQueuePtr;
 LabrestAPI::CallbackThreadSrv * CbThreadPtr;
 
@@ -58,6 +60,10 @@ LabrestServerApp::run(int argc, char* argv[])
 
     dbPtr = &db;
     
+    ::LabrestAPI::ResourceFinder resourceFinder;
+
+    resFinder = &resourceFinder;
+
     ::LabrestAPI::EventsQueue queue;
     
     EvQueuePtr = &queue;

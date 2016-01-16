@@ -24,8 +24,6 @@ class LabrestDB
         
         int sqlite3_column_int_or_null(sqlite3_stmt * stmt, int iCol, int default_value = -1);
         
-        bool ResourceIsNotLock(int resourceId);
-        
         bool ExistsResourceType(int resTypeId);
         
         bool ExistsResource(int resourceId);
@@ -42,13 +40,13 @@ public:
 
 	int disconnect();
         
-        bool authUser(::std::string username, ::std::string authdate);
+    bool authUser(::std::string username, ::std::string authdate);
         
-        bool existsUser(::std::string username);
+    bool existsUser(::std::string username);
         
 	::LabrestAPI::UserList getAllUsers();
         
-        ::LabrestAPI::User getUser(::std::string username);
+    ::LabrestAPI::User getUser(::std::string username);
 
 	bool addUser(::std::string username, ::std::string authdate, int group);
 
@@ -56,9 +54,9 @@ public:
 
 	bool modifyUser(::std::string username, ::std::string authdata, int group);
         
-        ::LabrestAPI::ResourceList getAllResources();
-        
-        ::LabrestAPI::Resource getResource(int id);
+    ::LabrestAPI::ResourceList getAllResources();
+
+    ::LabrestAPI::Resource getResource(int id);
 
 	int  addResourse(::std::string name, 
                          ::std::string description, 
@@ -67,17 +65,18 @@ public:
 
 	bool deleteResource(int id);
 
-        bool modifyResource(int id, ::std::string name, 
+    bool modifyResource(int id, ::std::string name,
                             ::std::string description,
                             int typeId, 
                             int parentId);
 	
-        ::LabrestAPI::ResourceTypeList getAllResourceTypes();
+    ::LabrestAPI::ResourceTypeList getAllResourceTypes();
         
-        ::LabrestAPI::ResourceType getResourceType(int id);
+    ::LabrestAPI::ResourceType getResourceType(int id);
         
-        int  addResourceType(::std::string name, 
+    int  addResourceType(::std::string name,
                              ::std::string description, 
+                             int writeLimit,
                              int parentId);
 
 	bool deleteResourceType(int id);
@@ -85,19 +84,38 @@ public:
 	bool modifyResourceType(int id, 
                                 ::std::string name, 
                                 ::std::string description, 
+                                int writeLimit,
                                 int parentId);
 
 	bool lockResource(int resourceId, ::std::string username, int duration);
 
 	bool unlockResource(int resourceId, ::std::string username = "system");
         
-        bool ResourceIsLockByUser(int resourceId, ::std::string username);
+    bool ResourceIsLockByUser(int resourceId, ::std::string username);
+
+    bool ResourceIsNotLock(int resourceId);
         
-        ::LabrestAPI::LockStatus getLockStatus(int Id);
+    ::LabrestAPI::LockStatus getLockStatus(int Id);
         
-        ::LabrestAPI::History getLockHistry();
+    ::LabrestAPI::History getLockHistry();
+
+    bool connectResources(int resourceId1, int resourceId2);
+
+    bool isConnectedResources(int resourceId1, int resourceId2);
+
+    bool disconnectResources(int resourceId1, int resourceId2);
+
+    ::LabrestAPI::LinkList getAllConnections();
+
+    ::LabrestAPI::ResourceList getResources(int resourceTypeId);
         
-        void TimeOutCallbacks();
+    ::LabrestAPI::IntList getResourceIdsCennectedWith(int resourceId);
+
+    int getUsingCount(int resourceId);
+
+    //TODO connectionMatrix
+
+    void TimeOutCallbacks();
 };
 
 };

@@ -165,6 +165,12 @@ public:
     virtual void run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
 };
 
+class change_restype_writeLimit : public base_change_restype_command
+{
+public:
+    virtual void run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
+
 class change_restype_command : public base_command
 {
 public:

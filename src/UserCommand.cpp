@@ -93,13 +93,13 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
             " 2. exit\n"
             " 3. add_user <username> <password> <admin(1)/user(0)>\n"
             " 4. add_res <name> <description> <parent id> <type id>\n"
-            " 5. add_restype <name> <description> <parent id>\n"
+            " 5. add_restype <name> <description> <write limit> <parent id>\n"
             " 6. delete_user <username>\n"
             " 7. delete_res <resource id>\n"
             " 8. delete_restype <resource type id>\n"
             " 9. change_user <username> password/group <new value>\n"
             "10. change_res <resource id> name/descr/type_id/parent_id <new value>\n"
-            "11. change_restype <resource type id> name/descr/parent_id <new value>\n"
+            "11. change_restype <resource type id> name/descr/write_limit/parent_id <new value>\n"
             "12. all_users\n"
             "13. all_res\n"
             "14. all_restypes\n"
@@ -352,7 +352,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
         if (temp.resLockStatus.startTime == -1) 
             ::std::cout << "" ; 
         else ::std::cout << ctime(&start) ;
-        ::std::cout   << " || " << temp.type.id << " | " << temp.parentId << ::std::endl;
+        ::std::cout   << " || " << temp.type.writeLimit << " |  " << temp.type.id << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
@@ -360,15 +360,17 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
 
 bool add_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 {
-    rightParameters(parameters, 4);
+    rightParameters(parameters, 5);
     
-    ::std::stringstream s1(parameters[3]);
+    ::std::stringstream s1(parameters[3]), s2(parameters[4]);
     
-    int parent_id;   
+    int parent_id, writeLimit;
         
-    s1 >> parent_id;
+    s2 >> parent_id;
     
-    session->getResourceManager()->addResourceType(parameters[1],parameters[2],parent_id);
+    s1 >> writeLimit;
+
+    session->getResourceManager()->addResourceType(parameters[1],parameters[2],writeLimit,parent_id);
     
     return true;
 }
@@ -424,7 +426,7 @@ void change_restype_name::run(::std::vector<std::string> parameters, ::LabrestAP
          
     res_type = session->getResourceManager()->getResourceType(rest_id);
     
-    session->getResourceManager()->modifyResourceType(res_type.id,parameters[3],res_type.description,res_type.parentId);
+    session->getResourceManager()->modifyResourceType(res_type.id,parameters[3],res_type.description,res_type.writeLimit, res_type.parentId);
 }
 
 void change_restype_descr::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
@@ -439,7 +441,7 @@ void change_restype_descr::run(::std::vector<std::string> parameters, ::LabrestA
          
     res_type = session->getResourceManager()->getResourceType(rest_id);
     
-    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name, parameters[3],res_type.parentId);
+    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name, parameters[3],res_type.writeLimit, res_type.parentId);
 }
 
 void change_restype_parentId::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
@@ -456,7 +458,24 @@ void change_restype_parentId::run(::std::vector<std::string> parameters, ::Labre
     
     s2 >> new_parent_id;
         
-    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name,res_type.description,new_parent_id);
+    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name,res_type.description,res_type.writeLimit, new_parent_id);
+}
+
+void change_restype_writeLimit::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+    ::LabrestAPI::ResourceType res_type;
+
+    ::std::stringstream s1(parameters[1]), s2(parameters[3]);
+
+    int rest_id, new_write_limit;
+
+    s1 >> rest_id;
+
+    res_type = session->getResourceManager()->getResourceType(rest_id);
+
+    s2 >> new_write_limit;
+
+    session->getResourceManager()->modifyResourceType(res_type.id,res_type.name,res_type.description, new_write_limit,res_type.parentId);
 }
 
 bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
@@ -473,7 +492,7 @@ bool all_restype_command::run(::std::vector<std::string> parameters, ::LabrestAP
            
         temp = *it;
             
-        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.parentId << ::std::endl;
+        ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description << " | " << temp.writeLimit << " | " << temp.parentId << ::std::endl;
     };
     
     return true;
