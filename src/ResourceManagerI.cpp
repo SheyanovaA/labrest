@@ -371,9 +371,9 @@ LabrestAPI::ResourceManagerI::isConnectedResources(::Ice::Int resource1Id,
 {
 	::std::cout << "ResourceManagerI::isConnectedResources() called" << ::std::endl;
 
-	bool status = dbPtr->disconnectResources(resource1Id,resource2Id);
 
-	return status;
+
+	return true;
 }
 
 ::LabrestAPI::LinkList

@@ -106,8 +106,11 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
             "15. lock_history\n"
             "16. lock_res <resource id> [<duration>]\n"
             "17. unlock_res <resource id>\n"
-            "18. reg"
-            "19. unreg";
+            "18. reg\n"
+            "19. unreg\n"
+    		"20. find <resource type id1> [resource type id2 ...]\n"
+    		"21. connect <resource id 1> <resource id 2>"
+    		"22. disconnect <resource id 1> <resource id 2>";
     return true;
 }
 
@@ -527,6 +530,83 @@ bool lock_history_command::run(::std::vector<std::string> parameters, ::LabrestA
     
     return true;
 }
+
+bool find_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+	rightParameters(parameters, 1);
+
+	if(parameters.size()==2)
+	{
+		::std::stringstream s1(parameters[1]);
+
+		int id;
+
+		s1 >> id;
+
+		::LabrestAPI::Resource temp = session->getResourceManager()->findBestResource(id);
+
+		::std::cout <<  temp.id << ::std::endl;
+	}
+	else
+	{
+		::LabrestAPI::IntList ids;
+
+		for(int i = 1; i < parameters.size(); i++)
+		{
+			::std::stringstream s1(parameters[i]);
+
+			int id;
+
+			s1 >> id;
+
+			ids.push_back(id);
+		}
+		::LabrestAPI::ResourceList temp = session->getResourceManager()->findBestResources(ids);
+
+		for(::LabrestAPI::ResourceList::iterator t = temp.begin(); t != temp.end(); ++t)
+		{
+			::std::cout <<  t->id << ::std::endl;
+		}
+	}
+
+	return true;
+};
+
+
+bool connect_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+	rightParameters(parameters, 2);
+
+	::std::stringstream s1(parameters[1]), s2(parameters[2]);
+
+	int id1, id2;
+
+	s1 >> id1;
+
+	s2 >> id2;
+
+	session->getResourceManager()->connectResources(id1,id2);
+
+	return true;
+};
+
+bool disconnect_resource_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
+{
+	rightParameters(parameters, 2);
+
+	::std::stringstream s1(parameters[1]), s2(parameters[2]);
+
+	int id1, id2;
+
+	s1 >> id1;
+
+	s2 >> id2;
+
+	session->getResourceManager()->disconnectResources(id1,id2);
+
+	return true;
+};
+
 //
 //bool reg_callback_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session)
 //{    

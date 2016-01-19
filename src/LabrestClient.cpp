@@ -153,6 +153,9 @@ LabrestClientApp::run(int argc, char* argv[])
         commands["lock_history"] = new lock_history_command();
         commands["lock_res"] = new lock_resource_command();
         commands["unlock_res"] = new unlock_resource_command();
+        commands["find"] = new find_resource_command();
+        commands["connect"] = new connect_resource_command();
+        commands["disconnect"] = new disconnect_resource_command();
 
         
         while (true) 

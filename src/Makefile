@@ -3,7 +3,11 @@ CXX_FLAGS=
 LD=g++
 LDFLAGS=
 RMRF=rm -rf
-MD=mkdir
+MD=mkdir -p
+CPRF=cp -rf
+MVF=mv -f
+
+INSTALL_DIR=/opt/labrest
 
 ICE_HOME=/usr
 SLICE2CPP=${ICE_HOME}/bin/slice2cpp
@@ -14,6 +18,8 @@ TG_DIR=../target
 SRC_DIR=../src
 OBJECTS_DIR=$(TG_DIR)/objects
 FINAL_DIR=$(TG_DIR)/final
+RES_DIR=../res
+
 
 OBJS=LabrestAPI.o \
      ResourceManagerI.o \
@@ -36,11 +42,11 @@ OBJS=LabrestAPI.o \
 all: dirs labrest_server labrest_client final
 
 final:
-	mv -f $(OBJS) $(OBJECTS_DIR)
-	cp -rf ../res/* $(FINAL_DIR)
+	$(MVF) $(OBJS) $(OBJECTS_DIR)
+	$(CPRF) $(RES_DIR)/* $(FINAL_DIR)
 
 dirs: 
-	$(MD) -p $(TG_DIR) $(OBJECTS_DIR) $(FINAL_DIR)
+	$(MD) $(TG_DIR) $(OBJECTS_DIR) $(FINAL_DIR)
 	
 LabrestAPI.h LabrestAPI.cpp: LabrestAPI.ice
 	$(SLICE2CPP) -I/usr/share/Ice-3.4.2/slice $^
@@ -61,3 +67,16 @@ labrest_client: LabrestClient.o LabrestAPI.o UserCommand.o CallbackI.o CallbackT
 
 clean:
 	$(RMRF) $(OBJS) $(TG_DIR) $(OBJECTS_DIR) $(FINAL_DIR) *~ labrest_server labrest_client LabrestAPII.h LabrestAPII.cpp LabrestAPI.h LabrestAPI.cpp sessions LabrestAPI LabrestAPI_ice.py LabrestAPI_ice.pyc */*~
+	
+install: all
+	sudo $(MD) $(INSTALL_DIR)
+	sudo $(CPRF) $(FINAL_DIR)/* $(INSTALL_DIR)
+	sudo $(MVF) $(INSTALL_DIR)/lab_* /etc/init.d
+	
+uninstall:
+	sudo service lab_webserver stop
+	sudo service lab_server stop
+	sudo $(RMRF) $(INSTALL_DIR) /etc/init.d/lab_server /etc/init.d/lab_webserver /var/log/lab_*server.log
+	
+	
+	

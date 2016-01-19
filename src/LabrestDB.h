@@ -113,7 +113,7 @@ public:
 
     int getUsingCount(int resourceId);
 
-    //TODO connectionMatrix
+    int getConnectionsCount(::LabrestAPI::IntList ids);
 
     void TimeOutCallbacks();
 };

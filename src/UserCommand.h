@@ -200,6 +200,24 @@ class lock_history_command : public base_command
 public:
     virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
 };
+
+class find_resource_command : public base_command
+{
+public:
+	virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
+
+class connect_resource_command : public base_command
+{
+public:
+	virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
+
+class disconnect_resource_command : public base_command
+{
+public:
+	virtual bool run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPrx session);
+};
 //
 //class reg_callback_command : public base_command
 //{

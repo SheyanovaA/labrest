@@ -5,7 +5,7 @@ int LabrestAPI::LabrestDB::connect()
 {
 //    ::std::cout << "LabrestDB::connect() called" << ::std::endl;
     
-    int rc = sqlite3_open("labrest.db", &db);
+    int rc = sqlite3_open("/tmp/labrest.db", &db);
 
     if(rc)
     {
@@ -35,8 +35,8 @@ int LabrestAPI::LabrestDB::connect()
                 "duration integer, end_time datetime, unlock_comment text);";
 
        sql[3] = "create table if not exists "
-                "resource_links(resource1_id integer primary key, "
-                "resource2_id integer primary key);";
+                "resource_links(resource1_id integer, resource2_id integer, "
+                "primary key(resource1_id, resource2_id));";
 
         //add test user 'us' with password '1':
         sql[5] = "insert or replace into user values('admin','admin','1');";
@@ -44,7 +44,7 @@ int LabrestAPI::LabrestDB::connect()
 
          sqlite3_exec(db, "BEGIN", 0, 0, 0);
     
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 7; i++)
         {
 //            ::std::cout << sql[i] << ::std::endl;
                 
@@ -1329,6 +1329,8 @@ LabrestAPI::LabrestDB::getResources(int resourceTypeId)
 
 	sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
+	::std::cout << "LabrestDB::getResources() id = " << resourceTypeId << " done" <<::std::endl;
+
 	return resources;
 }
 
@@ -1371,7 +1373,9 @@ LabrestAPI::LabrestDB::getResources(int resourceTypeId)
 int
 LabrestAPI::LabrestDB::getUsingCount(int resourceId) {
 
-	int result;
+	int result = 0;
+
+	::std::cout << " LabrestDB::getUsingCount(" << resourceId << ") called" << ::std::endl;
 
 	::LabrestAPI::History lock_history;
 
@@ -1388,10 +1392,40 @@ LabrestAPI::LabrestDB::getUsingCount(int resourceId) {
 	while (s == SQLITE_ROW)
 	{
 		result++;
+
+		s = sqlite3_step(ppStmt);
+
+		::std::cout << " LabrestDB::getUsingCount() : count = " << result  << ::std::endl;
 	}
 	sqlite3_finalize(ppStmt);
 
 	sqlite3_exec(db, "COMMIT", 0, 0, 0);
 
+	::std::cout << " LabrestDB::getUsingCount() : count = " << result  << ::std::endl;
+
 	return result;
+}
+
+
+int
+LabrestAPI::LabrestDB::getConnectionsCount(::LabrestAPI::IntList ids) {
+	int result = 0;
+
+	for (LabrestAPI::IntList::iterator i = ids.begin(); i != ids.end(); ++i)
+	{
+		::std::cout << "getConnectionsCount() : id =  " << *i <<::std::endl;
+		LabrestAPI::IntList connectedWith = getResourceIdsCennectedWith(*i);
+		for(LabrestAPI::IntList::iterator it = connectedWith.begin(); it != connectedWith.end(); ++it)
+		{
+			for (LabrestAPI::IntList::iterator id = ids.begin(); id != ids.end(); ++id)
+			{
+				if((*id)==(*it))
+				{
+					result++;
+				}
+			}
+		}
+	}
+	::std::cout << "getConnectionsCount() : result =  " << result << ::std::endl;
+	return result/2;
 }
