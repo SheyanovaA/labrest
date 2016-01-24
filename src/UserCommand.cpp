@@ -109,8 +109,8 @@ help_command::run(::std::vector<std::string> parameters, ::LabrestAPI::SessionPr
             "18. reg\n"
             "19. unreg\n"
     		"20. find <resource type id1> [resource type id2 ...]\n"
-    		"21. connect <resource id 1> <resource id 2>"
-    		"22. disconnect <resource id 1> <resource id 2>";
+    		"21. connect <resource id 1> <resource id 2>\n"
+    		"22. disconnect <resource id 1> <resource id 2>\n";
     return true;
 }
 
@@ -353,7 +353,7 @@ bool all_resource_command::run(::std::vector<std::string> parameters, ::LabrestA
         ::std::cout <<  temp.id << " | " << temp.name << " | " << temp.description
                 << " || " << temp.resLockStatus.username << " | " ;
         if (temp.resLockStatus.startTime == -1) 
-            ::std::cout << "" ; 
+            ::std::cout << " " ;
         else ::std::cout << ctime(&start) ;
         ::std::cout   << " || " << temp.type.writeLimit << " |  " << temp.type.id << " | " << temp.parentId << ::std::endl;
     };
