@@ -1,0 +1,4 @@
+*.pyc
+target
+src/LabrestAPI.cpp
+src/LabrestAPI.h
